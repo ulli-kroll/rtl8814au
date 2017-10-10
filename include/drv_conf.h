@@ -22,12 +22,6 @@
 #include "autoconf.h"
 #include "hal_ic_cfg.h"
 
-#if defined (PLATFORM_LINUX) && defined (PLATFORM_WINDOWS)
-
-#error "Shall be Linux or Windows, but not both!\n"
-
-#endif
-
 //Older Android kernel doesn't has CONFIG_ANDROID defined,
 //add this to force CONFIG_ANDROID defined
 
