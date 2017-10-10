@@ -29,12 +29,6 @@
 #define RTL871X_MODULE_NAME "8814AU"
 #define DRV_NAME "rtl8814au"
 
-
-
-
-#define PLATFORM_LINUX	1
-
-
 #define CONFIG_IOCTL_CFG80211 1
 
 #ifdef CONFIG_IOCTL_CFG80211

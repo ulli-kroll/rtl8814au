@@ -331,8 +331,6 @@ struct ieee_ibss_seq {
 	_list	list;
 };
 
-#if defined(PLATFORM_LINUX) || defined(CONFIG_RTL8711FW)
-
 struct rtw_ieee80211_hdr {
 	u16 frame_ctl;
 	u16 duration_id;
@@ -381,8 +379,6 @@ struct eapol {
 	u8 type;
 	u16 length;
 } __attribute__ ((packed));
-
-#endif
 
 enum eap_type {
 	EAP_PACKET = 0,
@@ -492,8 +488,6 @@ enum eap_type {
 
 #define P80211_OUI_LEN 3
 
-#if defined(PLATFORM_LINUX) || defined(CONFIG_RTL8711FW)
-
 struct ieee80211_snap_hdr {
 
         u8    dsap;   /* always 0xAA */
@@ -502,8 +496,6 @@ struct ieee80211_snap_hdr {
         u8    oui[P80211_OUI_LEN];    /* organizational universal id */
 
 } __attribute__ ((packed));
-
-#endif
 
 #define SNAP_SIZE sizeof(struct ieee80211_snap_hdr)
 
@@ -944,8 +936,6 @@ struct ieee80211_softmac_stats{
 #define BIP_AAD_SIZE  20
 #endif //CONFIG_IEEE80211W
 
-#if defined(PLATFORM_LINUX) || defined(CONFIG_RTL8711FW)
-
 struct ieee80211_security {
 	u16 active_key:2,
             enabled:1,
@@ -957,8 +947,6 @@ struct ieee80211_security {
 	u8 level;
 	u16 flags;
 } __attribute__ ((packed));
-
-#endif
 
 /*
 
@@ -1000,8 +988,6 @@ struct ieee80211_header_data {
 #define MFIE_TYPE_RATES_EX   50
 #define MFIE_TYPE_GENERIC    221
 
-#if defined(PLATFORM_LINUX) || defined(CONFIG_RTL8711FW)
-
 struct ieee80211_info_element_hdr {
 	u8 id;
 	u8 len;
@@ -1012,7 +998,6 @@ struct ieee80211_info_element {
 	u8 len;
 	u8 data[0];
 } __attribute__ ((packed));
-#endif
 
 /*
  * These are the data types that can make up management packets
@@ -1033,9 +1018,6 @@ struct ieee80211_info_element {
 
 #define IEEE80211_DEFAULT_TX_ESSID "Penguin"
 #define IEEE80211_DEFAULT_BASIC_RATE 10
-
-
-#if defined(PLATFORM_LINUX) || defined(CONFIG_RTL8711FW)
 
 
 struct ieee80211_authentication {
@@ -1075,7 +1057,6 @@ struct ieee80211_assoc_response_frame {
 	u16 aid;
 //	struct ieee80211_info_element info_element; /* supported rates */
 } __attribute__ ((packed));
-#endif
 
 struct ieee80211_txb {
 	u8 nr_frags;

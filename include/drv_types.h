@@ -35,9 +35,7 @@
 #include <wifi.h>
 #include <ieee80211.h>
 
-#ifdef PLATFORM_LINUX
 #include <drv_types_linux.h>
-#endif
 
 enum _NIC_VERSION {
 
@@ -728,10 +726,8 @@ struct dvobj_priv
 	u8 * usb_vendor_req_buf;
 #endif
 
-#ifdef PLATFORM_LINUX
 	struct usb_interface *pusbintf;
 	struct usb_device *pusbdev;
-#endif//PLATFORM_LINUX
 
 };
 
@@ -745,7 +741,6 @@ struct dvobj_priv
 #define dvobj_to_rfctl(dvobj) (&(dvobj->rf_ctl))
 #define rfctl_to_dvobj(rfctl) container_of((rfctl), struct dvobj_priv, rf_ctl)
 
-#ifdef PLATFORM_LINUX
 static struct device *dvobj_to_dev(struct dvobj_priv *dvobj)
 {
 	/* todo: get interface type from dvobj and the return the dev accordingly */
@@ -754,7 +749,6 @@ static struct device *dvobj_to_dev(struct dvobj_priv *dvobj)
 
 	return &dvobj->pusbintf->dev;
 }
-#endif
 
 _adapter *dvobj_get_port0_adapter(struct dvobj_priv *dvobj);
 
@@ -881,11 +875,6 @@ struct _ADAPTER{
 	_thread_hdl_ xmitThread;
 	_thread_hdl_ recvThread;
 
-#ifndef PLATFORM_LINUX
-	NDIS_STATUS (*dvobj_init)(struct dvobj_priv *dvobj);
-	void (*dvobj_deinit)(struct dvobj_priv *dvobj);
-#endif
-
  	u32 (*intf_init)(struct dvobj_priv *dvobj);
 	void (*intf_deinit)(struct dvobj_priv *dvobj);
 	int (*intf_alloc_irq)(struct dvobj_priv *dvobj);
@@ -895,7 +884,6 @@ struct _ADAPTER{
 	void (*intf_start)(_adapter * adapter);
 	void (*intf_stop)(_adapter * adapter);
 
-#ifdef PLATFORM_LINUX
 	_nic_hdl pnetdev;
 	char old_ifname[IFNAMSIZ];
 
@@ -923,8 +911,6 @@ struct _ADAPTER{
 	#endif
 
 #endif /* CONFIG_IOCTL_CFG80211 */
-
-#endif /* PLATFORM_LINUX */
 
 	u8 mac_addr[ETH_ALEN];
 	int net_closed;

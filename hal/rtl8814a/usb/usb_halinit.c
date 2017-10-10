@@ -883,14 +883,12 @@ USB_AggModeSwitch(
 	{
 		// 2010/12/10 MH The parameter is tested by SD1 engineer and SD3 channel emulator.
 		// USB mode
-#if (RT_PLATFORM == PLATFORM_LINUX)
 		if (pMgntInfo->LinkDetectInfo.bTxBusyTraffic)
 		{
 			pHalData->RxAggBlockCount	= 16;
 			pHalData->RxAggBlockTimeout	= 7;
 		}
 		else
-#endif
 		{
 			pHalData->RxAggBlockCount	= 40;
 			pHalData->RxAggBlockTimeout	= 5;
@@ -911,7 +909,6 @@ USB_AggModeSwitch(
 
 	if (pHalData->RxAggBlockCount > MAX_RX_AGG_BLKCNT)
 		pHalData->RxAggBlockCount = MAX_RX_AGG_BLKCNT;
-#if (OS_WIN_FROM_VISTA(OS_VERSION)) || (RT_PLATFORM == PLATFORM_LINUX)	// do not support WINXP to prevent usbehci.sys BSOD
 	if (IS_WIRELESS_MODE_N_24G(Adapter) || IS_WIRELESS_MODE_N_5G(Adapter))
 	{
 		//
@@ -926,7 +923,6 @@ USB_AggModeSwitch(
 		// issue. Base on the newest test, we can not enable block cnt > 30, otherwise XP usbehci.sys may
 		// BSOD.
 	}
-#endif
 
 #endif
 #endif

@@ -197,12 +197,10 @@ void	EFUSE_ShadowMapUpdate(PADAPTER pAdapter, u8 efuseType, BOOLEAN bPseudoTest)
 void	EFUSE_ShadowRead(PADAPTER pAdapter, u8 Type, u16 Offset, u32 *Value);
 u8 rtw_efuse_file_read(PADAPTER padapter,u8 *filepatch,u8 *buf, u32 len);
 
-#ifdef PLATFORM_LINUX
 #ifdef CONFIG_EFUSE_CONFIG_FILE
 u32 rtw_read_efuse_from_file(const char *path, u8 *buf);
 u32 rtw_read_macaddr_from_file(const char *path, u8 *buf);
 #endif /* CONFIG_EFUSE_CONFIG_FILE */
-#endif /* PLATFORM_LINUX */
 
 #endif
 

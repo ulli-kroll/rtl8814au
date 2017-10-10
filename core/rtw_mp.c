@@ -162,7 +162,6 @@ static void _init_mp_priv_(struct mp_priv *pmp_priv)
 
 }
 
-#ifdef PLATFORM_LINUX
 static int init_mp_priv_by_os(struct mp_priv *pmp_priv)
 {
 	int i, res;
@@ -203,7 +202,6 @@ _exit_init_mp_priv:
 
 	return res;
 }
-#endif
 
 static void mp_init_xmit_attrib(struct mp_tx *pmptx, PADAPTER padapter)
 {
@@ -1336,11 +1334,9 @@ void SetPacketTx(PADAPTER padapter)
 	rtw_mfree(pmp_priv->TXradomBuffer,4096);
 
 	//3 6. start thread
-#ifdef PLATFORM_LINUX
 	pmp_priv->tx.PktTxThread = kthread_run(mp_xmit_packet_thread, pmp_priv, "RTW_MP_THREAD");
 	if (IS_ERR(pmp_priv->tx.PktTxThread))
 		DBG_871X("Create PktTx Thread Fail !!!!!\n");
-#endif
 
 	Rtw_MPSetMacTxEDCA(padapter);
 exit:
@@ -1482,12 +1478,10 @@ u32 mp_query_psd(PADAPTER pAdapter, u8 *data)
 	u32 psd_data=0;
 
 
-#ifdef PLATFORM_LINUX
 	if (!netif_running(pAdapter->pnetdev)) {
 		RT_TRACE(_module_mp_, _drv_warning_, ("mp_query_psd: Fail! interface not opened!\n"));
 		return 0;
 	}
-#endif
 
 	if (check_fwstate(&pAdapter->mlmepriv, WIFI_MP_STATE) == _FALSE) {
 		RT_TRACE(_module_mp_, _drv_warning_, ("mp_query_psd: Fail! not in MP mode!\n"));

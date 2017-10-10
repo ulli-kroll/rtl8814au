@@ -48,7 +48,6 @@ The protection mechanism is through the pending queue.
 	_mutex ioctl_mutex;
 
 
-#ifdef PLATFORM_LINUX
 	// when in USB, IO is through interrupt in/out endpoints
 	struct usb_device 	*udev;
 	PURB	piorw_urb;
@@ -58,7 +57,6 @@ The protection mechanism is through the pending queue.
 	_timer	io_timer;
 	u8 bio_irp_timeout;
 	u8 bio_timer_cancel;
-#endif
 
 };
 
@@ -82,7 +80,6 @@ void rtw_cancel_all_timer(_adapter *padapter);
 
 uint loadparam(_adapter *adapter);
 
-#ifdef PLATFORM_LINUX
 int rtw_ioctl(struct net_device *dev, struct ifreq *rq, int cmd);
 
 int rtw_init_netdev_name(struct net_device *pnetdev, const char *ifname);
@@ -102,8 +99,6 @@ u16 rtw_recv_select_queue(struct sk_buff *skb);
 #ifdef CONFIG_IOCTL_CFG80211
 #include "../os_dep/linux/ioctl_cfg80211.h"
 #endif //CONFIG_IOCTL_CFG80211
-
-#endif //PLATFORM_LINUX
 
 
 void rtw_ips_dev_unload(_adapter *padapter);
