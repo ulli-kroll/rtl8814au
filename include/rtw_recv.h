@@ -20,24 +20,16 @@
 #ifndef _RTW_RECV_H_
 #define _RTW_RECV_H_
 
-#ifdef PLATFORM_OS_XP
-		#define NR_RECVBUFF (16)
-#elif defined(PLATFORM_OS_CE)
-		#define NR_RECVBUFF (4)
-#else //PLATFORM_LINUX /PLATFORM_BSD
-
-	#ifdef CONFIG_SINGLE_RECV_BUF
-		#define NR_RECVBUFF (1)
-	#else
-			#define NR_RECVBUFF (8)
-	#endif //CONFIG_SINGLE_RECV_BUF
-	#ifdef CONFIG_PREALLOC_RX_SKB_BUFFER
-		#define NR_PREALLOC_RECV_SKB (rtw_rtkm_get_nr_recv_skb()>>1)
-	#else /*!CONFIG_PREALLOC_RX_SKB_BUFFER */
-		#define NR_PREALLOC_RECV_SKB 8
-	#endif /* CONFIG_PREALLOC_RX_SKB_BUFFER */
-
-#endif
+#ifdef CONFIG_SINGLE_RECV_BUF
+	#define NR_RECVBUFF (1)
+#else
+		#define NR_RECVBUFF (8)
+#endif //CONFIG_SINGLE_RECV_BUF
+#ifdef CONFIG_PREALLOC_RX_SKB_BUFFER
+	#define NR_PREALLOC_RECV_SKB (rtw_rtkm_get_nr_recv_skb()>>1)
+#else /*!CONFIG_PREALLOC_RX_SKB_BUFFER */
+	#define NR_PREALLOC_RECV_SKB 8
+#endif /* CONFIG_PREALLOC_RX_SKB_BUFFER */
 
 #define NR_RECVFRAME 256
 
@@ -449,18 +441,10 @@ struct recv_buf
 	u8	*pend;
 
 
-	#if defined(PLATFORM_OS_XP)||defined(PLATFORM_LINUX)||defined(PLATFORM_FREEBSD)
+	#if defined(PLATFORM_LINUX)||defined(PLATFORM_FREEBSD)
 	PURB	purb;
 	dma_addr_t dma_transfer_addr;	/* (in) dma addr for transfer_buffer */
 	u32 alloc_sz;
-	#endif
-
-	#ifdef PLATFORM_OS_XP
-	PIRP		pirp;
-	#endif
-
-	#ifdef PLATFORM_OS_CE
-	USB_TRANSFER	usb_transfer_read_port;
 	#endif
 
 	u8  irp_pending;

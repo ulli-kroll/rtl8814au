@@ -35,14 +35,6 @@
 #include <wifi.h>
 #include <ieee80211.h>
 
-#ifdef PLATFORM_OS_XP
-#include <drv_types_xp.h>
-#endif
-
-#ifdef PLATFORM_OS_CE
-#include <drv_types_ce.h>
-#endif
-
 #ifdef PLATFORM_LINUX
 #include <drv_types_linux.h>
 #endif

@@ -21,19 +21,15 @@
 #define __RTL8814A_RECV_H__
 
 #ifndef MAX_RECVBUF_SZ
-#ifdef PLATFORM_OS_CE
-#define MAX_RECVBUF_SZ (8192+1024) // 8K+1k
+#ifndef CONFIG_MINIMAL_MEMORY_USAGE
+	#define MAX_RECVBUF_SZ (32768) // 32k
+	//#define MAX_RECVBUF_SZ (24576) // 24k
+	//#define MAX_RECVBUF_SZ (20480) //20K
+	//#define MAX_RECVBUF_SZ (10240) //10K
+	//#define MAX_RECVBUF_SZ (15360) // 15k < 16k
+	//#define MAX_RECVBUF_SZ (8192+1024) // 8K+1k
 #else
-	#ifndef CONFIG_MINIMAL_MEMORY_USAGE
-		#define MAX_RECVBUF_SZ (32768) // 32k
-		//#define MAX_RECVBUF_SZ (24576) // 24k
-		//#define MAX_RECVBUF_SZ (20480) //20K
-		//#define MAX_RECVBUF_SZ (10240) //10K
-		//#define MAX_RECVBUF_SZ (15360) // 15k < 16k
-		//#define MAX_RECVBUF_SZ (8192+1024) // 8K+1k
-	#else
-		#define MAX_RECVBUF_SZ (4000) // about 4K
-	#endif
+	#define MAX_RECVBUF_SZ (4000) // about 4K
 #endif
 #endif //!MAX_RECVBUF_SZ
 

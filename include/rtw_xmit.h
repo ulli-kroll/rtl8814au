@@ -34,14 +34,10 @@
 #define NR_XMITBUFF	(4)
 #endif //CONFIG_SINGLE_XMIT_BUF
 
-#ifdef PLATFORM_OS_CE
-#define XMITBUF_ALIGN_SZ 4
-#else
 #ifdef USB_XMITBUF_ALIGN_SZ
 #define XMITBUF_ALIGN_SZ (USB_XMITBUF_ALIGN_SZ)
 #else
 #define XMITBUF_ALIGN_SZ 512
-#endif
 #endif
 
 // xmit extension buff defination
@@ -415,17 +411,9 @@ struct xmit_buf
 	//u32 sz[8];
 	u32	ff_hwaddr;
 
-#if defined(PLATFORM_OS_XP)||defined(PLATFORM_LINUX) || defined(PLATFORM_FREEBSD)
+#if defined(PLATFORM_LINUX) || defined(PLATFORM_FREEBSD)
 	PURB	pxmit_urb[8];
 	dma_addr_t dma_transfer_addr;	/* (in) dma addr for transfer_buffer */
-#endif
-
-#ifdef PLATFORM_OS_XP
-	PIRP		pxmit_irp[8];
-#endif
-
-#ifdef PLATFORM_OS_CE
-	USB_TRANSFER	usb_transfer_write_port;
 #endif
 
 	u8 bpending[8];
@@ -587,10 +575,6 @@ struct	xmit_priv	{
 	_sema	tx_retevt;//all tx return event;
 	u8		txirp_cnt;//
 
-#ifdef PLATFORM_OS_CE
-	USB_TRANSFER	usb_transfer_write_port;
-//	USB_TRANSFER	usb_transfer_write_mem;
-#endif
 #ifdef PLATFORM_LINUX
 	struct tasklet_struct xmit_tasklet;
 #endif

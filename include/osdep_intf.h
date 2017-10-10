@@ -60,14 +60,6 @@ The protection mechanism is through the pending queue.
 	u8 bio_timer_cancel;
 #endif
 
-#ifdef PLATFORM_OS_XP
-		PURB	piorw_urb;
-		PIRP		piorw_irp;
-		u8 io_irp_cnt;
-		u8 bio_irp_pending;
-		_sema io_retevt;
-#endif
-
 };
 
 
