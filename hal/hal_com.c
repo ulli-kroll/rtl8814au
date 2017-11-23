@@ -2846,26 +2846,18 @@ int hal_efuse_macaddr_offset(_adapter *adapter)
 	case RTL8812:
 		if (interface_type == RTW_USB)
 			addr_offset = EEPROM_MAC_ADDR_8812AU;
-		else if (interface_type == RTW_PCIE)
-			addr_offset = EEPROM_MAC_ADDR_8812AE;
 		break;
 #endif
 #ifdef CONFIG_RTL8821A
 	case RTL8821:
 		if (interface_type == RTW_USB)
 			addr_offset = EEPROM_MAC_ADDR_8821AU;
-		else if (interface_type == RTW_SDIO)
-			addr_offset = EEPROM_MAC_ADDR_8821AS;
-		else if (interface_type == RTW_PCIE)
-			addr_offset = EEPROM_MAC_ADDR_8821AE;
 		break;
 #endif
 #ifdef CONFIG_RTL8814A
 	case RTL8814A:
 		if (interface_type == RTW_USB)
 			addr_offset = EEPROM_MAC_ADDR_8814AU;
-		else if (interface_type == RTW_PCIE)
-			addr_offset = EEPROM_MAC_ADDR_8814AE;
 		break;
 #endif
 	}
