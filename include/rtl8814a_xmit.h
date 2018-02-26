@@ -236,11 +236,7 @@ typedef struct txdescriptor_8814
 #define SET_TX_DESC_DATA_RC_8814A(__pTxDesc, __Value) 			SET_BITS_TO_LE_4BYTE(__pTxDesc+32, 8, 6, __Value)
 #define SET_TX_DESC_EN_HWEXSEQ_8814A(__pTxDesc, __Value) 			SET_BITS_TO_LE_4BYTE(__pTxDesc+32, 14, 1, __Value)
 #define SET_TX_DESC_HWSEQ_EN_8814A(__pTxDesc, __Value) 			SET_BITS_TO_LE_4BYTE(__pTxDesc+32, 15, 1, __Value)
-#if(DEV_BUS_TYPE != RT_SDIO_INTERFACE)
 #define SET_TX_DESC_NEXT_HEAD_PAGE_L_8814A(__pTxDesc,__Value)(__pTxDesc, __Value) 	SET_BITS_TO_LE_4BYTE(__pTxDesc+32, 16, 8, __Value)
-#else
-#define SET_TX_DESC_SDIO_SEQ_8814A(__pTxDesc,__Value)(__pTxDesc, __Value) 			SET_BITS_TO_LE_4BYTE(__pTxDesc+32, 16, 8, __Value) //20130415 KaiYuan add for 8814AS
-#endif
 #define SET_TX_DESC_TAIL_PAGE_L_8814A(__pTxDesc,__Value)(__pTxDesc, __Value) 			SET_BITS_TO_LE_4BYTE(__pTxDesc+32, 24, 8, __Value)
 
 // Dword 9

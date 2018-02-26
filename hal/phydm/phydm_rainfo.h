@@ -142,7 +142,7 @@ typedef struct _ODM_RA_Info_ {
 	u1Byte RAstage;  // StageRA, decide how many times RA will be done between PT
 	u1Byte PTSmoothFactor;
 #endif
-#if (DM_ODM_SUPPORT_TYPE == ODM_AP) && ((DEV_BUS_TYPE == RT_USB_INTERFACE) || (DEV_BUS_TYPE == RT_SDIO_INTERFACE))
+#if (DM_ODM_SUPPORT_TYPE == ODM_AP) && ((DEV_BUS_TYPE == RT_USB_INTERFACE))
 	u1Byte RateDownCounter;
 	u1Byte RateUpCounter;
 	u1Byte RateDirection;

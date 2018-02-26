@@ -1440,7 +1440,7 @@ odm_RateAdaptiveMaskInit(
 
 	pOdmRA->HighRSSIThresh = 50;
 #if (DM_ODM_SUPPORT_TYPE == ODM_AP) && \
-	((DEV_BUS_TYPE == RT_USB_INTERFACE) || (DEV_BUS_TYPE == RT_SDIO_INTERFACE))
+	((DEV_BUS_TYPE == RT_USB_INTERFACE))
 	pOdmRA->LowRSSIThresh = 23;
 #else
 	pOdmRA->LowRSSIThresh = 20;

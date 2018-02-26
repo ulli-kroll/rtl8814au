@@ -252,7 +252,7 @@ odm_SignalScaleMapping_92CSeries(
 	}
 #endif
 
-#if ((DEV_BUS_TYPE == RT_USB_INTERFACE) ||(DEV_BUS_TYPE == RT_SDIO_INTERFACE))
+#if ((DEV_BUS_TYPE == RT_USB_INTERFACE))
 	if((pDM_Odm->SupportInterface  == ODM_ITRF_USB) || (pDM_Odm->SupportInterface  == ODM_ITRF_SDIO))
 	{
 		if(CurrSig >= 51 && CurrSig <= 100)
@@ -2190,7 +2190,7 @@ ODM_ConfigRFWithHeaderFile(
 			}
 		}
 #endif
-#if ((DEV_BUS_TYPE == RT_USB_INTERFACE) || (DEV_BUS_TYPE == RT_SDIO_INTERFACE))
+#if ((DEV_BUS_TYPE == RT_USB_INTERFACE))
 #if (RTL8188F_SUPPORT == 1)
 		if (pDM_Odm->SupportICType == ODM_RTL8188F)
 		{
@@ -2287,8 +2287,6 @@ ODM_ConfigRFWithTxPwrTrackHeaderFile(
 	if (pDM_Odm->SupportICType == ODM_RTL8703B) {
 		if (pDM_Odm->SupportInterface == ODM_ITRF_USB)
 			READ_AND_CONFIG_MP(8703B, _TxPowerTrack_USB);
-		else if (pDM_Odm->SupportInterface == ODM_ITRF_SDIO)
-			READ_AND_CONFIG_MP(8703B, _TxPowerTrack_SDIO);
 	}
 #endif
 
@@ -2296,8 +2294,6 @@ ODM_ConfigRFWithTxPwrTrackHeaderFile(
 	if (pDM_Odm->SupportICType == ODM_RTL8188F) {
 		if (pDM_Odm->SupportInterface == ODM_ITRF_USB)
 			READ_AND_CONFIG_MP(8188F, _TxPowerTrack_USB);
-		else if (pDM_Odm->SupportInterface == ODM_ITRF_SDIO)
-			READ_AND_CONFIG_MP(8188F, _TxPowerTrack_SDIO);
 	}
 #endif
 
@@ -2312,7 +2308,7 @@ ODM_ConfigRFWithTxPwrTrackHeaderFile(
 			READ_AND_CONFIG_MP(8822B, _TxPowerTrack);			*/
 #endif
 
-#if ((DEV_BUS_TYPE == RT_USB_INTERFACE) || (DEV_BUS_TYPE == RT_SDIO_INTERFACE))
+#if ((DEV_BUS_TYPE == RT_USB_INTERFACE))
 #if RTL8188F_SUPPORT
 	if(pDM_Odm->SupportICType == ODM_RTL8188F)
 			READ_AND_CONFIG_TC(8188F,_TxPowerTrack_PCIE);
@@ -2485,7 +2481,7 @@ ODM_ConfigBBWithHeaderFile(
 			READ_AND_CONFIG_MP(8822B, _PHY_REG_MP); */
 	}
 #endif
-#if ((DEV_BUS_TYPE == RT_USB_INTERFACE) || (DEV_BUS_TYPE == RT_SDIO_INTERFACE))
+#if ((DEV_BUS_TYPE == RT_USB_INTERFACE))
 #if (RTL8188F_SUPPORT == 1)
 	if(pDM_Odm->SupportICType == ODM_RTL8188F)
 	{
@@ -2589,7 +2585,7 @@ ODM_ConfigMACWithHeaderFile(
 		READ_AND_CONFIG_MP(8822B, _MAC_REG);
 #endif
 
-#if ((DEV_BUS_TYPE == RT_USB_INTERFACE) || (DEV_BUS_TYPE == RT_SDIO_INTERFACE))
+#if ((DEV_BUS_TYPE == RT_USB_INTERFACE))
 #if (RTL8188F_SUPPORT == 1)
 	if (pDM_Odm->SupportICType == ODM_RTL8188F)
 		READ_AND_CONFIG_TC(8188F,_MAC_REG);
@@ -2629,7 +2625,7 @@ ODM_ConfigFWWithHeaderFile(
 	{
 	}
 #endif
-#if ((DEV_BUS_TYPE == RT_USB_INTERFACE) || (DEV_BUS_TYPE == RT_SDIO_INTERFACE))
+#if ((DEV_BUS_TYPE == RT_USB_INTERFACE))
 #endif
 #endif//(DM_ODM_SUPPORT_TYPE == ODM_WIN)
 
@@ -2692,7 +2688,7 @@ ODM_GetHWImgVersion(
 	if (pDM_Odm->SupportICType == ODM_RTL8822B)
 		Version = GET_VERSION(8822B, _MAC_REG);
 #endif
-#if ((DEV_BUS_TYPE == RT_USB_INTERFACE) || (DEV_BUS_TYPE == RT_SDIO_INTERFACE))
+#if ((DEV_BUS_TYPE == RT_USB_INTERFACE))
 #if (RTL8188F_SUPPORT == 1)
 	if (pDM_Odm->SupportICType == ODM_RTL8188F)
 		Version = GET_VERSION_TC(8188F, _MAC_REG);

@@ -1198,11 +1198,7 @@ phydm_hl_smart_ant_type1_init_8821a(
 	pdm_sat_table->data_codeword_bit_num  = 24;/*max=32*/
 	pdm_sat_table->beam_patten_num_each_ant = 4;
 
-	#if DEV_BUS_TYPE == RT_SDIO_INTERFACE
 	pdm_sat_table->latch_time = 100; /*mu sec*/
-	#elif DEV_BUS_TYPE == RT_USB_INTERFACE
-	pdm_sat_table->latch_time = 100; /*mu sec*/
-	#endif
 	pdm_sat_table->pkt_skip_statistic_en = 0;
 
 	pdm_sat_table->ant_num  = 2;/*max=8*/

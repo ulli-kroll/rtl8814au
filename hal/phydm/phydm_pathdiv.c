@@ -1950,11 +1950,7 @@ ODM_CCKPathDiversityChkPerPktRssi(
 	BOOLEAN			bCount = FALSE;
 	pPD_T	pDM_PDTable = &Adapter->DM_PDTable;
 	//BOOLEAN	isCCKrate = RX_HAL_IS_CCK_RATE_92C(pDesc);
-#if DEV_BUS_TYPE != RT_SDIO_INTERFACE
 	BOOLEAN	isCCKrate = RX_HAL_IS_CCK_RATE(Adapter, pDesc);
-#else  //below code would be removed if we have verified SDIO
-	BOOLEAN	isCCKrate = IS_HARDWARE_TYPE_8188E(Adapter) ? RX_HAL_IS_CCK_RATE_88E(pDesc) : RX_HAL_IS_CCK_RATE_92C(pDesc);
-#endif
 
 	if((pHalData->PathDivCfg != 1) || (pHalData->RSSI_test == FALSE))
 		return;

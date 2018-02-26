@@ -250,7 +250,7 @@ void UpdateEarlyModeInfo8814(struct xmit_priv *pxmitpriv,struct xmit_buf *pxmitb
 }
 #endif
 
-#if ((DEV_BUS_TYPE == RT_USB_INTERFACE) || (DEV_BUS_TYPE == RT_SDIO_INTERFACE))
+#if ((DEV_BUS_TYPE == RT_USB_INTERFACE))
 void rtl8814a_cal_txdesc_chksum(u8 *ptxdesc)
 {
 	u16	*usPtr;

@@ -1857,7 +1857,7 @@ hal_InitPGData_8814A(
 	if(_FALSE == pHalData->bautoload_fail_flag)
 	{ // autoload OK.
 		// hal_ReadeFuse_8814A is FW offload read efuse, todo
-	//#if ((DEV_BUS_TYPE==RT_USB_INTERFACE || DEV_BUS_TYPE==RT_SDIO_INTERFACE))  && (MP_DRIVER != 1)
+	//#if ((DEV_BUS_TYPE==RT_USB_INTERFACE))  && (MP_DRIVER != 1)
 		//if(hal_ReadeFuse_8814A(pAdapter) == _FAIL)
 	//#endif
 

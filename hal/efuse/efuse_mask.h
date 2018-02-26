@@ -27,6 +27,4 @@
 	#include "rtl8814a/HalEfuseMask8814A_PCIE.h"
 	#endif
 
-#elif DEV_BUS_TYPE == RT_SDIO_INTERFACE
-
 #endif

@@ -112,7 +112,6 @@ SetBcnCtrlReg(
 	pHalData->RegBcnCtrlVal &= ~ClearBits;
 
 #if 0
-//#if DEV_BUS_TYPE == RT_SDIO_INTERFACE
 	pHalData->RegBcnCtrlVal &= ~EN_TXBCN_RPT;
 #endif
 	rtw_write8(Adapter, REG_BCN_CTRL_8814A, (u8)(pHalData->RegBcnCtrlVal));
@@ -833,10 +832,6 @@ int _CheckWLANFwPatchBTFwReady_8821A( PADAPTER	Adapter )
 	u8	u1bTmp;
 	int ret = _FAIL;
 
-#if (DEV_BUS_TYPE == RT_SDIO_INTERFACE)
-		u32	txpktbuf_bndy;
-#endif
-
 	//---------------------------------------------------------
 	// Check if BT FW patch procedure is ready.
 	//---------------------------------------------------------
@@ -865,26 +860,6 @@ int _CheckWLANFwPatchBTFwReady_8821A( PADAPTER	Adapter )
 	//---------------------------------------------------------
 	// Reset beacon setting to the initial value.
 	//---------------------------------------------------------
-#if (DEV_BUS_TYPE == RT_SDIO_INTERFACE)
-#if 0
-		if(!Adapter->MgntInfo.bWiFiConfg)
-		{
-			txpktbuf_bndy = TX_PAGE_BOUNDARY_8821;
-		}
-		else
-#endif
-		{// for WMM
-			txpktbuf_bndy = WMM_NORMAL_TX_PAGE_BOUNDARY_8821;
-		}
-
-		ret =	InitLLTTable8812A(Adapter, txpktbuf_bndy);
-		if(_SUCCESS != ret){
-			DBG_871X("_CheckWLANFwPatchBTFwReady_8821A(): Failed to init LLT!\n");
-		}
-
-		// Init Tx boundary.
-		rtw_write8(Adapter, REG_TDECTRL+1, (u8)txpktbuf_bndy);
-#endif
 
 	SetBcnCtrlReg(Adapter, BIT3, 0);
 	SetBcnCtrlReg(Adapter, 0, BIT4);
@@ -993,17 +968,6 @@ int _WriteBTFWtoTxPktBuf8812(
 	//---------------------------------------------------------
 	// 2. Adjust LLT table to an even boundary.
 	//---------------------------------------------------------
-#if 0//(DEV_BUS_TYPE == RT_SDIO_INTERFACE)
-	txpktbuf_bndy = 10; // rsvd page start address should be an even value.
-	rtStatus =	InitLLTTable8723BS(Adapter, txpktbuf_bndy);
-	if(_SUCCESS != rtStatus){
-		DBG_8192C("_CheckWLANFwPatchBTFwReady_8723B(): Failed to init LLT!\n");
-		return _FAIL;
-	}
-
-	// Init Tx boundary.
-	rtw_write8(Adapter, REG_DWBCN0_CTRL_8723B+1, (u8)txpktbuf_bndy);
-#endif
 
 
 	//---------------------------------------------------------

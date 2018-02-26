@@ -884,7 +884,6 @@ efuse_IsMasked(
 	//else if (IS_HARDWARE_TYPE_8821B(pAdapter))
 	//	return (IS_MASKED(8821B,_MPCIE,Offset)) ? TRUE : FALSE;
 
-#elif DEV_BUS_TYPE == RT_SDIO_INTERFACE
 #endif
 
 	return FALSE;
