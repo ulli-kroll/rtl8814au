@@ -33,5 +33,8 @@ currently <u>not</u>
 - activate USB3 switch
 - minor crosscompile check
 
+Please use prefix **rtl8814au** if you want to mail me  
+But please please don't, I have enough to do.  
+TIA  
 
 Hans Ulli Kroll <ulli.kroll@googlemail.com>
