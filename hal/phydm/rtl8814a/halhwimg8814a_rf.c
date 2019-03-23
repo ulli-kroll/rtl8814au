@@ -6779,7 +6779,7 @@ const char *Array_MP_8814A_TXPWR_LMT_type2[] = {
 };
 
 void
-ODM_ReadAndConfig_MP_8814A_TXPWR_LMT_type2(
+_ODM_ReadAndConfig_MP_8814A_TXPWR_LMT_type2(
 	IN   PDM_ODM_T  pDM_Odm
 )
 {
@@ -7795,7 +7795,7 @@ const char *Array_MP_8814A_TXPWR_LMT_Type3[] = {
 };
 
 void
-ODM_ReadAndConfig_MP_8814A_TXPWR_LMT_Type3(
+_ODM_ReadAndConfig_MP_8814A_TXPWR_LMT_Type3(
 	IN   PDM_ODM_T  pDM_Odm
 )
 {
@@ -8811,7 +8811,7 @@ const char *Array_MP_8814A_TXPWR_LMT_Type5[] = {
 };
 
 void
-ODM_ReadAndConfig_MP_8814A_TXPWR_LMT_Type5(
+_ODM_ReadAndConfig_MP_8814A_TXPWR_LMT_Type5(
 	IN   PDM_ODM_T  pDM_Odm
 )
 {
