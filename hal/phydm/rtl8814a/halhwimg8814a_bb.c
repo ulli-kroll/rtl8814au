@@ -4090,7 +4090,7 @@ u4Byte Array_MP_8814A_PHY_REG_PG_Type2[] = {
 };
 
 void
-ODM_ReadAndConfig_MP_8814A_PHY_REG_PG_Type2(
+_ODM_ReadAndConfig_MP_8814A_PHY_REG_PG_Type2(
 	IN   PDM_ODM_T  pDM_Odm
 )
 {
@@ -4270,7 +4270,7 @@ u4Byte Array_MP_8814A_PHY_REG_PG_Type3[] = {
 };
 
 void
-ODM_ReadAndConfig_MP_8814A_PHY_REG_PG_Type3(
+_ODM_ReadAndConfig_MP_8814A_PHY_REG_PG_Type3(
 	IN   PDM_ODM_T  pDM_Odm
 )
 {
@@ -4450,7 +4450,7 @@ u4Byte Array_MP_8814A_PHY_REG_PG_Type5[] = {
 };
 
 void
-ODM_ReadAndConfig_MP_8814A_PHY_REG_PG_Type5(
+_ODM_ReadAndConfig_MP_8814A_PHY_REG_PG_Type5(
 	IN   PDM_ODM_T  pDM_Odm
 )
 {
