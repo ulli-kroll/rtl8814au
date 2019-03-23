@@ -760,10 +760,6 @@ ODM_CmnInfoInit(
 			pDM_Odm->SupportInterface = (u1Byte)Value;
 			break;
 
-		case	ODM_CMNINFO_MP_TEST_CHIP:
-			pDM_Odm->bIsMPChip= (u1Byte)Value;
-			break;
-
 		case	ODM_CMNINFO_IC_TYPE:
 			pDM_Odm->SupportICType = Value;
 			break;

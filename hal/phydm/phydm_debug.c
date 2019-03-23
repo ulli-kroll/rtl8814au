@@ -979,7 +979,6 @@ VOID phydm_BasicProfile(
 		ICType = "RTL8195A";
 	else if (pDM_Odm->SupportICType == ODM_RTL8188F)
 		ICType = "RTL8188F";
-	PHYDM_SNPRINTF((output + used, out_len - used, "  %-35s: %s (MP Chip: %s)\n", "IC Type", ICType, pDM_Odm->bIsMPChip ? "Yes" : "No"));
 
 	if (pDM_Odm->CutVersion == ODM_CUT_A)
 		Cut = "A";
