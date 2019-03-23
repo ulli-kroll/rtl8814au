@@ -25,11 +25,6 @@
 #include "mp_precomp.h"
 #include "phydm_precomp.h"
 
-#define READ_AND_CONFIG_MP(ic, txt) (ODM_ReadAndConfig_MP_##ic##txt(pDM_Odm))
-
-
-  #define READ_AND_CONFIG     READ_AND_CONFIG_MP
-
 #define READ_FIRMWARE     READ_FIRMWARE_MP
 
 #define GET_VERSION_MP(ic, txt) 		(ODM_GetVersion_MP_##ic##txt())
@@ -2011,16 +2006,16 @@ ODM_ConfigRFWithHeaderFile(
 	{
 		if(ConfigType == CONFIG_RF_RADIO) {
 		 	if(eRFPath == ODM_RF_PATH_A)
-				READ_AND_CONFIG_MP(8814A,_RadioA);
+				ODM_ReadAndConfig_MP_8814A_RadioA(pDM_Odm);
 			else if(eRFPath == ODM_RF_PATH_B)
-				READ_AND_CONFIG_MP(8814A,_RadioB);
+				ODM_ReadAndConfig_MP_8814A_RadioB(pDM_Odm);
 			else if(eRFPath == ODM_RF_PATH_C)
-				READ_AND_CONFIG_MP(8814A,_RadioC);
+				ODM_ReadAndConfig_MP_8814A_RadioC(pDM_Odm);
 			else if(eRFPath == ODM_RF_PATH_D)
-				READ_AND_CONFIG_MP(8814A,_RadioD);
+				ODM_ReadAndConfig_MP_8814A_RadioD(pDM_Odm);
 		}
 		else if(ConfigType == CONFIG_RF_TXPWR_LMT)
-			READ_AND_CONFIG_MP(8814A,_TXPWR_LMT);
+			ODM_ReadAndConfig_MP_8814A_TXPWR_LMT(pDM_Odm);
 	}
 #endif
 
@@ -2044,13 +2039,13 @@ ODM_ConfigRFWithTxPwrTrackHeaderFile(
 	if(pDM_Odm->SupportICType == ODM_RTL8814A)
 	{
 		if(pDM_Odm->RFEType == 0)
-			READ_AND_CONFIG_MP(8814A,_TxPowerTrack_Type0);
+			ODM_ReadAndConfig_MP_8814A_TxPowerTrack_Type0(pDM_Odm);
 		else if(pDM_Odm->RFEType == 2)
-			READ_AND_CONFIG_MP(8814A,_TxPowerTrack_Type2);
+			ODM_ReadAndConfig_MP_8814A_TxPowerTrack_Type2(pDM_Odm);
 		else if (pDM_Odm->RFEType == 5)
-			READ_AND_CONFIG_MP(8814A, _TxPowerTrack_Type5);
+			ODM_ReadAndConfig_MP_8814A_TxPowerTrack_Type5(pDM_Odm);
 		else
-			READ_AND_CONFIG_MP(8814A,_TxPowerTrack);
+			ODM_ReadAndConfig_MP_8814A_TxPowerTrack(pDM_Odm);
 	}
 #endif
 	return HAL_STATUS_SUCCESS;
@@ -2075,13 +2070,13 @@ ODM_ConfigBBWithHeaderFile(
 	if(pDM_Odm->SupportICType == ODM_RTL8814A)
 	{
 		if(ConfigType == CONFIG_BB_PHY_REG){
-			READ_AND_CONFIG_MP(8814A,_PHY_REG);
+			ODM_ReadAndConfig_MP_8814A_PHY_REG(pDM_Odm);
 		}else if(ConfigType == CONFIG_BB_AGC_TAB){
-			READ_AND_CONFIG_MP(8814A,_AGC_TAB);
+			ODM_ReadAndConfig_MP_8814A_AGC_TAB(pDM_Odm);
 		}else if(ConfigType == CONFIG_BB_PHY_REG_PG){
-			READ_AND_CONFIG_MP(8814A,_PHY_REG_PG);
+			ODM_ReadAndConfig_MP_8814A_PHY_REG_PG(pDM_Odm);
 		}else if(ConfigType == CONFIG_BB_PHY_REG_MP){
-			READ_AND_CONFIG_MP(8814A,_PHY_REG_MP);
+			ODM_ReadAndConfig_MP_8814A_PHY_REG_MP(pDM_Odm);
 		}
 	}
 #endif
@@ -2107,7 +2102,7 @@ ODM_ConfigMACWithHeaderFile(
 //1 All platforms support
 #if (RTL8814A_SUPPORT == 1)
 	if (pDM_Odm->SupportICType == ODM_RTL8814A){
-		READ_AND_CONFIG_MP(8814A,_MAC_REG);
+		ODM_ReadAndConfig_MP_8814A_MAC_REG(pDM_Odm);
 	}
 #endif
 
