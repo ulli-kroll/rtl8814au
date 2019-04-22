@@ -1068,9 +1068,6 @@ VOID
 	PDM_ODM_T		pDM_Odm = &pHalData->DM_OutSrc;
 #endif
 #endif
-#ifdef DISABLE_BB_RF
-	return;
-#endif
 
 	return;
 #if (DM_ODM_SUPPORT_TYPE & (ODM_CE|ODM_AP))
@@ -1160,9 +1157,6 @@ VOID
 {
 	//HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(pAdapter);
 
-#ifdef DISABLE_BB_RF
-	return;
-#endif
 
 #if !(DM_ODM_SUPPORT_TYPE & ODM_AP)
 	if (IS_92C_SERIAL(pHalData->VersionID))
@@ -1647,9 +1641,6 @@ VOID
 	PDM_ODM_T		pDM_Odm = &pHalData->DM_OutSrc;
 #endif
 #endif
-#if DISABLE_BB_RF
-	return;
-#endif
 
 	return;
 
@@ -1729,9 +1720,6 @@ VOID
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(pAdapter);
 
-#if DISABLE_BB_RF
-	return TRUE;
-#endif
 #if !(DM_ODM_SUPPORT_TYPE & ODM_AP)
 
 	//if(IS_92C_SERIAL( pHalData->VersionID)){

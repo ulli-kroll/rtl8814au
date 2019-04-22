@@ -1007,9 +1007,6 @@ static VOID _BBTurnOnBlock(
 	IN	PADAPTER		Adapter
 	)
 {
-#if (DISABLE_BB_RF)
-	return;
-#endif
 
 	PHY_SetBBReg(Adapter, rFPGA0_RFMOD, bCCKEn, 0x1);
 	PHY_SetBBReg(Adapter, rFPGA0_RFMOD, bOFDMEn, 0x1);
@@ -1024,10 +1021,6 @@ static VOID _RfPowerSave(
 	HAL_DATA_TYPE	*pHalData	= GET_HAL_DATA(Adapter);
 	PMGNT_INFO		pMgntInfo	= &(Adapter->MgntInfo);
 	u8			eRFPath;
-
-#if (DISABLE_BB_RF)
-	return;
-#endif
 
 	if(pMgntInfo->RegRfOff == _TRUE){ // User disable RF via registry.
 		RT_TRACE((COMP_INIT|COMP_RF), DBG_LOUD, ("InitializeAdapter8192CUsb(): Turn off RF for RegRfOff.\n"));

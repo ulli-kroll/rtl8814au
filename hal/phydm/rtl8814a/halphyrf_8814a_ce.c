@@ -528,10 +528,6 @@ BOOLEAN PHY_QueryRFPathSwitch_8814A(
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(pAdapter);
 
-#if DISABLE_BB_RF
-	return TRUE;
-#endif
-
 	return phy_QueryRFPathSwitch_8814A(pAdapter);
 }
 

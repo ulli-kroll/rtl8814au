@@ -481,10 +481,6 @@ BOOLEAN PHY_QueryRFPathSwitch_8814A(
 	)
 {
 
-#if DISABLE_BB_RF
-	return TRUE;
-#endif
-
 	return phy_QueryRFPathSwitch_8814A(pAdapter);
 }
 

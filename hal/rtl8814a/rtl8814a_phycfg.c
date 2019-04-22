@@ -38,10 +38,6 @@ PHY_QueryBBReg8814A(
 {
 	u32	ReturnValue = 0, OriginalValue, BitShift;
 
-#if (DISABLE_BB_RF == 1)
-	return 0;
-#endif
-
 	OriginalValue = rtw_read32(Adapter, RegAddr);
 	BitShift = PHY_CalculateBitShift(BitMask);
 	ReturnValue = (OriginalValue & BitMask) >> BitShift;
@@ -62,9 +58,6 @@ PHY_SetBBReg8814A(
 {
 	u32			OriginalValue, BitShift;
 
-#if (DISABLE_BB_RF == 1)
-	return;
-#endif
 
 	if(BitMask!= bMaskDWord)
 	{//if not "double word" write
@@ -163,10 +156,6 @@ PHY_QueryRFReg8814A(
 {
 	u32	Readback_Value;
 
-#if (DISABLE_BB_RF == 1)
-	return 0;
-#endif
-
 	Readback_Value = phy_RFRead_8814A(Adapter, eRFPath, RegAddr, BitMask);
 
 	return (Readback_Value);
@@ -183,9 +172,6 @@ PHY_SetRFReg8814A(
 	)
 {
 
-#if (DISABLE_BB_RF == 1)
-	return;
-#endif
 
 	if(BitMask == 0)
 		return;

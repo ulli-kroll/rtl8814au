@@ -3583,11 +3583,7 @@ void ReadRFType8814A(PADAPTER padapter)
 {
 	PHAL_DATA_TYPE pHalData = GET_HAL_DATA(padapter);
 
-#if DISABLE_BB_RF
-	pHalData->rf_chip = RF_PSEUDO_11N;
-#else
 	pHalData->rf_chip = RF_6052;
-#endif
 
 	//if (pHalData->rf_type == _RF_1T1R){
 	//	pHalData->bRFPathRxEnable[0] = _TRUE;

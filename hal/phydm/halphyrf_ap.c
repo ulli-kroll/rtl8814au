@@ -2161,9 +2161,6 @@ PHY_IQCalibrate_8192C(
 	if(bStartContTx || bSingleTone || bCarrierSuppression)
 		return;
 
-#ifdef DISABLE_BB_RF
-	return;
-#endif
 	if(pAdapter->bSlaveOfDMSP)
 		return;
 
@@ -2310,9 +2307,6 @@ PHY_LCCalibrate_8192C(
 	bCarrierSuppression = pAdapter->MptCtx.bCarrierSuppression;
 #endif
 
-#ifdef DISABLE_BB_RF
-	return;
-#endif
 
 	//ignore LCK when continuous Tx
 	if(bStartContTx || bSingleTone || bCarrierSuppression)
@@ -2368,9 +2362,6 @@ PHY_APCalibrate_8192C(
 	//default disable APK, because Tx NG issue, suggest by Jenyu, 2011.11.25
 	return;
 
-#ifdef DISABLE_BB_RF
-	return;
-#endif
 
 #if FOR_BRAZIL_PRETEST != 1
 	if(pHalData->bAPKdone)
