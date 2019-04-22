@@ -42,10 +42,6 @@ PHY_QueryBBReg8814A(
 	return 0;
 #endif
 
-#if(SIC_ENABLE == 1)
-	return SIC_QueryBBReg(Adapter, RegAddr, BitMask);
-#endif
-
 	OriginalValue = rtw_read32(Adapter, RegAddr);
 	BitShift = PHY_CalculateBitShift(BitMask);
 	ReturnValue = (OriginalValue & BitMask) >> BitShift;
@@ -67,11 +63,6 @@ PHY_SetBBReg8814A(
 	u32			OriginalValue, BitShift;
 
 #if (DISABLE_BB_RF == 1)
-	return;
-#endif
-
-#if(SIC_ENABLE == 1)
-	SIC_SetBBReg(Adapter, RegAddr, BitMask, Data);
 	return;
 #endif
 

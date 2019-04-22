@@ -39,8 +39,6 @@
 
 /* BB/RF related */
 
-#define	SIC_ENABLE				0
-
 /*------------------------------Define structure----------------------------*/
 
 
