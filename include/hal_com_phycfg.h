@@ -233,34 +233,5 @@ PHY_SetTxPowerIndex(
 	IN	u8				Rate
 	);
 
-#ifdef CONFIG_LOAD_PHY_PARA_FROM_FILE
-#define MAX_PARA_FILE_BUF_LEN	25600
-
-#define LOAD_MAC_PARA_FILE				BIT0
-#define LOAD_BB_PARA_FILE					BIT1
-#define LOAD_BB_PG_PARA_FILE				BIT2
-#define LOAD_BB_MP_PARA_FILE				BIT3
-#define LOAD_RF_PARA_FILE					BIT4
-#define LOAD_RF_TXPWR_TRACK_PARA_FILE	BIT5
-#define LOAD_RF_TXPWR_LMT_PARA_FILE		BIT6
-
-int phy_ConfigMACWithParaFile(IN PADAPTER	Adapter, IN char*	pFileName);
-
-int phy_ConfigBBWithParaFile(IN PADAPTER	Adapter, IN char*	pFileName, IN u32	ConfigType);
-
-int phy_ConfigBBWithPgParaFile(IN PADAPTER	Adapter, IN char*	pFileName);
-
-int phy_ConfigBBWithMpParaFile(IN PADAPTER	Adapter, IN char*	pFileName);
-
-int PHY_ConfigRFWithParaFile(IN	PADAPTER	Adapter, IN char*	pFileName, IN u8	eRFPath);
-
-int PHY_ConfigRFWithTxPwrTrackParaFile(IN PADAPTER	Adapter, IN char*	pFileName);
-
-int PHY_ConfigRFWithPowerLimitTableParaFile(IN PADAPTER	Adapter, IN char*	pFileName);
-
-void phy_free_filebuf(_adapter *padapter);
-#endif //CONFIG_LOAD_PHY_PARA_FROM_FILE
-
-
 #endif //__HAL_COMMON_H__
 

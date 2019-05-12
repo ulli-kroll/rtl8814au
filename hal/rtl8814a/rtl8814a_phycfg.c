@@ -208,10 +208,6 @@ s32 PHY_MACConfig8814(PADAPTER Adapter)
 	//
 	// Config MAC
 	//
-#ifdef CONFIG_LOAD_PHY_PARA_FROM_FILE
-	rtStatus = phy_ConfigMACWithParaFile(Adapter, pszMACRegFile);
-	if (rtStatus == _FAIL)
-#endif //CONFIG_LOAD_PHY_PARA_FROM_FILE
 	{
 #ifdef CONFIG_EMBEDDED_FWIMG
 		ODM_ConfigMACWithHeaderFile(&pHalData->odmpriv);
@@ -398,9 +394,6 @@ phy_BB8814A_Config_ParaFile(
 	if ( Adapter->registrypriv.RegEnableTxPowerLimit == 1 ||
 	     ( Adapter->registrypriv.RegEnableTxPowerLimit == 2 && pHalData->EEPROMRegulatory == 1 ) )
 	{
-#ifdef CONFIG_LOAD_PHY_PARA_FROM_FILE
-		if (PHY_ConfigRFWithPowerLimitTableParaFile( Adapter, pszRFTxPwrLmtFile )== _FAIL)
-#endif
 		{
 #ifdef CONFIG_EMBEDDED_FWIMG
 			if (HAL_STATUS_SUCCESS != ODM_ConfigRFWithHeaderFile(&pHalData->odmpriv, CONFIG_RF_TXPWR_LMT, (ODM_RF_RADIO_PATH_E)0))
@@ -415,9 +408,6 @@ phy_BB8814A_Config_ParaFile(
 	}
 
 	// Read PHY_REG.TXT BB INIT!!
-#ifdef CONFIG_LOAD_PHY_PARA_FROM_FILE
-	if (phy_ConfigBBWithParaFile(Adapter, pszBBRegFile, CONFIG_BB_PHY_REG) == _FAIL)
-#endif
 	{
 #ifdef CONFIG_EMBEDDED_FWIMG
 		if (HAL_STATUS_SUCCESS != ODM_ConfigBBWithHeaderFile(&pHalData->odmpriv, CONFIG_BB_PHY_REG))
@@ -433,9 +423,6 @@ phy_BB8814A_Config_ParaFile(
 	// Read PHY_REG_MP.TXT BB INIT!!
 #if (MP_DRIVER == 1)
 	if (Adapter->registrypriv.mp_mode == 1) {
-#ifdef CONFIG_LOAD_PHY_PARA_FROM_FILE
-		if (phy_ConfigBBWithMpParaFile(Adapter, pszBBRegMpFile) == _FAIL)
-#endif
 		{
 #ifdef CONFIG_EMBEDDED_FWIMG
 			if (HAL_STATUS_SUCCESS != ODM_ConfigBBWithHeaderFile(&pHalData->odmpriv, CONFIG_BB_PHY_REG_MP))
@@ -455,9 +442,6 @@ phy_BB8814A_Config_ParaFile(
 	if ( Adapter->registrypriv.RegEnableTxPowerByRate == 1 ||
 	     ( Adapter->registrypriv.RegEnableTxPowerByRate == 2 && pHalData->EEPROMRegulatory != 2 ) )
 	{
-#ifdef CONFIG_LOAD_PHY_PARA_FROM_FILE
-		if (phy_ConfigBBWithPgParaFile(Adapter, pszBBRegPgFile) == _FAIL)
-#endif
 		{
 #ifdef CONFIG_EMBEDDED_FWIMG
 			if (HAL_STATUS_SUCCESS != ODM_ConfigBBWithHeaderFile(&pHalData->odmpriv, CONFIG_BB_PHY_REG_PG))
@@ -479,9 +463,6 @@ phy_BB8814A_Config_ParaFile(
 	}
 
 	// BB AGC table Initialization
-#ifdef CONFIG_LOAD_PHY_PARA_FROM_FILE
-	if (phy_ConfigBBWithParaFile(Adapter, pszAGCTableFile, CONFIG_BB_AGC_TAB) == _FAIL)
-#endif
 	{
 #ifdef CONFIG_EMBEDDED_FWIMG
 		if (HAL_STATUS_SUCCESS != ODM_ConfigBBWithHeaderFile(&pHalData->odmpriv, CONFIG_BB_AGC_TAB))
