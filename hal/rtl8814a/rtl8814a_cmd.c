@@ -445,9 +445,6 @@ _func_enter_;
 			pwrModeByte5 = 0x40;
 		}
 
-#ifdef CONFIG_EXT_CLK
-		Mode |= BIT(7);//supporting 26M XTAL CLK_Request feature.
-#endif //CONFIG_EXT_CLK
 	}
 	else
 	{
