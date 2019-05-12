@@ -501,12 +501,6 @@ extern int ATOMIC_SUB_RETURN(ATOMIC_T *v, int i);
 extern int ATOMIC_INC_RETURN(ATOMIC_T *v);
 extern int ATOMIC_DEC_RETURN(ATOMIC_T *v);
 
-//File operation APIs, just for linux now
-extern int rtw_is_file_readable(char *path);
-extern int rtw_retrieve_from_file(char *path, u8 *buf, u32 sz);
-extern int rtw_store_to_file(char *path, u8* buf, u32 sz);
-
-
 #ifndef PLATFORM_FREEBSD
 extern void rtw_free_netdev(struct net_device * netdev);
 #endif //PLATFORM_FREEBSD
