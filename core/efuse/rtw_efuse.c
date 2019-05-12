@@ -794,52 +794,6 @@ BOOLEAN rtw_file_efuse_IsMasked(
 
 }
 
-
-u8 rtw_efuse_file_read(PADAPTER padapter,u8 *filepatch,u8 *buf,u32 len)
-{
-	char *ptmp;
-	char *ptmpbuf=NULL;
-	u32 rtStatus;
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
-
-	ptmpbuf = rtw_zmalloc(2048);
-
-	if (ptmpbuf == NULL)
-		return _FALSE;
-
-	_rtw_memset(ptmpbuf,'\0',2048);
-
-	rtStatus = rtw_retrieve_from_file(filepatch, ptmpbuf, 2048);
-
-	if( rtStatus > 100 )
-	{
-		u32 i,j;
-		for(i=0,j=0;j<len;i+=2,j++)
-		{
-			if (( ptmpbuf[i] == ' ' ) && (ptmpbuf[i+1] != '\n' && ptmpbuf[i+1] != '\0')) {
-				i++;
-			}
-			if( (ptmpbuf[i+1] != '\n' && ptmpbuf[i+1] != '\0'))
-			{
-					buf[j] = simple_strtoul(&ptmpbuf[i],&ptmp, 16);
-					DBG_871X(" i=%d,j=%d, %x \n",i,j,buf[j]);
-
-			} else {
-				j--;
-			}
-
-		}
-
-	} else {
-		DBG_871X(" %s ,filepatch %s , FAIL %d\n", __func__, filepatch, rtStatus);
-		return _FALSE;
-	}
-	rtw_mfree(ptmpbuf, 2048);
-	DBG_871X(" %s ,filepatch %s , done %d\n", __func__, filepatch, rtStatus);
-	return _TRUE;
-}
-
-
 BOOLEAN
 efuse_IsMasked(
 	PADAPTER	pAdapter,
