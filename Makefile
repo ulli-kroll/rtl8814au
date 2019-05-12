@@ -63,56 +63,53 @@ CONFIG_DRVEXT_MODULE = n
 export TopDIR ?= $(shell pwd)
 
 ########### COMMON  #################################
-_OS_INTFS_FILES :=	os_dep/osdep_service.o \
-			os_dep/linux/os_intfs.o \
-			os_dep/linux/usb_intf.o \
-			os_dep/linux/usb_ops_linux.o \
-			os_dep/linux/ioctl_linux.o \
-			os_dep/linux/xmit_linux.o \
-			os_dep/linux/mlme_linux.o \
-			os_dep/linux/recv_linux.o \
-			os_dep/linux/ioctl_cfg80211.o \
-			os_dep/linux/rtw_cfgvendor.o \
-			os_dep/linux/wifi_regd.o \
-			os_dep/linux/rtw_android.o \
+_OS_INTFS_FILES := os_dep/osdep_service.o \
+		   os_dep/linux/os_intfs.o \
+		   os_dep/linux/usb_intf.o \
+		   os_dep/linux/usb_ops_linux.o \
+		   os_dep/linux/ioctl_linux.o \
+		   os_dep/linux/xmit_linux.o \
+		   os_dep/linux/mlme_linux.o \
+		   os_dep/linux/recv_linux.o \
+		   os_dep/linux/ioctl_cfg80211.o \
+		   os_dep/linux/rtw_cfgvendor.o \
+		   os_dep/linux/wifi_regd.o \
+		   os_dep/linux/rtw_android.o \
 
 ifeq ($(CONFIG_MP_INCLUDED), y)
 _OS_INTFS_FILES += os_dep/linux/ioctl_mp.o
 endif
 
-_HAL_INTFS_FILES :=	hal/hal_intf.o \
-			hal/hal_com.o \
-			hal/hal_com_phycfg.o \
-			hal/hal_phy.o \
-			hal/hal_dm.o \
-			hal/hal_btcoex.o \
-			hal/hal_mp.o \
-			hal/hal_hci/hal_usb.o \
-			hal/led/hal_usb_led.o
-
+_HAL_INTFS_FILES := hal/hal_intf.o \
+		    hal/hal_com.o \
+		    hal/hal_com_phycfg.o \
+		    hal/hal_phy.o \
+		    hal/hal_dm.o \
+		    hal/hal_mp.o \
+		    hal/hal_hci/hal_usb.o \
+		    hal/led/hal_usb_led.o
 
 _OUTSRC_FILES := hal/phydm/phydm_debug.o	\
-		hal/phydm/phydm_antdiv.o\
-		hal/phydm/phydm_antdect.o\
-		hal/phydm/phydm_interface.o\
-		hal/phydm/phydm_hwconfig.o\
-		hal/phydm/phydm.o\
-		hal/phydm/halphyrf_ce.o\
-		hal/phydm/phydm_edcaturbocheck.o\
-		hal/phydm/phydm_dig.o\
-		hal/phydm/phydm_pathdiv.o\
-		hal/phydm/phydm_rainfo.o\
-		hal/phydm/phydm_dynamicbbpowersaving.o\
-		hal/phydm/phydm_powertracking_ce.o\
-		hal/phydm/phydm_dynamictxpower.o\
-		hal/phydm/phydm_adaptivity.o\
-		hal/phydm/phydm_cfotracking.o\
-		hal/phydm/phydm_noisemonitor.o\
-		hal/phydm/phydm_acs.o\
-		hal/phydm/phydm_beamforming.o\
-		hal/phydm/txbf/halcomtxbf.o\
-		hal/phydm/txbf/haltxbfinterface.o
-
+		 hal/phydm/phydm_antdiv.o\
+		 hal/phydm/phydm_antdect.o\
+		 hal/phydm/phydm_interface.o\
+		 hal/phydm/phydm_hwconfig.o\
+		 hal/phydm/phydm.o\
+		 hal/phydm/halphyrf_ce.o\
+		 hal/phydm/phydm_edcaturbocheck.o\
+		 hal/phydm/phydm_dig.o\
+		 hal/phydm/phydm_pathdiv.o\
+		 hal/phydm/phydm_rainfo.o\
+		 hal/phydm/phydm_dynamicbbpowersaving.o\
+		 hal/phydm/phydm_powertracking_ce.o\
+		 hal/phydm/phydm_dynamictxpower.o\
+		 hal/phydm/phydm_adaptivity.o\
+		 hal/phydm/phydm_cfotracking.o\
+		 hal/phydm/phydm_noisemonitor.o\
+		 hal/phydm/phydm_acs.o\
+		 hal/phydm/phydm_beamforming.o\
+		 hal/phydm/txbf/halcomtxbf.o\
+		 hal/phydm/txbf/haltxbfinterface.o
 
 EXTRA_CFLAGS += -I$(src)/platform
 
@@ -127,37 +124,36 @@ MODULE_NAME = rtl8814au
 EXTRA_CFLAGS += -DCONFIG_RTL8814A
 
 _HAL_INTFS_FILES +=  hal/HalPwrSeqCmd.o \
-					hal/rtl8814a/Hal8814PwrSeq.o \
-					hal/rtl8814a/rtl8814a_xmit.o\
-					hal/rtl8814a/rtl8814a_sreset.o
+		     hal/rtl8814a/Hal8814PwrSeq.o \
+		     hal/rtl8814a/rtl8814a_xmit.o\
+		     hal/rtl8814a/rtl8814a_sreset.o
 
-_HAL_INTFS_FILES +=	hal/rtl8814a/rtl8814a_hal_init.o \
-			hal/rtl8814a/rtl8814a_phycfg.o \
-			hal/rtl8814a/rtl8814a_rf6052.o \
-			hal/rtl8814a/rtl8814a_dm.o \
-			hal/rtl8814a/rtl8814a_rxdesc.o \
-			hal/rtl8814a/rtl8814a_cmd.o \
+_HAL_INTFS_FILES += hal/rtl8814a/rtl8814a_hal_init.o \
+		    hal/rtl8814a/rtl8814a_phycfg.o \
+		    hal/rtl8814a/rtl8814a_rf6052.o \
+		    hal/rtl8814a/rtl8814a_dm.o \
+		    hal/rtl8814a/rtl8814a_rxdesc.o \
+		    hal/rtl8814a/rtl8814a_cmd.o \
 
 
-_HAL_INTFS_FILES +=	\
-			hal/rtl8814a/usb/usb_halinit.o \
-			hal/rtl8814a/usb/rtl8814au_led.o \
-			hal/rtl8814a/usb/rtl8814au_xmit.o \
-			hal/rtl8814a/usb/rtl8814au_recv.o
+_HAL_INTFS_FILES += hal/rtl8814a/usb/usb_halinit.o \
+		    hal/rtl8814a/usb/rtl8814au_led.o \
+		    hal/rtl8814a/usb/rtl8814au_xmit.o \
+		    hal/rtl8814a/usb/rtl8814au_recv.o
 
 _HAL_INTFS_FILES += hal/rtl8814a/usb/usb_ops_linux.o
 
 _HAL_INTFS_FILES +=hal/efuse/rtl8814a/HalEfuseMask8814A_USB.o
 
 _OUTSRC_FILES += hal/phydm/rtl8814a/halhwimg8814a_bb.o\
-								hal/phydm/rtl8814a/halhwimg8814a_mac.o\
-								hal/phydm/rtl8814a/halhwimg8814a_rf.o\
-								hal/phydm/rtl8814a/halhwimg8814a_fw.o\
-								hal/phydm/rtl8814a/phydm_iqk_8814a.o\
-								hal/phydm/rtl8814a/phydm_regconfig8814a.o\
-								hal/phydm/rtl8814a/halphyrf_8814a_ce.o\
-								hal/phydm/rtl8814a/phydm_rtl8814a.o\
-								hal/phydm/txbf/haltxbf8814a.o
+		 hal/phydm/rtl8814a/halhwimg8814a_mac.o\
+		 hal/phydm/rtl8814a/halhwimg8814a_rf.o\
+		 hal/phydm/rtl8814a/halhwimg8814a_fw.o\
+		 hal/phydm/rtl8814a/phydm_iqk_8814a.o\
+		 hal/phydm/rtl8814a/phydm_regconfig8814a.o\
+		 hal/phydm/rtl8814a/halphyrf_8814a_ce.o\
+		 hal/phydm/rtl8814a/phydm_rtl8814a.o\
+		 hal/phydm/txbf/haltxbf8814a.o
 
 endif
 
@@ -196,26 +192,6 @@ endif
 
 ifeq ($(CONFIG_EFUSE_CONFIG_FILE), y)
 EXTRA_CFLAGS += -DCONFIG_EFUSE_CONFIG_FILE
-
-#EFUSE_MAP_PATH
-USER_EFUSE_MAP_PATH ?=
-ifneq ($(USER_EFUSE_MAP_PATH),)
-EXTRA_CFLAGS += -DEFUSE_MAP_PATH=\"$(USER_EFUSE_MAP_PATH)\"
-else ifeq ($(MODULE_NAME), 8189es)
-EXTRA_CFLAGS += -DEFUSE_MAP_PATH=\"/system/etc/wifi/wifi_efuse_8189e.map\"
-else ifeq ($(MODULE_NAME), 8723bs)
-EXTRA_CFLAGS += -DEFUSE_MAP_PATH=\"/system/etc/wifi/wifi_efuse_8723bs.map\"
-else
-EXTRA_CFLAGS += -DEFUSE_MAP_PATH=\"/system/etc/wifi/wifi_efuse_$(MODULE_NAME).map\"
-endif
-
-#WIFIMAC_PATH
-USER_WIFIMAC_PATH ?=
-ifneq ($(USER_WIFIMAC_PATH),)
-EXTRA_CFLAGS += -DWIFIMAC_PATH=\"$(USER_WIFIMAC_PATH)\"
-else
-EXTRA_CFLAGS += -DWIFIMAC_PATH=\"/data/wifimac.txt\"
-endif
 
 endif
 
@@ -343,7 +319,6 @@ rtk_core :=	core/rtw_cmd.o \
 		core/rtw_br_ext.o \
 		core/rtw_iol.o \
 		core/rtw_sreset.o \
-		core/rtw_btcoex.o \
 		core/rtw_beamforming.o \
 		core/rtw_odm.o \
 		core/efuse/rtw_efuse.o
