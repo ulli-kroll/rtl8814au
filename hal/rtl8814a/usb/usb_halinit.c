@@ -1846,12 +1846,6 @@ hal_InitPGData_8814A(
 		EFUSE_ShadowMapUpdate(padapter, EFUSE_WIFI, _FALSE);
 	}
 
-#ifdef CONFIG_EFUSE_CONFIG_FILE
-	if (check_phy_efuse_tx_power_info_valid(padapter) == _FALSE) {
-		if (Hal_readPGDataFromConfigFile(padapter) != _SUCCESS)
-			DBG_871X_LEVEL(_drv_err_, "invalid phy efuse and read from file fail, will use driver default!!\n");
-	}
-#endif
 }
 
 VOID
