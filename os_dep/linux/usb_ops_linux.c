@@ -634,9 +634,6 @@ _func_enter_;
 #endif	// CONFIG_USE_USB_BUFFER_ALLOC_TX
 
 #ifdef USB_PACKET_OFFSET_SZ
-#if (USB_PACKET_OFFSET_SZ == 0)
-	purb->transfer_flags |= URB_ZERO_PACKET;
-#endif
 #endif
 
 #if 0
