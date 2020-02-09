@@ -224,21 +224,7 @@ GetDeltaSwingTable_8814A(
 	u1Byte         	channel   		 = pHalData->CurrentChannel;
 
 
-	if (pDM_Odm->mp_mode == TRUE) {
-	#if (DM_ODM_SUPPORT_TYPE & (ODM_WIN | ODM_CE))
-		#if (DM_ODM_SUPPORT_TYPE & ODM_WIN)
-			#if (MP_DRIVER == 1)
-					PMPT_CONTEXT pMptCtx = &(Adapter->MptCtx);
-
-					TxRate = MptToMgntRate(pMptCtx->MptRateIndex);
-			#endif
-		#elif (DM_ODM_SUPPORT_TYPE & ODM_CE)
-				PMPT_CONTEXT pMptCtx = &(Adapter->mppriv.MptCtx);
-
-				TxRate = MptToMgntRate(pMptCtx->MptRateIndex);
-		#endif
-	#endif
-	} else {
+	{
 		u2Byte	rate	 = *(pDM_Odm->pForcedDataRate);
 
 		if (!rate) { /*auto rate*/
@@ -313,21 +299,7 @@ GetDeltaSwingTable_8814A_PathCD(
 	u1Byte         	channel   		 = pHalData->CurrentChannel;
 
 
-	if (pDM_Odm->mp_mode == TRUE) {
-	#if (DM_ODM_SUPPORT_TYPE & (ODM_WIN | ODM_CE))
-		#if (DM_ODM_SUPPORT_TYPE & ODM_WIN)
-			#if (MP_DRIVER == 1)
-					PMPT_CONTEXT pMptCtx = &(Adapter->MptCtx);
-
-					TxRate = MptToMgntRate(pMptCtx->MptRateIndex);
-			#endif
-		#elif (DM_ODM_SUPPORT_TYPE & ODM_CE)
-				PMPT_CONTEXT pMptCtx = &(Adapter->mppriv.MptCtx);
-
-				TxRate = MptToMgntRate(pMptCtx->MptRateIndex);
-		#endif
-	#endif
-	} else {
+	{
 		u2Byte	rate	 = *(pDM_Odm->pForcedDataRate);
 
 		if (!rate) { /*auto rate*/

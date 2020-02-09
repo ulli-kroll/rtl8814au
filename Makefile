@@ -77,7 +77,6 @@ _HAL_INTFS_FILES := hal/hal_intf.o \
 		    hal/hal_com_phycfg.o \
 		    hal/hal_phy.o \
 		    hal/hal_dm.o \
-		    hal/hal_mp.o \
 		    hal/hal_hci/hal_usb.o \
 		    hal/led/hal_usb_led.o
 
@@ -310,9 +309,6 @@ $(MODULE_NAME)-$(CONFIG_WAPI_SUPPORT) += core/rtw_wapi.o	\
 $(MODULE_NAME)-y += $(_OS_INTFS_FILES)
 $(MODULE_NAME)-y += $(_HAL_INTFS_FILES)
 $(MODULE_NAME)-y += $(_OUTSRC_FILES)
-
-$(MODULE_NAME)-$(CONFIG_MP_INCLUDED) += core/rtw_mp.o \
-					core/rtw_mp_ioctl.o
 
 obj-$(CONFIG_RTL8814AU) := $(MODULE_NAME).o
 

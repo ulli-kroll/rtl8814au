@@ -1066,6 +1066,27 @@ PHY_SetTxPowerLevel8814(
 #endif //0
 }
 
+/* ULLI : need to move this here */
+
+u8 MgntQuery_NssTxRate(u16 Rate)
+{
+	u8	NssNum = RF_TX_NUM_NONIMPLEMENT;
+
+	if ((Rate >= MGN_MCS8 && Rate <= MGN_MCS15) ||
+		 (Rate >= MGN_VHT2SS_MCS0 && Rate <= MGN_VHT2SS_MCS9))
+		NssNum = RF_2TX;
+	else if ((Rate >= MGN_MCS16 && Rate <= MGN_MCS23) ||
+		 (Rate >= MGN_VHT3SS_MCS0 && Rate <= MGN_VHT3SS_MCS9))
+		NssNum = RF_3TX;
+	else if ((Rate >= MGN_MCS24 && Rate <= MGN_MCS31) ||
+		 (Rate >= MGN_VHT4SS_MCS0 && Rate <= MGN_VHT4SS_MCS9))
+		NssNum = RF_4TX;
+	else
+		NssNum = RF_1TX;
+
+	return NssNum;
+}
+
 /**************************************************************************************************************
  *   Description:
  *       The low-level interface to get the FINAL Tx Power Index , called  by both MP and Normal Driver.
