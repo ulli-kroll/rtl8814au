@@ -1595,13 +1595,6 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MISC21);
 
 //HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_INIT_PABIAS);
 //	_InitPABias(Adapter);
-#if (MP_DRIVER == 1)
-	if (Adapter->registrypriv.mp_mode == 1)
-	{
-		Adapter->mppriv.channel = pHalData->CurrentChannel;
-		MPT_InitializeAdapter(Adapter, Adapter->mppriv.channel);
-	}
-#endif	//#if (MP_DRIVER == 1)
 
 
 HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MISC31);
