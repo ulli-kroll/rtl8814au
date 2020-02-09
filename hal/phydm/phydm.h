@@ -1401,12 +1401,6 @@ PhyDM_Get_Structure(
 #define	IS_HARDWARE_TYPE_8192D(_Adapter)			FALSE
 #define	RF_T_METER_92D					0x42
 
-
-#define SET_TX_DESC_ANTSEL_A_92C(__pTxDesc, __Value) SET_BITS_TO_LE_1BYTE(__pTxDesc+8+3, 0, 1, __Value)
-#define SET_TX_DESC_TX_ANTL_92C(__pTxDesc, __Value) SET_BITS_TO_LE_1BYTE(__pTxDesc+8+3, 4, 2, __Value)
-#define SET_TX_DESC_TX_ANT_HT_92C(__pTxDesc, __Value) SET_BITS_TO_LE_1BYTE(__pTxDesc+8+3, 6, 2, __Value)
-#define SET_TX_DESC_TX_ANT_CCK_92C(__pTxDesc, __Value) SET_BITS_TO_LE_1BYTE(__pTxDesc+8+3, 2, 2, __Value)
-
 #define GET_RX_STATUS_DESC_RX_MCS(__pRxStatusDesc)				LE_BITS_TO_1BYTE( __pRxStatusDesc+12, 0, 6)
 
 #define		RX_HAL_IS_CCK_RATE_92C(pDesc)\
