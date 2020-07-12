@@ -451,18 +451,6 @@ u8 rtw_get_current_tx_sgi(_adapter *padapter, u8 macid);
 
 void rtw_hal_set_fw_rsvd_page(_adapter* adapter, bool finished);
 
-#ifdef CONFIG_GPIO_API
-u8 rtw_hal_get_gpio(_adapter* adapter, u8 gpio_num);
-int rtw_hal_set_gpio_output_value(_adapter* adapter, u8 gpio_num, bool isHigh);
-int rtw_hal_config_gpio(_adapter* adapter, u8 gpio_num, bool isOutput);
-int rtw_hal_register_gpio_interrupt(_adapter* adapter, int gpio_num, void(*callback)(u8 level));
-int rtw_hal_disable_gpio_interrupt(_adapter* adapter, int gpio_num);
-#endif
-
-#ifdef CONFIG_GPIO_WAKEUP
-void rtw_hal_set_output_gpio(_adapter *padapter, u8 index, u8 outputval);
-#endif
-
 typedef enum _HAL_PHYDM_OPS {
 	HAL_PHYDM_DIS_ALL_FUNC,
 	HAL_PHYDM_FUNC_SET,

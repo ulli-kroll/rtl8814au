@@ -721,14 +721,6 @@ u8 rtw_hal_get_txbuff_rsvd_page_num(_adapter *adapter, bool wowlan)
 	return adapter->HalFunc.hal_get_tx_buff_rsvd_page_num(adapter, wowlan);
 }
 
-#ifdef CONFIG_GPIO_API
-void rtw_hal_update_hisr_hsisr_ind(_adapter *padapter, u32 flag)
-{
-	if (padapter->HalFunc.update_hisr_hsisr_ind)
-		padapter->HalFunc.update_hisr_hsisr_ind(padapter, flag);
-}
-#endif
-
 void rtw_hal_fw_correct_bcn(_adapter *padapter)
 {
 	if (padapter->HalFunc.fw_correct_bcn)

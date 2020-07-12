@@ -331,9 +331,6 @@ struct hal_ops {
 			u8 IsPsPoll, u8 IsBTQosNull, u8 bDataFrame);
 
 	u8 (*hal_get_tx_buff_rsvd_page_num)(_adapter *adapter, bool wowlan);
-#ifdef CONFIG_GPIO_API
-	void (*update_hisr_hsisr_ind)(PADAPTER padapter, u32 flag);
-#endif
 	void (*fw_correct_bcn)(PADAPTER padapter);
 };
 
@@ -620,10 +617,6 @@ s32 rtw_hal_fill_h2c_cmd(PADAPTER padapter, u8 ElementID, u32 CmdLen, u8 *pCmdBu
 void rtw_hal_fill_fake_txdesc(_adapter *padapter, u8 *pDesc, u32 BufferLen,
 		u8 IsPsPoll, u8 IsBTQosNull, u8 bDataFrame);
 u8 rtw_hal_get_txbuff_rsvd_page_num(_adapter *adapter, bool wowlan);
-
-#ifdef CONFIG_GPIO_API
-void rtw_hal_update_hisr_hsisr_ind(_adapter *padapter, u32 flag);
-#endif
 
 void rtw_hal_fw_correct_bcn(_adapter *padapter);
 
