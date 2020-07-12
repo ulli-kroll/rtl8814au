@@ -814,7 +814,7 @@ odm_TXPowerTrackingThermalMeterInit(
 	pHalData->TXPowercount       = 0;
 	pHalData->bTXPowerTrackingInit = FALSE;
 
-	if(pDM_Odm->mp_mode == FALSE)
+	if(1)
 		pHalData->TxPowerTrackControl = TRUE;
 	ODM_RT_TRACE(pDM_Odm,COMP_POWER_TRACKING, DBG_LOUD, ("pMgntInfo->bTXPowerTracking = %d\n", pMgntInfo->bTXPowerTracking));
 #elif (DM_ODM_SUPPORT_TYPE == ODM_CE)
@@ -829,7 +829,7 @@ odm_TXPowerTrackingThermalMeterInit(
 			pdmpriv->TXPowercount = 0;
 			pdmpriv->bTXPowerTrackingInit = _FALSE;
 
-			if(pDM_Odm->mp_mode == FALSE)		//for mp driver, turn off txpwrtracking as default
+			if(1)		//for mp driver, turn off txpwrtracking as default
 				pdmpriv->TxPowerTrackControl = _TRUE;
 
 		}

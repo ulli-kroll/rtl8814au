@@ -120,13 +120,6 @@ ODM_InitMpDriverStatus(
 {
 #if(DM_ODM_SUPPORT_TYPE & ODM_WIN)
 
-	// Decide when compile time
-	#if(MP_DRIVER == 1)
-	pDM_Odm->mp_mode = TRUE;
-	#else
-	pDM_Odm->mp_mode = FALSE;
-	#endif
-
 #elif(DM_ODM_SUPPORT_TYPE & ODM_CE)
 
 	PADAPTER	Adapter =  pDM_Odm->Adapter;
@@ -134,9 +127,6 @@ ODM_InitMpDriverStatus(
 	// Update information every period
 
 #else
-
-	// MP mode is always false at AP side
-	pDM_Odm->mp_mode = FALSE;
 
 #endif
 }

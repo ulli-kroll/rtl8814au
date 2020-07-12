@@ -733,9 +733,6 @@ odm_PathDiversityInit(
 
 	/*pDM_Odm->SupportAbility |= ODM_BB_PATH_DIV;*/
 
-	if(pDM_Odm->mp_mode == TRUE)
-		return;
-
 	if(!(pDM_Odm->SupportAbility & ODM_BB_PATH_DIV))
 	{
 		ODM_RT_TRACE(pDM_Odm, ODM_COMP_PATH_DIV,ODM_DBG_LOUD,("Return: Not Support PathDiv\n"));

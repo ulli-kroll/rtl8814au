@@ -835,15 +835,6 @@ odm_RX_HWAntDiv_Init_92E(
 	PDM_ODM_T		pDM_Odm = (PDM_ODM_T)pDM_VOID;
 	pFAT_T	pDM_FatTable = &pDM_Odm->DM_FatTable;
 
-	if(pDM_Odm->mp_mode == TRUE)
-	{
-		//pDM_Odm->AntDivType = CGCS_RX_SW_ANTDIV;
-		odm_AntDiv_on_off(pDM_Odm, ANTDIV_OFF);
-		ODM_SetBBReg(pDM_Odm, 0xc50 , BIT8, 0); //r_rxdiv_enable_anta  Regc50[8]=1'b0  0: control by c50[9]
-		ODM_SetBBReg(pDM_Odm, 0xc50 , BIT9, 1);  // 1:CG, 0:CS
-		return;
-	}
-
 	 ODM_RT_TRACE(pDM_Odm,ODM_COMP_ANT_DIV, ODM_DBG_LOUD, ("***8192E AntDiv_Init =>  AntDivType=[CGCS_RX_HW_ANTDIV]\n"));
 
 	 //Pin Settings
@@ -883,15 +874,6 @@ odm_TRX_HWAntDiv_Init_92E(
 {
 	PDM_ODM_T		pDM_Odm = (PDM_ODM_T)pDM_VOID;
 	pFAT_T	pDM_FatTable = &pDM_Odm->DM_FatTable;
-
-	if(pDM_Odm->mp_mode == TRUE)
-	{
-		//pDM_Odm->AntDivType = CGCS_RX_SW_ANTDIV;
-		odm_AntDiv_on_off(pDM_Odm, ANTDIV_OFF);
-		ODM_SetBBReg(pDM_Odm, 0xc50 , BIT8, 0); //r_rxdiv_enable_anta  Regc50[8]=1'b0  0: control by c50[9]
-		ODM_SetBBReg(pDM_Odm, 0xc50 , BIT9, 1);  // 1:CG, 0:CS
-		return;
-	}
 
 	 ODM_RT_TRACE(pDM_Odm,ODM_COMP_ANT_DIV, ODM_DBG_LOUD, ("***8192E AntDiv_Init =>  AntDivType=[ Only for DIR605, CG_TRX_HW_ANTDIV]\n"));
 
@@ -4477,8 +4459,6 @@ odm_AntennaDiversityInit(
 	)
 {
 	PDM_ODM_T		pDM_Odm = (PDM_ODM_T)pDM_VOID;
-	if(pDM_Odm->mp_mode == TRUE)
-		return;
 
 	if(pDM_Odm->SupportICType & (ODM_OLD_IC_ANTDIV_SUPPORT))
 	{
@@ -4503,8 +4483,6 @@ odm_AntennaDiversity(
 	)
 {
 	PDM_ODM_T		pDM_Odm = (PDM_ODM_T)pDM_VOID;
-	if(pDM_Odm->mp_mode == TRUE)
-		return;
 
 	if(pDM_Odm->SupportICType & (ODM_OLD_IC_ANTDIV_SUPPORT))
 	{

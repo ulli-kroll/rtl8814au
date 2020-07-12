@@ -448,7 +448,7 @@ odm_TXPowerTrackingThermalMeterInit(
 	PADAPTER		Adapter = pDM_Odm->Adapter;
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
 
-	if(pDM_Odm->mp_mode == FALSE)
+	if(1)
 		pHalData->TxPowerTrackControl = TRUE;
 #elif (DM_ODM_SUPPORT_TYPE == ODM_CE)
 	PADAPTER		Adapter = pDM_Odm->Adapter;
@@ -458,12 +458,12 @@ odm_TXPowerTrackingThermalMeterInit(
 	pRFCalibrateInfo->TXPowercount = 0;
 	pRFCalibrateInfo->bTXPowerTrackingInit = _FALSE;
 
-	if(pDM_Odm->mp_mode == FALSE)
+	if(1)
 		pRFCalibrateInfo->TxPowerTrackControl = _TRUE;
 	else
 		pRFCalibrateInfo->TxPowerTrackControl = _FALSE;
 
-	if(pDM_Odm->mp_mode == FALSE)
+	if(1)
 		pRFCalibrateInfo->TxPowerTrackControl = _TRUE;
 
 
