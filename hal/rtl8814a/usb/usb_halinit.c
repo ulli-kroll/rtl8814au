@@ -1345,7 +1345,7 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_INIT_LLTT);
 	}*/
 
 HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_DOWNLOAD_FW);
-	if (Adapter->registrypriv.mp_mode == 0) {
+	if (1) {
 		status = FirmwareDownload8814A(Adapter, _FALSE);
 		if (status != _SUCCESS) {
 			DBG_871X("%s: Download Firmware failed!!\n", __FUNCTION__);
@@ -1470,14 +1470,6 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_RF);
 #endif
 
 #if (MP_DRIVER == 1)
-	if (Adapter->registrypriv.mp_mode == 1)
-	{
-		status = PHY_BBConfigMP_8814A(Adapter);
-		if(status != RT_STATUS_SUCCESS){
-			DBG_871X("Configure BB MP failed!!\n");
-			return status;
-		}
-	}
 #endif
 
 	PHY_ConfigBB_8814A(Adapter);

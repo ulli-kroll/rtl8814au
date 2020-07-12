@@ -422,19 +422,6 @@ phy_BB8814A_Config_ParaFile(
 
 	// Read PHY_REG_MP.TXT BB INIT!!
 #if (MP_DRIVER == 1)
-	if (Adapter->registrypriv.mp_mode == 1) {
-		{
-#ifdef CONFIG_EMBEDDED_FWIMG
-			if (HAL_STATUS_SUCCESS != ODM_ConfigBBWithHeaderFile(&pHalData->odmpriv, CONFIG_BB_PHY_REG_MP))
-				rtStatus = _FAIL;
-#endif
-		}
-
-		if(rtStatus != _SUCCESS){
-			DBG_871X("phy_BB8812_Config_ParaFile():Write BB Reg MP Fail!!\n");
-			goto phy_BB_Config_ParaFile_Fail;
-		}
-	}
 #endif	// #if (MP_DRIVER == 1)
 
 	// If EEPROM or EFUSE autoload OK, We must config by PHY_REG_PG.txt
@@ -1599,7 +1586,6 @@ PHY_SwitchWirelessBand8814A(
 		// cck_enable
 		//PHY_SetBBReg(Adapter, rOFDMCCKEN_Jaguar, bOFDMEN_Jaguar|bCCKEN_Jaguar, 0x3);
 
-		if(Adapter->registrypriv.mp_mode == 0)
 		{
 			// 0x80C & 0xa04 should use same antenna.
 			PHY_SetBBReg(Adapter, rTxPath_Jaguar, 0xf0, 0x2);
@@ -1628,7 +1614,6 @@ PHY_SwitchWirelessBand8814A(
 
 		PHY_SetRFEReg8814A(Adapter, FALSE, Band);
 
-		if(Adapter->registrypriv.mp_mode == 0)
 		{
 			PHY_SetBBReg(Adapter, rTxPath_Jaguar, 0xf0, 0x0);
 			PHY_SetBBReg(Adapter, rCCK_RX_Jaguar, 0x0f000000, 0xF);
@@ -2111,11 +2096,6 @@ VOID phy_SetBwMode8814A(PADAPTER	Adapter)
 	}
 
 #if (MP_DRIVER == 1)
-if (Adapter->registrypriv.mp_mode == 1) {
-	/* 2 Set Reg 0x8AC */
-	PHY_SetRXSC_by_TXSC_8814A(Adapter, (SubChnlNum & 0xf));
-	PHY_Set_SecCCATH_by_RXANT_8814A(Adapter, pHalData->AntennaRxPath);
-}
 #endif
 	/* 3 Set RF related register */
 	PHY_RF6052SetBandwidth8814A(Adapter, pHalData->CurrentChannelBW);
@@ -2420,13 +2400,6 @@ phy_SwChnl8814A(
 			PHY_SetBBReg(pAdapter, rAGC_table_Jaguar2, 0x1F, 3);	// 0x958[4:0] = 0x3
 	}
 
-	if (pAdapter->registrypriv.mp_mode == 1) {
-				if (!pHalData->bSetChnlBW)
-					phy_ADC_CLK_8814A(pAdapter);
-		phy_SpurCalibration_8814A(pAdapter);
-		phy_ModifyInitialGain_8814A(pAdapter);
-	}
-
 	/* 2.4G CCK TX DFIR  */
 	if (channelToSW >= 1 && channelToSW <= 11) {
 		PHY_SetBBReg(pAdapter, rCCK0_TxFilter1, bMaskDWord, 0x1a1b0030);
@@ -2578,7 +2551,7 @@ phy_SwChnlAndSetBwMode8814A(
 		pHalData->bSetChnlBW = FALSE;
 	}
 
-	if (Adapter->registrypriv.mp_mode == 0) {
+	if (1) {
 		ODM_ClearTxPowerTrackingState(pDM_Odm);
 		PHY_SetTxPowerLevel8814(Adapter, pHalData->CurrentChannel);
 		if (pHalData->bNeedIQK == _TRUE) {

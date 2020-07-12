@@ -236,7 +236,7 @@
 
 #define ENABLE_NEW_RFE_TYPE	0
 
-	#define MP_DRIVER 0
+	#define MP_DRIVER 1
 
 
 /*

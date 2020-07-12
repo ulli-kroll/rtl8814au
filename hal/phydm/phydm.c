@@ -132,7 +132,6 @@ ODM_InitMpDriverStatus(
 	PADAPTER	Adapter =  pDM_Odm->Adapter;
 
 	// Update information every period
-	pDM_Odm->mp_mode = (BOOLEAN)Adapter->registrypriv.mp_mode;
 
 #else
 
@@ -155,7 +154,6 @@ ODM_UpdateMpDriverStatus(
 	PADAPTER	Adapter =  pDM_Odm->Adapter;
 
 	// Update information erery period
-	pDM_Odm->mp_mode = (BOOLEAN)Adapter->registrypriv.mp_mode;
 
 #else
 

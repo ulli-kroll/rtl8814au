@@ -215,12 +215,6 @@ static void Update_ODM_ComInfo_8814(PADAPTER	Adapter)
 		SupportAbility |= ODM_BB_ANT_DIV;
 
 #if (MP_DRIVER==1)
-	if (Adapter->registrypriv.mp_mode == 1) {
-		SupportAbility = 0
-			| ODM_RF_CALIBRATION
-			| ODM_RF_TX_PWR_TRACK
-			;
-	}
 #endif//(MP_DRIVER==1)
 
 #ifdef CONFIG_DISABLE_ODM
