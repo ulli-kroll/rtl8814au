@@ -1142,13 +1142,6 @@ _func_enter_;
 
 	if (*psta == NULL) {
 		RT_TRACE(_module_rtl871x_recv_c_,_drv_err_,("can't get psta under sta2sta_data_frame ; drop pkt\n"));
-#ifdef CONFIG_MP_INCLUDED
-		if (adapter->registrypriv.mp_mode == 1)
-		{
-			if(check_fwstate(pmlmepriv, WIFI_MP_STATE) == _TRUE)
-				adapter->mppriv.rx_pktloss++;
-		}
-#endif
 		ret= _FAIL;
 		goto exit;
 	}
@@ -1268,9 +1261,6 @@ _func_enter_;
 		_rtw_memcpy(pattrib->ta, pattrib->src, ETH_ALEN);
 
 		//
-		if(adapter->mppriv.bRTWSmbCfg==_FALSE)
-			_rtw_memcpy(pattrib->bssid,  mybssid, ETH_ALEN);
-
 
 		*psta = rtw_get_stainfo(pstapriv, pattrib->bssid); // get sta_info
 		if (*psta == NULL) {
@@ -1390,8 +1380,6 @@ _func_enter_;
 		_rtw_memcpy(pattrib->ra, pattrib->dst, ETH_ALEN);
 		_rtw_memcpy(pattrib->ta, pattrib->src, ETH_ALEN);
 		//
-		if(adapter->mppriv.bRTWSmbCfg == _FALSE)
-			_rtw_memcpy(pattrib->bssid,  mybssid, ETH_ALEN);
 
 		*psta = rtw_get_stainfo(pstapriv, pattrib->bssid); // get sta_info
 		if (*psta == NULL) {
@@ -3350,41 +3338,6 @@ int process_recv_indicatepkts(_adapter *padapter, union recv_frame *prframe)
 
 }
 
-#ifdef CONFIG_MP_INCLUDED
-int validate_mp_recv_frame(_adapter *adapter, union recv_frame *precv_frame)
-{
-	int ret = _SUCCESS;
-	u8 *ptr = precv_frame->u.hdr.rx_data;
-	u8 type,subtype;
-
-	if(!adapter->mppriv.bmac_filter)
-		return ret;
-#if 0
-	if (1){
-		u8 bDumpRxPkt;
-		type =  GetFrameType(ptr);
-		subtype = GetFrameSubType(ptr); //bit(7)~bit(2)
-
-		rtw_hal_get_def_var(adapter, HAL_DEF_DBG_DUMP_RXPKT, &(bDumpRxPkt));
-		if(bDumpRxPkt ==1){//dump all rx packets
-			int i;
-			DBG_871X("############ type:0x%02x subtype:0x%02x ################# \n",type,subtype);
-
-			for(i=0; i<64;i=i+8)
-				DBG_871X("%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X:\n", *(ptr+i),
-				*(ptr+i+1), *(ptr+i+2) ,*(ptr+i+3) ,*(ptr+i+4),*(ptr+i+5), *(ptr+i+6), *(ptr+i+7));
-			DBG_871X("############################# \n");
-		}
-	}
-#endif
-
-	if(_rtw_memcmp( GetAddr2Ptr(ptr), adapter->mppriv.mac_filter, ETH_ALEN) == _FALSE )
-		ret = _FAIL;
-
-	return ret;
-}
-#endif
-
 static sint MPwlanhdr_to_ethhdr ( union recv_frame *precvframe)
 {
 	sint	rmv_len;
@@ -3450,16 +3403,6 @@ _func_enter_;
 		len = htons(pattrib->seq_num);
 		//DBG_871X("wlan seq = %d ,seq_num =%x\n",len,pattrib->seq_num);
 		_rtw_memcpy(ptr+12,&len, 2);
-	if(adapter->mppriv.bRTWSmbCfg==_TRUE)
-	{
-//		if(_rtw_memcmp(mcastheadermac, pattrib->dst, 3) == _TRUE)//SimpleConfig Dest.
-//			_rtw_memcpy(ptr+ETH_ALEN, pattrib->bssid, ETH_ALEN);
-
-		if(_rtw_memcmp(mcastheadermac, pattrib->bssid, 3) == _TRUE) //SimpleConfig Dest.
-			_rtw_memcpy(ptr, pattrib->bssid, ETH_ALEN);
-
-	}
-
 
 _func_exit_;
 	return ret;
@@ -3473,10 +3416,7 @@ int mp_recv_frame(_adapter *padapter, union recv_frame *rframe)
 	struct rx_pkt_attrib *pattrib = &rframe->u.hdr.attrib;
 	struct recv_priv *precvpriv = &padapter->recvpriv;
 	_queue *pfree_recv_queue = &padapter->recvpriv.free_recv_queue;
-#ifdef CONFIG_MP_INCLUDED
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
-	struct mp_priv *pmppriv = &padapter->mppriv;
-#endif //CONFIG_MP_INCLUDED
 	u8 type;
 	u8 *ptr = rframe->u.hdr.rx_data;
 	u8 *psa, *pda, *pbssid;
@@ -3485,24 +3425,7 @@ int mp_recv_frame(_adapter *padapter, union recv_frame *rframe)
 
 	if ( (check_fwstate(pmlmepriv, _FW_LINKED) == _TRUE) )//&&(padapter->mppriv.check_mp_pkt == 0))
 	{
-		if (pattrib->crc_err == 1){
-			padapter->mppriv.rx_crcerrpktcount++;
-		}
-		else{
-			if(_SUCCESS == validate_mp_recv_frame(padapter, rframe))
-				padapter->mppriv.rx_pktcount++;
-			else
-				padapter->mppriv.rx_pktcount_filter_out++;
-		}
 
-		if(pmppriv->rx_bindicatePkt == _FALSE)
-		{
-			//RT_TRACE(_module_rtl871x_recv_c_, _drv_alert_, ("MP - Not in loopback mode , drop pkt \n"));
-			ret = _FAIL;
-			rtw_free_recvframe(rframe, pfree_recv_queue);//free this recv_frame
-			goto exit;
-		}
-		else
 		{
 			type =	GetFrameType(ptr);
 			pattrib->to_fr_ds = get_tofr_ds(ptr);

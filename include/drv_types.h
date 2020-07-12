@@ -859,10 +859,6 @@ struct _ADAPTER{
 
 	struct	led_priv	ledpriv;
 
-#ifdef CONFIG_MP_INCLUDED
-       struct	mp_priv	mppriv;
-#endif
-
 #ifdef CONFIG_AP_MODE
 	struct	hostapd_priv	*phostapdpriv;
 #endif
