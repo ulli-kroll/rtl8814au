@@ -3727,43 +3727,6 @@ static void read_chip_version_8814a(PADAPTER Adapter)
 
 }
 
-VOID
-hal_PatchwithJaguar_8814(
-	IN PADAPTER				Adapter,
-	IN RT_MEDIA_STATUS		MediaStatus
-	)
-{
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
-	struct mlme_ext_priv	*pmlmeext = &(Adapter->mlmeextpriv);
-	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
-
-	if(	(MediaStatus == RT_MEDIA_CONNECT) &&
-		(pmlmeinfo->assoc_AP_vendor == HT_IOT_PEER_REALTEK_JAGUAR_BCUTAP ))
-	{
-		rtw_write8(Adapter, rVhtlen_Use_Lsig_Jaguar, 0x1);
-		rtw_write8(Adapter, REG_TCR+3, BIT2);
-	}
-	else
-	{
-		rtw_write8(Adapter, rVhtlen_Use_Lsig_Jaguar, 0x3F);
-		rtw_write8(Adapter, REG_TCR+3, BIT0|BIT1|BIT2);
-	}
-
-
-	/*if(	(MediaStatus == RT_MEDIA_CONNECT) &&
-		((pmlmeinfo->assoc_AP_vendor == HT_IOT_PEER_REALTEK_JAGUAR_BCUTAP) ||
-		 (pmlmeinfo->assoc_AP_vendor == HT_IOT_PEER_REALTEK_JAGUAR_CCUTAP)))
-	{
-		pHalData->Reg837 |= BIT2;
-		rtw_write8(Adapter, rBWIndication_Jaguar+3, pHalData->Reg837);
-	}
-	else
-	{
-		pHalData->Reg837 &= (~BIT2);
-		rtw_write8(Adapter, rBWIndication_Jaguar+3, pHalData->Reg837);
-	}*/
-}
-
 void UpdateHalRAMask8814A(PADAPTER padapter, u32 mac_id, u8 rssi_level)
 {
 	u64	mask,rate_bitmap, *dm_RA_Mask=NULL;
