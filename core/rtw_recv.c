@@ -3974,15 +3974,6 @@ int recv_func_prehandle(_adapter *padapter, union recv_frame *rframe)
 	struct recv_priv *precvpriv = &padapter->recvpriv;
 	_queue *pfree_recv_queue = &padapter->recvpriv.free_recv_queue;
 
-#ifdef DBG_RX_COUNTER_DUMP
-	if( padapter->dump_rx_cnt_mode & DUMP_DRV_RX_COUNTER )
-	{
-		if (pattrib->crc_err == 1)
-			padapter->drv_rx_cnt_crcerror++;
-		else
-			padapter->drv_rx_cnt_ok++;
-	}
-#endif
 
 #ifdef CONFIG_MP_INCLUDED
 	if (padapter->registrypriv.mp_mode == 1 || padapter->mppriv.bRTWSmbCfg ==_TRUE)
