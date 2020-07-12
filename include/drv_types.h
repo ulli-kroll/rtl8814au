@@ -127,10 +127,6 @@ typedef struct _ADAPTER _adapter, ADAPTER,*PADAPTER;
 #include <drvext_api.h>
 #endif // CONFIG_DRVEXT_MODULE
 
-#ifdef CONFIG_MP_INCLUDED
-#include <rtw_mp.h>
-#endif // CONFIG_MP_INCLUDED
-
 #ifdef CONFIG_BR_EXT
 #include <rtw_br_ext.h>
 #endif // CONFIG_BR_EXT

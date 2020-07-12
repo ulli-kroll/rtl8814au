@@ -83,7 +83,6 @@
 
 #define CONFIG_DFS	1
 
-//#ifndef CONFIG_MP_INCLUDED
 	#define CONFIG_IPS	1
 	#ifdef CONFIG_IPS
 	//#define CONFIG_IPS_LEVEL_2	1 //enable this to set default IPS mode to IPS_LEVEL_2
@@ -112,10 +111,6 @@
 		//	#define CONFIG_TSF_RESET_OFFLOAD 1		// For 2 PORT TSF SYNC.
 		//#endif
 	#endif
-
-//#else 	//#ifndef CONFIG_MP_INCLUDED
-
-//#endif 	//#ifndef CONFIG_MP_INCLUDED
 
 #define CONFIG_AP_MODE	1
 #ifdef CONFIG_AP_MODE
@@ -241,14 +236,7 @@
 
 #define ENABLE_NEW_RFE_TYPE	0
 
-#ifdef CONFIG_MP_INCLUDED
-	#define MP_DRIVER 1
-	#define CONFIG_MP_IWPRIV_SUPPORT	1
-	//#undef CONFIG_USB_TX_AGGREGATION
-	//#undef CONFIG_USB_RX_AGGREGATION
-#else
 	#define MP_DRIVER 0
-#endif
 
 
 /*

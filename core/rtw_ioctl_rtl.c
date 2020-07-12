@@ -21,9 +21,6 @@
 
 #include <drv_types.h>
 
-#ifdef CONFIG_MP_INCLUDED
-#include <rtw_mp_ioctl.h>
-#endif
 
 struct oid_obj_priv oid_rtl_seg_01_01[] =
 {

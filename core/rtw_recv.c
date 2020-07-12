@@ -3898,15 +3898,6 @@ int recv_func_prehandle(_adapter *padapter, union recv_frame *rframe)
 	_queue *pfree_recv_queue = &padapter->recvpriv.free_recv_queue;
 
 
-#ifdef CONFIG_MP_INCLUDED
-	if (padapter->registrypriv.mp_mode == 1 || padapter->mppriv.bRTWSmbCfg ==_TRUE)
-	{
-		mp_recv_frame(padapter,rframe);
-		ret = _FAIL;
-		goto exit;
-        }
-	else
-#endif
 	{
 	//check the frame crtl field and decache
 	ret = validate_recv_frame(padapter, rframe);
@@ -4169,10 +4160,6 @@ _func_exit_;
 
 _recv_entry_drop:
 
-#ifdef CONFIG_MP_INCLUDED
-	if (padapter->registrypriv.mp_mode == 1)
-		padapter->mppriv.rx_pktloss = precvpriv->rx_drop;
-#endif
 
 	//RT_TRACE(_module_rtl871x_recv_c_,_drv_err_,("_recv_entry_drop\n"));
 

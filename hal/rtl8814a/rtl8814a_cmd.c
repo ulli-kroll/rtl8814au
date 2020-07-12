@@ -1315,11 +1315,6 @@ _C2HContentParsing8814(
 
 	case C2H_BT_MP_INFO:
 		DBG_871X("[C2H], C2H_BT_MP_INFO!!\n");
-#ifdef CONFIG_MP_INCLUDED
-		/* MPTBT_FwC2hBtMpCtrl(Adapter, tmpBuf, c2hCmdLen); */
-#else
-		/* NDBG_FwC2hBtControl(Adapter, tmpBuf, c2hCmdLen); */
-#endif
 			break;
 
 	/*
