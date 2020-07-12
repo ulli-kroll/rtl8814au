@@ -42,78 +42,44 @@ typedef struct txdescriptor_8814
 //=============
 // Dword 0
 #define SET_TX_DESC_PKT_SIZE_8814A(__pTxDesc, __Value) 						SET_BITS_TO_LE_4BYTE(__pTxDesc, 0, 16, __Value)
-#define GET_TX_DESC_PKT_SIZE_8814A(__pTxDesc)									LE_BITS_TO_4BYTE( __pTxDesc, 0, 16)
 #define SET_TX_DESC_OFFSET_8814A(__pTxDesc, __Value) 							SET_BITS_TO_LE_4BYTE(__pTxDesc, 16, 8, __Value)
-#define GET_TX_DESC_OFFSET_8814A(__pTxDesc)									LE_BITS_TO_4BYTE( __pTxDesc, 16, 8)
 #define SET_TX_DESC_BMC_8814A(__pTxDesc, __Value) 							SET_BITS_TO_LE_4BYTE(__pTxDesc, 24, 1, __Value)
-#define SET_TX_DESC_HTC_8814A(__pTxDesc, __Value) 								SET_BITS_TO_LE_4BYTE(__pTxDesc, 25, 1, __Value)
 #define SET_TX_DESC_LAST_SEG_8814A(__pTxDesc, __Value) 						SET_BITS_TO_LE_4BYTE(__pTxDesc, 26, 1, __Value)
-#define SET_TX_DESC_LINIP_8814A(__pTxDesc, __Value) 							SET_BITS_TO_LE_4BYTE(__pTxDesc, 28, 1, __Value)
-#define SET_TX_DESC_AMSDU_PAD_EN_8814A(__pTxDesc, __Value) 					SET_BITS_TO_LE_4BYTE(__pTxDesc, 27, 1, __Value)
-#define SET_TX_DESC_NO_ACM_8814A(__pTxDesc, __Value) 							SET_BITS_TO_LE_4BYTE(__pTxDesc, 29, 1, __Value)
-#define SET_TX_DESC_GF_8814A(__pTxDesc, __Value) 								SET_BITS_TO_LE_4BYTE(__pTxDesc, 30, 1, __Value)
 #define SET_TX_DESC_DISQSELSEQ_8814A(__pTxDesc, __Value) 						SET_BITS_TO_LE_4BYTE(__pTxDesc, 31, 1, __Value)
 
 // Dword 1
 #define SET_TX_DESC_MACID_8814A(__pTxDesc, __Value) 							SET_BITS_TO_LE_4BYTE(__pTxDesc+4, 0, 7, __Value)
 #define SET_TX_DESC_QUEUE_SEL_8814A(__pTxDesc, __Value) 						SET_BITS_TO_LE_4BYTE(__pTxDesc+4, 8, 5, __Value)
-#define SET_TX_DESC_RDG_NAV_EXT_8814A(__pTxDesc, __Value) 					SET_BITS_TO_LE_4BYTE(__pTxDesc+4, 13, 1, __Value)
-#define SET_TX_DESC_LSIG_TXOP_EN_8814A(__pTxDesc, __Value) 					SET_BITS_TO_LE_4BYTE(__pTxDesc+4, 14, 1, __Value)
-#define SET_TX_DESC_PIFS_8814A(__pTxDesc, __Value) 							SET_BITS_TO_LE_4BYTE(__pTxDesc+4, 15, 1, __Value)
 #define SET_TX_DESC_RATE_ID_8814A(__pTxDesc, __Value) 							SET_BITS_TO_LE_4BYTE(__pTxDesc+4, 16, 5, __Value)
-#define SET_TX_DESC_EN_DESC_ID_8814A(__pTxDesc, __Value) 						SET_BITS_TO_LE_4BYTE(__pTxDesc+4, 21, 1, __Value)
 #define SET_TX_DESC_SEC_TYPE_8814A(__pTxDesc, __Value) 						SET_BITS_TO_LE_4BYTE(__pTxDesc+4, 22, 2, __Value)
 #define SET_TX_DESC_PKT_OFFSET_8814A(__pTxDesc, __Value) 						SET_BITS_TO_LE_4BYTE(__pTxDesc+4, 24, 5, __Value)
-#define SET_TX_DESC_MORE_DATA_8814A(__pTxDesc, __Value) 						SET_BITS_TO_LE_4BYTE(__pTxDesc+4, 29, 1, __Value)
-#define SET_TX_DESC_TXOP_PS_CAP_8814A(__pTxDesc, __Value) 					SET_BITS_TO_LE_4BYTE(__pTxDesc+4, 30, 1, __Value)
-#define SET_TX_DESC_TXOP_PS_MODE_8814A(__pTxDesc, __Value) 					SET_BITS_TO_LE_4BYTE(__pTxDesc+4, 31, 1, __Value)
 
 
 // Dword 2
 #define SET_TX_DESC_PAID_8814A(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+8, 0,  9, __Value)
-#define SET_TX_DESC_CCA_RTS_8814A(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+8, 10, 2, __Value)
 #define SET_TX_DESC_AGG_ENABLE_8814A(__pTxDesc, __Value) 		SET_BITS_TO_LE_4BYTE(__pTxDesc+8, 12, 1, __Value)
-#define SET_TX_DESC_RDG_ENABLE_8814A(__pTxDesc, __Value) 		SET_BITS_TO_LE_4BYTE(__pTxDesc+8, 13, 1, __Value)
-#define SET_TX_DESC_NULL_0_8814A(__pTxDesc, __Value) 		SET_BITS_TO_LE_4BYTE(__pTxDesc+8, 14, 1, __Value)
-#define SET_TX_DESC_NULL_1_8814A(__pTxDesc, __Value) 		SET_BITS_TO_LE_4BYTE(__pTxDesc+8, 15, 1, __Value)
 #define SET_TX_DESC_BK_8814A(__pTxDesc, __Value) 				SET_BITS_TO_LE_4BYTE(__pTxDesc+8, 16, 1, __Value)
-#define SET_TX_DESC_MORE_FRAG_8814A(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+8, 17, 1, __Value)
-#define GET_TX_DESC_MORE_FRAG_8814A(__pTxDesc)				LE_BITS_TO_4BYTE( __pTxDesc+8, 17, 1)
-#define SET_TX_DESC_RAW_8814A(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+8, 18, 1, __Value)
-#define SET_TX_DESC_SPE_RPT_8814A(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+8, 19, 1, __Value)
 #define SET_TX_DESC_AMPDU_DENSITY_8814A(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+8, 20, 3, __Value)
-#define SET_TX_DESC_BT_NULL_8814A(__pTxDesc, __Value) 			SET_BITS_TO_LE_4BYTE(__pTxDesc+8, 23, 1, __Value)
 #define SET_TX_DESC_GID_8814A(__pTxDesc, __Value) 			SET_BITS_TO_LE_4BYTE(__pTxDesc+8, 24, 6, __Value)
-#define SET_TX_DESC_HW_AES_IV_8814A(__pTxDesc, __Value) 			SET_BITS_TO_LE_4BYTE(__pTxDesc+8, 31, 1, __Value)
 
 
 // Dword 3
-#define SET_TX_DESC_WHEADER_LEN_8814A(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+12, 0, 5, __Value)
-#define SET_TX_DESC_EARLY_RATE_8814A(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+12, 5, 1, __Value)
 #define SET_TX_DESC_HW_SSN_SEL_8814A(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+12, 6, 2, __Value)
 #define SET_TX_DESC_USE_RATE_8814A(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+12, 8, 1, __Value)
-#define SET_TX_DESC_DISABLE_RTS_FB_8814A(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+12, 9, 1, __Value)
 #define SET_TX_DESC_DISABLE_FB_8814A(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+12, 10, 1, __Value)
 #define SET_TX_DESC_CTS2SELF_8814A(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+12, 11, 1, __Value)
 #define SET_TX_DESC_RTS_ENABLE_8814A(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+12, 12, 1, __Value)
-#define SET_TX_DESC_HW_RTS_ENABLE_8814A(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+12, 13, 1, __Value)
-#define SET_TX_DESC_CHECK_EN_8814A(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+12, 14, 1, __Value)
 #define SET_TX_DESC_NAV_USE_HDR_8814A(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+12, 15, 1, __Value)
-#define SET_TX_DESC_USE_MAX_LEN_8814A(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+12, 16, 1, __Value)
 #define SET_TX_DESC_MAX_AGG_NUM_8814A(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+12, 17, 5, __Value)
 #define SET_TX_DESC_NDPA_8814A(__pTxDesc, __Value) 		SET_BITS_TO_LE_4BYTE(__pTxDesc+12, 22, 2, __Value)
-#define SET_TX_DESC_AMPDU_MAX_TIME_8814A(__pTxDesc, __Value) 		SET_BITS_TO_LE_4BYTE(__pTxDesc+12, 24, 8, __Value)
 
 // Dword 4
 #define SET_TX_DESC_TX_RATE_8814A(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+16, 0, 7, __Value)
-#define SET_TX_DESC_TRY_RATE_8814A(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+16, 7, 1, __Value)
 #define SET_TX_DESC_DATA_RATE_FB_LIMIT_8814A(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+16, 8, 5, __Value)
 #define SET_TX_DESC_RTS_RATE_FB_LIMIT_8814A(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+16, 13, 4, __Value)
 #define SET_TX_DESC_RETRY_LIMIT_ENABLE_8814A(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+16, 17, 1, __Value)
 #define SET_TX_DESC_DATA_RETRY_LIMIT_8814A(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+16, 18, 6, __Value)
 #define SET_TX_DESC_RTS_RATE_8814A(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+16, 24, 5, __Value)
-#define SET_TX_DESC_PCTS_ENABLE_8814A(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+16, 29, 1, __Value)
-#define SET_TX_DESC_PCTS_MASK_IDX_8814A(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+16, 30, 2, __Value)
 
 
 // Dword 5
@@ -122,50 +88,24 @@ typedef struct txdescriptor_8814
 #define SET_TX_DESC_DATA_BW_8814A(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+20, 5, 2, __Value)
 #define SET_TX_DESC_DATA_LDPC_8814A(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+20, 7, 1, __Value)
 #define SET_TX_DESC_DATA_STBC_8814A(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+20, 8, 2, __Value)
-#define SET_TX_DESC_CTROL_STBC_8814A(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+20, 10, 2, __Value)
 #define SET_TX_DESC_RTS_SHORT_8814A(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+20, 12, 1, __Value)
 #define SET_TX_DESC_RTS_SC_8814A(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+20, 13, 4, __Value)
-#define SET_TX_DESC_SIGNALING_TA_PKT_8814A(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+20, 17, 1, __Value)
-#define SET_TX_DESC_PORT_ID_8814A(__pTxDesc,__Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+20, 21, 3, __Value)//20130415 KaiYuan add for 8814
-#define SET_TX_DESC_TX_ANT_8814A(__pTxDesc,__Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+20, 24, 4, __Value)
-#define SET_TX_DESC_TX_POWER_OFFSET_8814A(__pTxDesc,__Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+20, 28, 3, __Value)
 
 // Dword 6
 #define SET_TX_DESC_SW_DEFINE_8814A(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+24, 0, 12, __Value)
-#define SET_TX_DESC_MBSSID_8814A(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+24, 12, 4, __Value)
-#define SET_TX_DESC_ANTSEL_A_8814A(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+24, 16, 3, __Value)
-#define SET_TX_DESC_ANTSEL_B_8814A(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+24, 19, 3, __Value)
-#define SET_TX_DESC_ANT_MAPA_8814A(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+24, 22, 2, __Value)
-#define SET_TX_DESC_ANT_MAPB_8814A(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+24, 24, 2, __Value)
-#define SET_TX_DESC_ANT_MAPC_8814A(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+24, 26, 2, __Value)
-#define SET_TX_DESC_ANT_MAPD_8814A(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+24, 28, 2, __Value)
 
 
 // Dword 7
-#if(DEV_BUS_TYPE == RT_PCI_INTERFACE)
-#define SET_TX_DESC_TX_BUFFER_SIZE_8814A(__pTxDesc, __Value) 		SET_BITS_TO_LE_4BYTE(__pTxDesc+28, 0, 16, __Value)
-#else
 #define SET_TX_DESC_TX_DESC_CHECKSUM_8814A(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+28, 0, 16, __Value)
-#endif
-#define SET_TX_DESC_NTX_MAP_8814A(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+28, 20, 4, __Value)
 #define SET_TX_DESC_USB_TXAGG_NUM_8814A(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+28, 24, 8, __Value)
 
 
 // Dword 8
-#define SET_TX_DESC_RTS_RC_8814A(__pTxDesc, __Value) 			SET_BITS_TO_LE_4BYTE(__pTxDesc+32, 0, 6, __Value)
-#define SET_TX_DESC_BAR_RTY_TH_8814A(__pTxDesc, __Value) 			SET_BITS_TO_LE_4BYTE(__pTxDesc+32, 6, 2, __Value)
-#define SET_TX_DESC_DATA_RC_8814A(__pTxDesc, __Value) 			SET_BITS_TO_LE_4BYTE(__pTxDesc+32, 8, 6, __Value)
 #define SET_TX_DESC_EN_HWEXSEQ_8814A(__pTxDesc, __Value) 			SET_BITS_TO_LE_4BYTE(__pTxDesc+32, 14, 1, __Value)
 #define SET_TX_DESC_HWSEQ_EN_8814A(__pTxDesc, __Value) 			SET_BITS_TO_LE_4BYTE(__pTxDesc+32, 15, 1, __Value)
-#define SET_TX_DESC_NEXT_HEAD_PAGE_L_8814A(__pTxDesc,__Value)(__pTxDesc, __Value) 	SET_BITS_TO_LE_4BYTE(__pTxDesc+32, 16, 8, __Value)
-#define SET_TX_DESC_TAIL_PAGE_L_8814A(__pTxDesc,__Value)(__pTxDesc, __Value) 			SET_BITS_TO_LE_4BYTE(__pTxDesc+32, 24, 8, __Value)
 
 // Dword 9
-#define SET_TX_DESC_PADDING_LENGTH_8814A(__pTxDesc, __Value) 						SET_BITS_TO_LE_4BYTE(__pTxDesc+36, 0, 11, __Value)
-#define SET_TX_DESC_TXBF_PATH_8814A(__pTxDesc, __Value) 								SET_BITS_TO_LE_4BYTE(__pTxDesc+36, 11, 1, __Value)
 #define SET_TX_DESC_SEQ_8814A(__pTxDesc, __Value) 										SET_BITS_TO_LE_4BYTE(__pTxDesc+36, 12, 12, __Value)
-#define SET_TX_DESC_NEXT_HEAD_PAGE_H_8814A(__pTxDesc,__Value)(__pTxDesc, __Value) 	SET_BITS_TO_LE_4BYTE(__pTxDesc+36, 24, 4, __Value)
-#define SET_TX_DESC_TAIL_PAGE_H_8814A(__pTxDesc,__Value)(__pTxDesc, __Value) 			SET_BITS_TO_LE_4BYTE(__pTxDesc+36, 28, 4, __Value)
 
 
 
