@@ -677,46 +677,6 @@ static u8 efuse_write8(PADAPTER padapter, u16 address, u8 *value)
 	return efuse_OneByteWrite(padapter,address, *value, _FALSE);
 }
 
-/*
- * read/wirte raw efuse data
- */
-u8 rtw_efuse_access(PADAPTER padapter, u8 bWrite, u16 start_addr, u16 cnts, u8 *data)
-{
-	int i = 0;
-	u16	real_content_len = 0, max_available_size = 0;
-	u8 res = _FAIL ;
-	u8 (*rw8)(PADAPTER, u16, u8*);
-
-	EFUSE_GetEfuseDefinition(padapter, EFUSE_WIFI, TYPE_EFUSE_REAL_CONTENT_LEN, (PVOID)&real_content_len, _FALSE);
-	EFUSE_GetEfuseDefinition(padapter, EFUSE_WIFI, TYPE_AVAILABLE_EFUSE_BYTES_TOTAL, (PVOID)&max_available_size, _FALSE);
-
-	if (start_addr > real_content_len)
-		return _FAIL;
-
-	if (_TRUE == bWrite) {
-		if ((start_addr + cnts) > max_available_size)
-			return _FAIL;
-		rw8 = &efuse_write8;
-	} else
-		rw8 = &efuse_read8;
-
-	Efuse_PowerSwitch(padapter, bWrite, _TRUE);
-
-	// e-fuse one byte read / write
-	for (i = 0; i < cnts; i++) {
-		if (start_addr >= real_content_len) {
-			res = _FAIL;
-			break;
-		}
-
-		res = rw8(padapter, start_addr++, data++);
-		if (_FAIL == res) break;
-	}
-
-	Efuse_PowerSwitch(padapter, bWrite, _FALSE);
-
-	return res;
-}
 //------------------------------------------------------------------------------
 u16 efuse_GetMaxSize(PADAPTER padapter)
 {
