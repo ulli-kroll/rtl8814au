@@ -117,10 +117,9 @@ Efuse_Write1ByteToFakeContent(
 VOID
 Efuse_PowerSwitch(
 	IN	PADAPTER	pAdapter,
-	IN	u8		bWrite,
 	IN	u8		PwrState)
 {
-	pAdapter->HalFunc.EfusePowerSwitch(pAdapter, bWrite, PwrState);
+	pAdapter->HalFunc.EfusePowerSwitch(pAdapter, PwrState);
 }
 
 /*-----------------------------------------------------------------------------
@@ -679,9 +678,9 @@ u16 efuse_GetMaxSize(PADAPTER padapter)
 //------------------------------------------------------------------------------
 u8 efuse_GetCurrentSize(PADAPTER padapter, u16 *size)
 {
-	Efuse_PowerSwitch(padapter, _FALSE, _TRUE);
+	Efuse_PowerSwitch(padapter, _TRUE);
 	*size = Efuse_GetCurrentSize(padapter, EFUSE_WIFI, _FALSE);
-	Efuse_PowerSwitch(padapter, _FALSE, _FALSE);
+	Efuse_PowerSwitch(padapter, _FALSE);
 
 	return _SUCCESS;
 }
@@ -695,11 +694,11 @@ u8 rtw_efuse_map_read(PADAPTER padapter, u16 addr, u16 cnts, u8 *data)
 	if ((addr + cnts) > mapLen)
 		return _FAIL;
 
-	Efuse_PowerSwitch(padapter, _FALSE, _TRUE);
+	Efuse_PowerSwitch(padapter, _TRUE);
 
 	efuse_ReadEFuse(padapter, EFUSE_WIFI, addr, cnts, data, _FALSE);
 
-	Efuse_PowerSwitch(padapter, _FALSE, _FALSE);
+	Efuse_PowerSwitch(padapter, _FALSE);
 
 	return _SUCCESS;
 }
@@ -713,11 +712,11 @@ u8 rtw_BT_efuse_map_read(PADAPTER padapter, u16 addr, u16 cnts, u8 *data)
 	if ((addr + cnts) > mapLen)
 		return _FAIL;
 
-	Efuse_PowerSwitch(padapter, _FALSE, _TRUE);
+	Efuse_PowerSwitch(padapter, _TRUE);
 
 	efuse_ReadEFuse(padapter, EFUSE_BT, addr, cnts, data, _FALSE);
 
-	Efuse_PowerSwitch(padapter, _FALSE, _FALSE);
+	Efuse_PowerSwitch(padapter, _FALSE);
 
 	return _SUCCESS;
 }
@@ -853,13 +852,13 @@ Efuse_ReadAllMap(
 {
 	u16	mapLen=0;
 
-	Efuse_PowerSwitch(pAdapter,_FALSE, _TRUE);
+	Efuse_PowerSwitch(pAdapter, _TRUE);
 
 	EFUSE_GetEfuseDefinition(pAdapter, efuseType, TYPE_EFUSE_MAP_LEN, (PVOID)&mapLen, bPseudoTest);
 
 	efuse_ReadEFuse(pAdapter, efuseType, 0, mapLen, Efuse, bPseudoTest);
 
-	Efuse_PowerSwitch(pAdapter,_FALSE, _FALSE);
+	Efuse_PowerSwitch(pAdapter, _FALSE);
 }
 
 /*-----------------------------------------------------------------------------

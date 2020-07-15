@@ -2256,9 +2256,9 @@ hal_ReadRFEType_8814A(
 static VOID
 hal_EfusePowerSwitch8814A(
 	IN	PADAPTER	pAdapter,
-	IN	u8		bWrite,
 	IN	u8		PwrState)
 {
+	u8      bWrite = _FALSE;
 	u8	tempval;
 	u16	tmpV16;
 	u8 	EFUSE_ACCESS_ON_8814A = 0x69;
@@ -2307,10 +2307,9 @@ hal_EfusePowerSwitch8814A(
 static VOID
 rtl8814_EfusePowerSwitch(
 	IN	PADAPTER	pAdapter,
-	IN	u8		bWrite,
 	IN	u8		PwrState)
 {
-	hal_EfusePowerSwitch8814A(pAdapter, bWrite, PwrState);
+	hal_EfusePowerSwitch8814A(pAdapter, PwrState);
 }
 
 static VOID

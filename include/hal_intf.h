@@ -299,7 +299,7 @@ struct hal_ops {
 	s32	(*hostap_mgnt_xmit_entry)(_adapter *padapter, _pkt *pkt);
 #endif
 
-	void (*EfusePowerSwitch)(_adapter *padapter, u8 bWrite, u8 PwrState);
+	void (*EfusePowerSwitch)(_adapter *padapter, u8 PwrState);
 	void (*ReadEFuse)(_adapter *padapter, u8 efuseType, u16 _offset, u16 _size_byte, u8 *pbuf, BOOLEAN bPseudoTest);
 	void (*EFUSEGetEfuseDefinition)(_adapter *padapter, u8 efuseType, u8 type, void *pOut, BOOLEAN bPseudoTest);
 	u16	(*EfuseGetCurrentSize)(_adapter *padapter, u8 efuseType, BOOLEAN bPseudoTest);
