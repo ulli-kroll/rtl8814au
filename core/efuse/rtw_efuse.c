@@ -123,16 +123,6 @@ Efuse_PowerSwitch(
 	pAdapter->HalFunc.EfusePowerSwitch(pAdapter, bWrite, PwrState);
 }
 
-VOID
-BTEfuse_PowerSwitch(
-	IN	PADAPTER	pAdapter,
-	IN	u8		bWrite,
-	IN	u8		PwrState)
-{
-	if(pAdapter->HalFunc.BTEfusePowerSwitch)
-		pAdapter->HalFunc.BTEfusePowerSwitch(pAdapter, bWrite, PwrState);
-}
-
 /*-----------------------------------------------------------------------------
  * Function:	efuse_GetCurrentSize
  *
