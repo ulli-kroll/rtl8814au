@@ -540,8 +540,8 @@ u32	rtw_build_vht_operation_ie(_adapter *padapter, u8 *pbuf, u8 channel)
 	SET_VHT_OPERATION_ELE_CHL_CENTER_FREQ1(operation, center_freq);//Todo: need to set correct center channel
 	SET_VHT_OPERATION_ELE_CHL_CENTER_FREQ2(operation,0);
 
-	if (padapter->registrypriv.rf_config != RF_MAX_TYPE)
-		rf_type = padapter->registrypriv.rf_config;
+	if (padapter->registrypriv._rf_config != RF_MAX_TYPE)
+		rf_type = padapter->registrypriv._rf_config;
 
 	switch (rf_type) {
 	case _RF_1T1R:

@@ -333,7 +333,7 @@ PHY_BBConfig8814(
 
 	hal_set_crystal_cap(Adapter, pHalData->CrystalCap);
 
-	switch (Adapter->registrypriv.rf_config) {
+	switch (Adapter->registrypriv._rf_config) {
 	case _RF_1T1R:
 	case RF_2T4R:
 	case RF_3T3R:
@@ -351,7 +351,7 @@ PHY_BBConfig8814(
 		PHY_SetBBReg(Adapter, rCCK_RX_Jaguar, 0xf0000000, 0x4);
 		/*pathB rx*/
 		PHY_SetBBReg(Adapter, rCCK_RX_Jaguar, 0x0f000000, 0x5);
-		DBG_871X("%s, unknown rf_config: %d\n", __func__, Adapter->registrypriv.rf_config);
+		DBG_871X("%s, unknown rf_config: %d\n", __func__, Adapter->registrypriv._rf_config);
 		break;
 	}
 

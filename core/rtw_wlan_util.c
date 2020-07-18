@@ -103,7 +103,7 @@ s8 rtw_get_tx_nss(_adapter *adapter, struct sta_info *psta)
 	u8 rf_type = _RF_1T1R, custom_rf_type, vht_mcs[2];
 	s8 nss = 1;
 
-	custom_rf_type = adapter->registrypriv.rf_config;
+	custom_rf_type = adapter->registrypriv._rf_config;
 	rtw_hal_get_hwreg(adapter, HW_VAR_RF_TYPE, (u8 *)(&rf_type));
 
 	if (!psta)

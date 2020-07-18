@@ -1832,21 +1832,21 @@ hal_Read_TRX_antenna_8814A(
 
 
 	/* if driver doesn't set rf_config, use the value of EEPROM */
-	if (Adapter->registrypriv.rf_config == RF_MAX_TYPE) {
+	if (Adapter->registrypriv._rf_config == RF_MAX_TYPE) {
 		if (trx_antenna == RF_4T4R && IS_SUPER_SPEED_USB(Adapter))
-			Adapter->registrypriv.rf_config = RF_3T3R;
+			Adapter->registrypriv._rf_config = RF_3T3R;
 		else if (trx_antenna == RF_2T4R)
-			Adapter->registrypriv.rf_config = RF_2T4R;
+			Adapter->registrypriv._rf_config = RF_2T4R;
 		else {
-			Adapter->registrypriv.rf_config = RF_2T4R;
-			DBG_871X("default rf type: %d\n", Adapter->registrypriv.rf_config);
+			Adapter->registrypriv._rf_config = RF_2T4R;
+			DBG_871X("default rf type: %d\n", Adapter->registrypriv._rf_config);
 		}
 	} else {
 		if (!IS_SUPER_SPEED_USB(Adapter))
-			Adapter->registrypriv.rf_config = RF_2T4R;
+			Adapter->registrypriv._rf_config = RF_2T4R;
 	}
 
-	DBG_871X("Final rf_config: %d\n", Adapter->registrypriv.rf_config);
+	DBG_871X("Final rf_config: %d\n", Adapter->registrypriv._rf_config);
 }
 
 
