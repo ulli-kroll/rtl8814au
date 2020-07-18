@@ -1822,6 +1822,15 @@ hal_Read_TRX_antenna_8814A(
 		DBG_871X("AutoloadFail, default to 2T4R\n");
 	}
 
+	/*
+	 * ULLI
+	 * ugly kludge
+	 * Realtek uses
+	 * ->registrypriv.rf_config to determine
+	 * rf antenna config and USB3 port support here
+	 */
+
+
 	/* if driver doesn't set rf_config, use the value of EEPROM */
 	if (Adapter->registrypriv.rf_config == RF_MAX_TYPE) {
 		if (trx_antenna == RF_4T4R && IS_SUPER_SPEED_USB(Adapter))
