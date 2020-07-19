@@ -355,8 +355,8 @@ phy_StoreTxPowerByRateBase(
 	for (band = BAND_ON_2_4G; band <= BAND_ON_5G; band++) {
 
 		for (path = RF_PATH_A; path < RF_PATH_MAX; path++) {
-			/* TODO: 8814A's NumTotalRFPath differs at probe(3) and up(4), need fixed
-			if (path >= hal_data->NumTotalRFPath)
+			/* TODO: 8814A's _NumTotalRFPath differs at probe(3) and up(4), need fixed
+			if (path >= hal_data->_NumTotalRFPath)
 				break;
 			*/
 
@@ -1706,7 +1706,7 @@ PHY_SetTxPowerLevelByPath(
 		if (IS_HARDWARE_TYPE_JAGUAR(Adapter) || IS_HARDWARE_TYPE_8814A(Adapter))
 			PHY_SetTxPowerIndexByRateSection(Adapter, path, channel, VHT_1SSMCS0_1SSMCS9);
 
-		if (pHalData->NumTotalRFPath >= 2)
+		if (pHalData->_NumTotalRFPath >= 2)
 		{
 			PHY_SetTxPowerIndexByRateSection( Adapter, path, channel, HT_MCS8_MCS15 );
 
@@ -2369,7 +2369,7 @@ void dump_tx_power_by_rate_base(void *sel, _adapter *adapter)
 			continue;
 
 		for (path = 0; path < RF_PATH_MAX; path++) {
-			if (path >= hal_data->NumTotalRFPath)
+			if (path >= hal_data->_NumTotalRFPath)
 				break;
 
 			DBG_871X_SEL_NL(sel, "[%sG][%c]\n", (band == BAND_ON_2_4G ? "2.4" : "5"), rf_path_char(path));
@@ -2408,7 +2408,7 @@ void dump_tx_power_by_rate(void *sel, _adapter *adapter)
 			continue;
 
 		for (path = 0; path < RF_PATH_MAX; path++) {
-			if (path >= hal_data->NumTotalRFPath)
+			if (path >= hal_data->_NumTotalRFPath)
 				break;
 
 			DBG_871X_SEL_NL(sel, "[%sG][%c]\n", (band == BAND_ON_2_4G ? "2.4" : "5"), rf_path_char(path));

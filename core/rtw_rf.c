@@ -419,7 +419,7 @@ void rtw_rf_apply_tx_gain_offset(_adapter *adapter, u8 ch)
 	s8 total_offset;
 	int i;
 
-	for (i = 0; i < hal_data->NumTotalRFPath; i++) {
+	for (i = 0; i < hal_data->_NumTotalRFPath; i++) {
 		kfree_offset = rtw_rf_get_kfree_tx_gain_offset(adapter, i, ch);
 		total_offset = kfree_offset + tx_pwr_track_offset;
 		rtw_rf_set_tx_gain_offset(adapter, i, total_offset);

@@ -2370,7 +2370,7 @@ phy_SwChnl8814A(
 		else
 			PHY_SetBBReg(pAdapter, rFc_area_Jaguar, 0x1ffe0000, 0x96a);
 
-		for(eRFPath = 0; eRFPath < pHalData->NumTotalRFPath; eRFPath++)
+		for(eRFPath = 0; eRFPath < pHalData->_NumTotalRFPath; eRFPath++)
 		{
 			// RF_MOD_AG
 			if (36 <= channelToSW && channelToSW <= 64)

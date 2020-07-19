@@ -100,8 +100,8 @@ phy_RF6052_Config_ParaFile_8814A(
 	//3//-----------------------------------------------------------------
 	//3// <2> Initialize RF
 	//3//-----------------------------------------------------------------
-	//for(eRFPath = RF_PATH_A; eRFPath <pHalData->NumTotalRFPath; eRFPath++)
-	for(eRFPath = 0; eRFPath <pHalData->NumTotalRFPath; eRFPath++)
+	//for(eRFPath = RF_PATH_A; eRFPath <pHalData->_NumTotalRFPath; eRFPath++)
+	for(eRFPath = 0; eRFPath <pHalData->_NumTotalRFPath; eRFPath++)
 	{
 		/*----Initialize RF fom connfiguration file----*/
 		switch(eRFPath)
@@ -179,7 +179,7 @@ PHY_RF6052_Config_8814A(
 	int					rtStatus = _SUCCESS;
 
 	// Initialize general global value
-	pHalData->NumTotalRFPath = 4;
+	pHalData->_NumTotalRFPath = 4;
 
 	//
 	// Config BB and RF

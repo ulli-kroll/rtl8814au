@@ -1026,7 +1026,7 @@ static VOID _RfPowerSave(
 		RT_TRACE((COMP_INIT|COMP_RF), DBG_LOUD, ("InitializeAdapter8192CUsb(): Turn off RF for RegRfOff.\n"));
 		MgntActSet_RF_State(Adapter, eRfOff, RF_CHANGE_BY_SW);
 		// Those action will be discard in MgntActSet_RF_State because off the same state
-		for(eRFPath = 0; eRFPath <pHalData->NumTotalRFPath; eRFPath++)
+		for(eRFPath = 0; eRFPath <pHalData->_NumTotalRFPath; eRFPath++)
 			PHY_SetRFReg(Adapter, eRFPath, 0x4, 0xC00, 0x0);
 	}
 	else if(pMgntInfo->RfOffReason > RF_CHANGE_BY_PS){ // H/W or S/W RF OFF before sleep.

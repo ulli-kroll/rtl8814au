@@ -97,30 +97,30 @@ void rtw_hal_config_rftype(PADAPTER  padapter)
 
 	if (IS_1T1R(pHalData->VersionID)) {
 		pHalData->_rf_type = _RF_1T1R;
-		pHalData->NumTotalRFPath = 1;
+		pHalData->_NumTotalRFPath = 1;
 	}
 	else if (IS_2T2R(pHalData->VersionID)) {
 		pHalData->_rf_type = RF_2T2R;
-		pHalData->NumTotalRFPath = 2;
+		pHalData->_NumTotalRFPath = 2;
 	}
 	else if (IS_1T2R(pHalData->VersionID)) {
 		pHalData->_rf_type = _RF_1T2R;
-		pHalData->NumTotalRFPath = 2;
+		pHalData->_NumTotalRFPath = 2;
 	}
 	else if(IS_3T3R(pHalData->VersionID)) {
 		pHalData->_rf_type = RF_3T3R;
-		pHalData->NumTotalRFPath = 3;
+		pHalData->_NumTotalRFPath = 3;
 	}
 	else if(IS_4T4R(pHalData->VersionID)) {
 		pHalData->_rf_type = RF_4T4R;
-		pHalData->NumTotalRFPath = 4;
+		pHalData->_NumTotalRFPath = 4;
 	}
 	else {
 		pHalData->_rf_type = _RF_1T1R;
-		pHalData->NumTotalRFPath = 1;
+		pHalData->_NumTotalRFPath = 1;
 	}
 
-	DBG_871X("%s RF_Type is %d TotalTxPath is %d \n", __FUNCTION__, pHalData->_rf_type, pHalData->NumTotalRFPath);
+	DBG_871X("%s RF_Type is %d TotalTxPath is %d \n", __FUNCTION__, pHalData->_rf_type, pHalData->_NumTotalRFPath);
 }
 
 #define	EEPROM_CHANNEL_PLAN_BY_HW_MASK	0x80
@@ -2596,7 +2596,7 @@ void rtw_get_raw_rssi_info(void *sel, _adapter *padapter)
 	if(isCCKrate)
 		psample_pkt_rssi->mimo_signal_strength[0] = psample_pkt_rssi->pwdball;
 
-	for(rf_path = 0;rf_path<pHalData->NumTotalRFPath;rf_path++)
+	for(rf_path = 0;rf_path<pHalData->_NumTotalRFPath;rf_path++)
 	{
 		DBG_871X_SEL_NL(sel, "RF_PATH_%d=>signal_strength:%d(%%),signal_quality:%d(%%)\n"
 			, rf_path, psample_pkt_rssi->mimo_signal_strength[rf_path], psample_pkt_rssi->mimo_signal_quality[rf_path]);
@@ -2622,7 +2622,7 @@ void rtw_dump_raw_rssi_info(_adapter *padapter)
 	if(isCCKrate)
 		psample_pkt_rssi->mimo_signal_strength[0] = psample_pkt_rssi->pwdball;
 
-	for(rf_path = 0;rf_path<pHalData->NumTotalRFPath;rf_path++)
+	for(rf_path = 0;rf_path<pHalData->_NumTotalRFPath;rf_path++)
 	{
 		DBG_871X("RF_PATH_%d=>signal_strength:%d(%%),signal_quality:%d(%%)"
 			, rf_path, psample_pkt_rssi->mimo_signal_strength[rf_path], psample_pkt_rssi->mimo_signal_quality[rf_path]);
@@ -2703,7 +2703,7 @@ void rtw_dump_rx_dframe_info(_adapter *padapter, void *sel)
 						DBG_871X_SEL(sel, "BW=%s, sgi =%d\n", BW, psta_dframe_info->sta_sgi);
 						DBG_871X_SEL(sel, "RxRate = %s\n", HDATA_RATE(psta_dframe_info->sta_data_rate));
 
-						for (rf_path = 0; rf_path < pHalData->NumTotalRFPath; rf_path++) {
+						for (rf_path = 0; rf_path < pHalData->_NumTotalRFPath; rf_path++) {
 
 							if (!isCCKrate) {
 
@@ -2748,7 +2748,7 @@ void rtw_store_phy_info(_adapter *padapter, union recv_frame *prframe)
 		psample_pkt_rssi->pwdball = pPhyInfo->RxPWDBAll;
 		psample_pkt_rssi->pwr_all = pPhyInfo->RecvSignalPower;
 
-		for (rf_path = 0; rf_path < pHalData->NumTotalRFPath; rf_path++) {
+		for (rf_path = 0; rf_path < pHalData->_NumTotalRFPath; rf_path++) {
 			psample_pkt_rssi->mimo_signal_strength[rf_path] = pPhyInfo->RxMIMOSignalStrength[rf_path];
 			psample_pkt_rssi->mimo_signal_quality[rf_path] = pPhyInfo->RxMIMOSignalQuality[rf_path];
 			if(!isCCKrate){
@@ -2768,7 +2768,7 @@ void rtw_store_phy_info(_adapter *padapter, union recv_frame *prframe)
 					psta_dframe_info->sta_data_rate = pattrib->data_rate;
 					psta_dframe_info->sta_sgi = pattrib->sgi;
 					psta_dframe_info->sta_bw_mode = pattrib->bw;
-					for (rf_path = 0; rf_path < pHalData->NumTotalRFPath; rf_path++) {
+					for (rf_path = 0; rf_path < pHalData->_NumTotalRFPath; rf_path++) {
 
 						psta_dframe_info->sta_mimo_signal_strength[rf_path] = (pPhyInfo->RxMIMOSignalStrength[rf_path]);/*Percentage to dbm*/
 
