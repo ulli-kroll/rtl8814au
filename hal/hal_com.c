@@ -94,6 +94,8 @@ void dump_chip_info(HAL_VERSION	ChipVersion)
 void rtw_hal_config_rftype(PADAPTER  padapter)
 {
 	HAL_DATA_TYPE *pHalData = GET_HAL_DATA(padapter);
+	struct dvobj_priv  *pdvobjpriv = adapter_to_dvobj(padapter);
+	struct usb_device *udev = pdvobjpriv->pusbdev;
 
 	if (IS_1T1R(pHalData->VersionID)) {
 		pHalData->_rf_type = _RF_1T1R;
@@ -121,6 +123,9 @@ void rtw_hal_config_rftype(PADAPTER  padapter)
 	}
 
 	DBG_871X("%s RF_Type is %d TotalTxPath is %d \n", __FUNCTION__, pHalData->_rf_type, pHalData->_NumTotalRFPath);
+	dev_info(&udev->dev, "->rtl8814au: rf_type %d\n", pHalData->_rf_type);
+	dev_info(&udev->dev, "->rtl8814au: NumTotalRFPath %d\n", pHalData->_NumTotalRFPath);
+	dev_info(&udev->dev, "->rtl8814au: VersionID %d\n", pHalData->VersionID);
 }
 
 #define	EEPROM_CHANNEL_PLAN_BY_HW_MASK	0x80

@@ -1797,29 +1797,39 @@ hal_Read_TRX_antenna_8814A(
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
 	u8 trx_antenna = RF_2T4R;
+	struct dvobj_priv  *pdvobjpriv = adapter_to_dvobj(Adapter);
+	struct usb_device *udev = pdvobjpriv->pusbdev;
 
 	if (!AutoloadFail) {
 		u8 trx_antenna_option = PROMContent[EEPROM_TRX_ANTENNA_OPTION_8814];
 
+		dev_info(&udev->dev, "->rtl8814au: trx_antenna_option %d\n", trx_antenna_option);
+
 		if (trx_antenna_option == 0xff) {
 			trx_antenna = RF_4T4R;
 			DBG_871X("EEPROM RF set 4T4R\n");
+			dev_info(&udev->dev, "->rtl8814au: trx_antenna 4T4R\n");
 		} else if (trx_antenna_option == 0xee) {
 			trx_antenna = RF_3T3R;
 			DBG_871X("EEPROM RF set 3T3R\n");
+			dev_info(&udev->dev, "->rtl8814au: trx_antenna 3T3R\n");
 		} else if (trx_antenna_option == 0x66) {
 			trx_antenna = RF_2T2R;
 			DBG_871X("EEPROM RF set 2T2R\n");
+			dev_info(&udev->dev, "->rtl8814au: trx_antenna 2T2R\n");
 		} else if (trx_antenna_option == 0x6f) {
 			trx_antenna = RF_2T4R;
 			DBG_871X("EEPROM RF set 2T4R\n");
+			dev_info(&udev->dev, "->rtl8814au: trx_antenna 2T4R\n");
 		} else {
 			trx_antenna = RF_2T4R;
 			DBG_871X("unknown EEPROM RF set, default to 2T4R\n");
+			dev_info(&udev->dev, "->rtl8814au: trx_antenna 2T4R\n");
 		}
 	} else {
 		trx_antenna = RF_2T4R;
 		DBG_871X("AutoloadFail, default to 2T4R\n");
+			dev_info(&udev->dev, "->rtl8814au: AutoloadFail trx_antenna 2T4R\n");
 	}
 
 	/*
@@ -1847,6 +1857,7 @@ hal_Read_TRX_antenna_8814A(
 	}
 
 	DBG_871X("Final rf_config: %d\n", Adapter->registrypriv._rf_config);
+	dev_info(&udev->dev, "->rtl8814au: rf_config %d\n", Adapter->registrypriv._rf_config);
 }
 
 
@@ -2234,7 +2245,9 @@ hal_ReadRFEType_8814A(
 	)
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
-
+	struct dvobj_priv  *pdvobjpriv = adapter_to_dvobj(Adapter);
+	struct usb_device *udev = pdvobjpriv->pusbdev;
+ 
 	if(!AutoloadFail)
 	{
 		if (0xFF == PROMContent[EEPROM_RFE_OPTION_8814] || PROMContent[EEPROM_RFE_OPTION_8814] & BIT7) {
@@ -2260,6 +2273,7 @@ hal_ReadRFEType_8814A(
 		hal_ReadAmplifierType_8814A(Adapter);
 	}
 	DBG_871X("RFE Type: 0x%2x\n", pHalData->RFEType);
+	dev_info(&udev->dev, "->rtl8814au: RFEType %d\n", pHalData->RFEType);
 }
 
 static VOID
