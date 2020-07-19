@@ -3593,7 +3593,7 @@ void ReadRFType8814A(PADAPTER padapter)
 
 	pHalData->rf_chip = RF_6052;
 
-	//if (pHalData->rf_type == _RF_1T1R){
+	//if (pHalData->_rf_type == _RF_1T1R){
 	//	pHalData->bRFPathRxEnable[0] = _TRUE;
 	//}
 	//else {	// Default unknow type is 2T2r
@@ -4153,20 +4153,20 @@ SetBeamformEnter_8812(
 	if(	(BeamformEntry.beamforming_entry_cap & BEAMFORMEE_CAP_VHT_SU) ||
 		(BeamformEntry.beamforming_entry_cap & BEAMFORMER_CAP_VHT_SU) )
 	{
-		if(pHalData->rf_type == RF_2T2R)
+		if(pHalData->_rf_type == RF_2T2R)
 			CSI_Param = 0x01090109;
 		else
 			CSI_Param = 0x01080108;
 	}
 	else
 	{
-		if(pHalData->rf_type == RF_2T2R)
+		if(pHalData->_rf_type == RF_2T2R)
 			CSI_Param = 0x03090309;
 		else
 			CSI_Param = 0x03080308;
 	}
 
-	if(pHalData->rf_type == RF_2T2R)
+	if(pHalData->_rf_type == RF_2T2R)
 		rtw_write32(Adapter, 0x9B4, 0x00000000);	// Nc =2
 	else
 		rtw_write32(Adapter, 0x9B4, 0x01081008); // Nc =1
@@ -6311,7 +6311,7 @@ u8 GetHalDefVar8814A(PADAPTER padapter, HAL_DEF_VARIABLE variable, void *pval)
 			break;
 
 		case HAL_DEF_TX_STBC:
-			if (pHalData->rf_type == _RF_1T2R || pHalData->rf_type == _RF_1T1R)
+			if (pHalData->_rf_type == _RF_1T2R || pHalData->_rf_type == _RF_1T1R)
 				*(u8 *)pval = 0;
 			else
 				*(u8 *)pval = 1;
@@ -6322,7 +6322,7 @@ u8 GetHalDefVar8814A(PADAPTER padapter, HAL_DEF_VARIABLE variable, void *pval)
 			break;
 
 		case HAL_DEF_EXPLICIT_BEAMFORMER:
-			if (pHalData->rf_type != _RF_1T2R || pHalData->rf_type != _RF_1T1R)/*1T?R not support mer*/
+			if (pHalData->_rf_type != _RF_1T2R || pHalData->_rf_type != _RF_1T1R)/*1T?R not support mer*/
 				*((PBOOLEAN)pval) = _TRUE;
 			else
 				*((PBOOLEAN)pval) = _FALSE;

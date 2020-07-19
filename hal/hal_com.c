@@ -96,31 +96,31 @@ void rtw_hal_config_rftype(PADAPTER  padapter)
 	HAL_DATA_TYPE *pHalData = GET_HAL_DATA(padapter);
 
 	if (IS_1T1R(pHalData->VersionID)) {
-		pHalData->rf_type = _RF_1T1R;
+		pHalData->_rf_type = _RF_1T1R;
 		pHalData->NumTotalRFPath = 1;
 	}
 	else if (IS_2T2R(pHalData->VersionID)) {
-		pHalData->rf_type = RF_2T2R;
+		pHalData->_rf_type = RF_2T2R;
 		pHalData->NumTotalRFPath = 2;
 	}
 	else if (IS_1T2R(pHalData->VersionID)) {
-		pHalData->rf_type = _RF_1T2R;
+		pHalData->_rf_type = _RF_1T2R;
 		pHalData->NumTotalRFPath = 2;
 	}
 	else if(IS_3T3R(pHalData->VersionID)) {
-		pHalData->rf_type = RF_3T3R;
+		pHalData->_rf_type = RF_3T3R;
 		pHalData->NumTotalRFPath = 3;
 	}
 	else if(IS_4T4R(pHalData->VersionID)) {
-		pHalData->rf_type = RF_4T4R;
+		pHalData->_rf_type = RF_4T4R;
 		pHalData->NumTotalRFPath = 4;
 	}
 	else {
-		pHalData->rf_type = _RF_1T1R;
+		pHalData->_rf_type = _RF_1T1R;
 		pHalData->NumTotalRFPath = 1;
 	}
 
-	DBG_871X("%s RF_Type is %d TotalTxPath is %d \n", __FUNCTION__, pHalData->rf_type, pHalData->NumTotalRFPath);
+	DBG_871X("%s RF_Type is %d TotalTxPath is %d \n", __FUNCTION__, pHalData->_rf_type, pHalData->NumTotalRFPath);
 }
 
 #define	EEPROM_CHANNEL_PLAN_BY_HW_MASK	0x80
@@ -1865,7 +1865,7 @@ _func_enter_;
 		*((u16*)val) = hal_data->BasicRateSet;
 		break;
 	case HW_VAR_RF_TYPE:
-		*((u8*)val) = hal_data->rf_type;
+		*((u8*)val) = hal_data->_rf_type;
 		break;
 	default:
 		if (0)
@@ -1922,9 +1922,9 @@ u8 rtw_hal_query_txbfer_rf_num(_adapter *adapter)
 */
 	) {
 		/*BF cap provided by Yu Chen, Sean, 2015, 01 */
-		if (hal_data->rf_type == RF_3T3R)
+		if (hal_data->_rf_type == RF_3T3R)
 			return 2;
-		else if (hal_data->rf_type == RF_4T4R)
+		else if (hal_data->_rf_type == RF_4T4R)
 			return 3;
 		else
 			return 1;
