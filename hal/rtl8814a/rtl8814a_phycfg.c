@@ -2133,14 +2133,6 @@ phy_SwChnl8814A(
 	if (kfree_data->flag & KFREE_FLAG_ON) {
 
 		channelIdx = rtw_ch_to_bb_gain_sel(channelToSW);
-	#if 0
-		if (pHalData->RfKFree_ch_group != channelIdx) {
-			/* Todo: wait for new phydm ready */
-			phy_ConfigKFree8814A(pAdapter, channelToSW, pHalData->CurrentBandType);
-			phydm_ConfigKFree(pDM_Odm, channelToSW, kfree_data->bb_gain);
-			DBG_871X("RfKFree_ch_group =%d\n", channelIdx);
-		}
-	#endif
 
 		pHalData->RfKFree_ch_group = channelIdx;
 
