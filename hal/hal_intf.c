@@ -495,12 +495,6 @@ void	rtw_hal_set_tx_power_level(_adapter *padapter, u8 channel)
 		padapter->HalFunc.set_tx_power_level_handler(padapter, channel);
 }
 
-void	rtw_hal_get_tx_power_level(_adapter *padapter, s32 *powerlevel)
-{
-	if(padapter->HalFunc.get_tx_power_level_handler)
-		padapter->HalFunc.get_tx_power_level_handler(padapter, powerlevel);
-}
-
 void	rtw_hal_dm_watchdog(_adapter *padapter)
 {
 	if (!is_primary_adapter(padapter))

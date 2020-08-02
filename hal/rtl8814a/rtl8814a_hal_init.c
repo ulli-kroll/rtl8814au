@@ -6484,7 +6484,6 @@ void rtl8814_set_hal_ops(struct hal_ops *pHalFunc)
 	pHalFunc->set_chnl_bw_handler = &PHY_SetSwChnlBWMode8814;
 
 	pHalFunc->set_tx_power_level_handler = &PHY_SetTxPowerLevel8814;
-	pHalFunc->get_tx_power_level_handler = &PHY_GetTxPowerLevel8814;
 
 	pHalFunc->hal_dm_watchdog = &rtl8814_HalDmWatchDog;
 

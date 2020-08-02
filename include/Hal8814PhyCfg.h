@@ -116,12 +116,6 @@ PHY_RFConfig8814A(
 //1 5. Tx  Power setting API
 
 VOID
-PHY_GetTxPowerLevel8814(
-	IN	PADAPTER		Adapter,
-	OUT ps4Byte			powerlevel
-	);
-
-VOID
 PHY_SetTxPowerLevel8814(
 	IN	PADAPTER		Adapter,
 	IN	u8			Channel
