@@ -1842,60 +1842,6 @@ VOID phy_SpurCalibration_8814A(PADAPTER	Adapter)
 }
 
 
-void phy_ModifyInitialGain_8814A(
-	PADAPTER		Adapter)
-{
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
-	u8 			channel = pHalData->CurrentChannel;
-	s1Byte		offset[4]; /*{A,B,C,D}*/
-	u8			i = 0;
-	u8			chnl_section = 0xff;
-
-	if (channel <= 14 && channel > 0)
-		chnl_section = 0; /*2G*/
-	else if (channel <= 64 && channel >= 36)
-		chnl_section = 1; /*5GL*/
-	else if (channel <= 144 && channel >= 100)
-		chnl_section = 2; /*5GM*/
-	else if (channel <= 177 && channel >= 149)
-		chnl_section = 3; /*5GH*/
-
-	if (chnl_section > 3) {
-		DBG_871X("%s: worng channel section\n", __func__);
-		return;
-	}
-
-	for (i = 0; i < 4; i++) {
-		u1Byte	hex_offset;
-
-		hex_offset = (u1Byte)(pHalData->RxGainOffset[chnl_section] >> (12-4*i))&0x0f;
-		DBG_871X("%s: pHalData->RxGainOffset[%d] = %x\n", __func__, chnl_section, pHalData->RxGainOffset[chnl_section]);
-		DBG_871X("%s: hex_offset = %x\n", __func__, hex_offset);
-
-		if (hex_offset == 0xf)
-			offset[i] = 0;
-		else if (hex_offset >= 0x8)
-			offset[i] = 0x11 - hex_offset;
-		else
-		 	offset[i] = 0x0 - hex_offset;
-		 offset[i] = (offset[i] / 2) * 2;
-		 DBG_871X("%s: offset[%d] = %x\n", __func__, i, offset[i]);
-		 DBG_871X("%s: BackUp_IG_REG_4_Chnl_Section[%d] = %x\n", __func__, i, pHalData->BackUp_IG_REG_4_Chnl_Section[i]);
-	}
-
-	if (pHalData->BackUp_IG_REG_4_Chnl_Section[0] != 0 &&
-		pHalData->BackUp_IG_REG_4_Chnl_Section[1] != 0 &&
-		pHalData->BackUp_IG_REG_4_Chnl_Section[2] != 0 &&
-		pHalData->BackUp_IG_REG_4_Chnl_Section[3] != 0
-		) {
-		PHY_SetBBReg(Adapter, rA_IGI_Jaguar, 0x000000ff, pHalData->BackUp_IG_REG_4_Chnl_Section[0] + offset[0]);
-		PHY_SetBBReg(Adapter, rB_IGI_Jaguar, 0x000000ff, pHalData->BackUp_IG_REG_4_Chnl_Section[1] + offset[1]);
-		PHY_SetBBReg(Adapter, rC_IGI_Jaguar2, 0x000000ff, pHalData->BackUp_IG_REG_4_Chnl_Section[2] + offset[2]);
-		PHY_SetBBReg(Adapter, rD_IGI_Jaguar2, 0x000000ff, pHalData->BackUp_IG_REG_4_Chnl_Section[3] + offset[3]);
-	}
-}
-
-
 VOID phy_SetBwMode8814A(PADAPTER	Adapter)
 {
 	u8			SubChnlNum = 0;
