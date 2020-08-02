@@ -2328,22 +2328,6 @@ phy_SwChnlAndSetBwMode8814A(
 		}
 	} else
 		PHY_IQCalibrate_8814A(pDM_Odm, _FALSE);
-#if 0 //todo
-#if (AUTO_CHNL_SEL_NHM == 1)
-	if(IS_AUTO_CHNL_SUPPORT(Adapter) &&
-		P2PIsSocialChannel(pHalData->CurrentChannel))
-	{
-		RT_TRACE(COMP_SCAN, DBG_TRACE, ("[ACS] phy_SwChnlAndSetBwMode8723B(): CurrentChannel %d Reset NHM counter!!\n", pHalData->CurrentChannel));
-		RT_TRACE(COMP_SCAN, DBG_TRACE, ("[ACS] phy_SwChnlAndSetBwMode8723B(): AutoChnlSelPeriod(%d)\n",
-			GetDefaultAdapter(Adapter)->MgntInfo.AutoChnlSel.AutoChnlSelPeriod));
-
-		// Reset NHM counter
-    		odm_AutoChannelSelectReset(GET_PDM_ODM(Adapter));
-
-		SET_AUTO_CHNL_STATE(Adapter, ACS_BEFORE_NHM);// Before NHM measurement
-	}
-#endif
-#endif //0
 	pHalData->bSwChnlAndSetBWInProgress= FALSE;
 }
 
