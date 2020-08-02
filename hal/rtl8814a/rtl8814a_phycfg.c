@@ -1719,34 +1719,6 @@ phy_SetBwRegMac_8814A(
 	}
 }
 
-VOID PHY_SetRXSC_by_TXSC_8814A(PADAPTER	Adapter, u1Byte SubChnlNum)
-{
-	PHAL_DATA_TYPE pHalData = GET_HAL_DATA(Adapter);
-
-	if (pHalData->CurrentChannelBW == CHANNEL_WIDTH_80) {
-		if (SubChnlNum == 0)
-			PHY_SetBBReg(Adapter, rRFMOD_Jaguar, 0x00000003c, 0x1);
-		else if (SubChnlNum == 1)
-			PHY_SetBBReg(Adapter, rRFMOD_Jaguar, 0x00000003c, 0x1);
-		else if (SubChnlNum == 2)
-			PHY_SetBBReg(Adapter, rRFMOD_Jaguar, 0x00000003c, 0x2);
-		else if (SubChnlNum == 4)
-			PHY_SetBBReg(Adapter, rRFMOD_Jaguar, 0x00000003c, 0x4);
-		else if (SubChnlNum == 3)
-			PHY_SetBBReg(Adapter, rRFMOD_Jaguar, 0x00000003c, 0x3);
-		else if (SubChnlNum == 9)
-			PHY_SetBBReg(Adapter, rRFMOD_Jaguar, 0x00000003c, 0x1);
-		else if (SubChnlNum == 10)
-			PHY_SetBBReg(Adapter, rRFMOD_Jaguar, 0x00000003c, 0x2);
-	} else if (pHalData->CurrentChannelBW == CHANNEL_WIDTH_40) {
-		if (SubChnlNum == 1)
-			PHY_SetBBReg(Adapter, rRFMOD_Jaguar, 0x00000003c, 0x1);
-		else if (SubChnlNum == 2)
-			PHY_SetBBReg(Adapter, rRFMOD_Jaguar, 0x00000003c, 0x2);
-	} else
-		PHY_SetBBReg(Adapter, rRFMOD_Jaguar, 0x00000003c, 0x0);
-}
-
 
 /* <20141230, James> A workaround to eliminate the 5280MHz & 5600MHz & 5760MHzspur of 8814A. (Asked by BBSD Neil.)*/
 VOID phy_SpurCalibration_8814A(PADAPTER	Adapter)
