@@ -1318,8 +1318,6 @@ ODM_ReleaseAllTimers(
 
 
 #if (DM_ODM_SUPPORT_TYPE == ODM_WIN)
-VOID ODM_InitAllWorkItems(IN PDM_ODM_T	pDM_Odm );
-VOID ODM_FreeAllWorkItems(IN PDM_ODM_T	pDM_Odm );
 
 
 
