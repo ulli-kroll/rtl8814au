@@ -1377,10 +1377,6 @@ ODM_PhyStatusQuery(
 		ODM_PhyStatusQuery_JaguarSeries(pDM_Odm, pPhyInfo, pPhyStatus, pPktinfo);
 #endif
 
-#if	ODM_IC_11N_SERIES_SUPPORT
-	if(pDM_Odm->SupportICType & ODM_IC_11N_SERIES )
-		ODM_PhyStatusQuery_92CSeries(pDM_Odm,pPhyInfo,pPhyStatus,pPktinfo);
-#endif
 }
 
 // For future use.
