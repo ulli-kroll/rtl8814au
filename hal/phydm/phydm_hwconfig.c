@@ -1365,12 +1365,6 @@ ODM_PhyStatusQuery(
 	IN		PODM_PACKET_INFO_T			pPktinfo
 	)
 {
-#if (RTL8822B_SUPPORT == 1)
-	if (pDM_Odm->SupportICType & ODM_RTL8822B) {
-		phydm_RxPhyStatusJaguarSeries2(pDM_Odm, pPhyStatus, pPktinfo, pPhyInfo);
-		return;
-	}
-#endif
 
 #if	ODM_IC_11AC_SERIES_SUPPORT
 	if (pDM_Odm->SupportICType & ODM_IC_11AC_SERIES)
