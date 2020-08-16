@@ -1135,11 +1135,6 @@ void _ps_close_RF(_adapter *padapter){
 }
 
 
-/*	A lightweight deinit function	*/
-static void rtl8814au_hw_reset(_adapter *Adapter)
-{
-}
-
 u32 rtl8814au_hal_init(PADAPTER Adapter)
 {
 	u8	value8 = 0, u1bRegCR;
@@ -1279,7 +1274,6 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_BEGIN);
 	it probably occurs some problem for double initial procedure.
 	Like "CONFIG_DEINIT_BEFORE_INIT" in 92du chip
 */
-	rtl8814au_hw_reset(Adapter); //todo
 
 
 
