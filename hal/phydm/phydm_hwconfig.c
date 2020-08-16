@@ -1005,9 +1005,6 @@ odm_Process_RSSIForDM(
 	//--------------Statistic for antenna/path diversity------------------
 	if(pDM_Odm->SupportAbility & ODM_BB_ANT_DIV)
 	{
-		#if(defined(CONFIG_HW_ANTENNA_DIVERSITY))
-			ODM_Process_RSSIForAntDiv(pDM_Odm,pPhyInfo,pPktinfo);
-		#endif
 	}
 	#if(defined(CONFIG_PATH_DIVERSITY))
 	else if(pDM_Odm->SupportAbility & ODM_BB_PATH_DIV)

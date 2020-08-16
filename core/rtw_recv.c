@@ -4476,9 +4476,6 @@ void rx_query_phy_status(
 		psta->rssi = pattrib->phy_info.RecvSignalPower;
 	//_exit_critical_bh(&pHalData->odm_stainfo_lock, &irqL);
 
-#ifdef CONFIG_SW_ANTENNA_DIVERSITY
-	if (GET_HAL_DATA(padapter)->odmpriv.RSSI_test == _FALSE)
-#endif
 	{
 		precvframe->u.hdr.psta = NULL;
 		if (pkt_info.bPacketMatchBSSID

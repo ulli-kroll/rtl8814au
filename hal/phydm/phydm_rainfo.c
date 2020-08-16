@@ -1281,11 +1281,6 @@ odm_RSSIMonitorCheckAP(
 	BOOLEAN			act_bfer = FALSE;
 
 #ifdef BEAMFORMING_SUPPORT
-#if (defined(CONFIG_HW_ANTENNA_DIVERSITY))
-	pBDC_T	pDM_BdcTable = &pDM_Odm->DM_BdcTable;
-	pDM_BdcTable->num_Txbfee_Client = 0;
-	pDM_BdcTable->num_Txbfer_Client = 0;
-#endif
 #endif
 
 	if (pDM_Odm->H2C_RARpt_connect) {
@@ -1317,22 +1312,6 @@ odm_RSSIMonitorCheckAP(
 				act_bfer = TRUE;
 			}
 
-#if (defined(CONFIG_HW_ANTENNA_DIVERSITY)) //BDC
-
-			if (act_bfer == TRUE) {
-				pDM_BdcTable->w_BFee_Client[i] = 1; //AP act as BFer
-				pDM_BdcTable->num_Txbfee_Client++;
-			} else {
-				pDM_BdcTable->w_BFee_Client[i] = 0; //AP act as BFer
-			}
-
-			if ((Beamform_cap & BEAMFORMEE_CAP_HT_EXPLICIT) || (Beamform_cap & BEAMFORMEE_CAP_VHT_SU)) {
-				pDM_BdcTable->w_BFer_Client[i] = 1; //AP act as BFee
-				pDM_BdcTable->num_Txbfer_Client++;
-			} else {
-				pDM_BdcTable->w_BFer_Client[i] = 0; //AP act as BFer
-			}
-#endif
 #endif
 
 			//2 STBC_en

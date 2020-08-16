@@ -5675,30 +5675,6 @@ _func_enter_;
 			break;
 #endif // CONFIG_P2P_PS
 
-#ifdef CONFIG_SW_ANTENNA_DIVERSITY
-		case HW_VAR_ANTENNA_DIVERSITY_LINK:
-			//SwAntDivRestAfterLink8192C(padapter);
-			ODM_SwAntDivRestAfterLink(podmpriv);
-			break;
-
-		case HW_VAR_ANTENNA_DIVERSITY_SELECT:
-			{
-				u8 Optimum_antenna = *pval;
-				u8 	Ant;
-
-				//switch antenna to Optimum_antenna
-				//DBG_8192C("==> HW_VAR_ANTENNA_DIVERSITY_SELECT , Ant_(%s)\n",(Optimum_antenna==2)?"A":"B");
-				if (pHalData->CurAntenna != Optimum_antenna)
-				{
-					Ant = (Optimum_antenna==2) ? MAIN_ANT : AUX_ANT;
-					ODM_UpdateRxIdleAnt(podmpriv, Ant);
-
-					pHalData->CurAntenna = Optimum_antenna;
-					//DBG_8192C("==> HW_VAR_ANTENNA_DIVERSITY_SELECT , Ant_(%s)\n",(Optimum_antenna==2)?"A":"B");
-				}
-			}
-			break;
-#endif //CONFIG_SW_ANTENNA_DIVERSITY
 
 		case HW_VAR_EFUSE_USAGE:
 			pHalData->EfuseUsedPercentage = *pval;
