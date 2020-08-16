@@ -1248,13 +1248,6 @@ ODM_InitAllTimers(
 	IN PDM_ODM_T	pDM_Odm
 	)
 {
-#if(defined(CONFIG_HW_ANTENNA_DIVERSITY))
-	ODM_AntDivTimers(pDM_Odm,INIT_ANTDIV_TIMMER);
-#elif(defined(CONFIG_SW_ANTENNA_DIVERSITY))
-	ODM_InitializeTimer(pDM_Odm,&pDM_Odm->DM_SWAT_Table.SwAntennaSwitchTimer,
-		(RT_TIMER_CALL_BACK)odm_SwAntDivChkAntSwitchCallback, NULL, "SwAntennaSwitchTimer");
-#endif
-
 #if (DM_ODM_SUPPORT_TYPE == ODM_AP)
 #ifdef MP_TEST
 	if (pDM_Odm->priv->pshare->rf_ft_var.mp_specific)
@@ -1304,12 +1297,6 @@ ODM_CancelAllTimers(
 	HAL_ADAPTER_STS_CHK(pDM_Odm)
 #endif
 
-#if(defined(CONFIG_HW_ANTENNA_DIVERSITY))
-	ODM_AntDivTimers(pDM_Odm,CANCEL_ANTDIV_TIMMER);
-#elif(defined(CONFIG_SW_ANTENNA_DIVERSITY))
-	ODM_CancelTimer(pDM_Odm,&pDM_Odm->DM_SWAT_Table.SwAntennaSwitchTimer);
-#endif
-
 #if (DM_ODM_SUPPORT_TYPE == ODM_AP)
 #ifdef MP_TEST
 	if (pDM_Odm->priv->pshare->rf_ft_var.mp_specific)
@@ -1345,12 +1332,6 @@ ODM_ReleaseAllTimers(
 	IN PDM_ODM_T	pDM_Odm
 	)
 {
-#if(defined(CONFIG_HW_ANTENNA_DIVERSITY))
-	ODM_AntDivTimers(pDM_Odm,RELEASE_ANTDIV_TIMMER);
-#elif(defined(CONFIG_SW_ANTENNA_DIVERSITY))
-	ODM_ReleaseTimer(pDM_Odm,&pDM_Odm->DM_SWAT_Table.SwAntennaSwitchTimer);
-#endif
-
 #if (DM_ODM_SUPPORT_TYPE == ODM_AP)
     #ifdef MP_TEST
 	if (pDM_Odm->priv->pshare->rf_ft_var.mp_specific)

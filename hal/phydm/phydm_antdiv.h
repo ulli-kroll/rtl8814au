@@ -179,70 +179,10 @@ typedef struct _SW_Antenna_Switch_
 	#endif
 	#endif
 #endif
-/* CE Platform use
-#ifdef CONFIG_SW_ANTENNA_DIVERSITY
-	_timer SwAntennaSwitchTimer;
-	u8Byte lastTxOkCnt;
-	u8Byte lastRxOkCnt;
-	u8Byte TXByteCnt_A;
-	u8Byte TXByteCnt_B;
-	u8Byte RXByteCnt_A;
-	u8Byte RXByteCnt_B;
-	u1Byte DoubleComfirm;
-	u1Byte TrafficLoad;
-	//SW Antenna Switch
-
-
-#endif
-*/
-#ifdef CONFIG_HW_ANTENNA_DIVERSITY
-	//Hybrid Antenna Diversity
-	u4Byte		CCK_Ant1_Cnt[ODM_ASSOCIATE_ENTRY_NUM];
-	u4Byte		CCK_Ant2_Cnt[ODM_ASSOCIATE_ENTRY_NUM];
-	u4Byte		OFDM_Ant1_Cnt[ODM_ASSOCIATE_ENTRY_NUM];
-	u4Byte		OFDM_Ant2_Cnt[ODM_ASSOCIATE_ENTRY_NUM];
-	u4Byte		RSSI_Ant1_Sum[ODM_ASSOCIATE_ENTRY_NUM];
-	u4Byte		RSSI_Ant2_Sum[ODM_ASSOCIATE_ENTRY_NUM];
-	u1Byte		TxAnt[ODM_ASSOCIATE_ENTRY_NUM];
-	u1Byte		TargetSTA;
-	u1Byte		antsel;
-	u1Byte		RxIdleAnt;
-
-#endif
-
 }SWAT_T, *pSWAT_T;
 
 
 #if (DM_ODM_SUPPORT_TYPE & (ODM_AP))
-#if (defined(CONFIG_HW_ANTENNA_DIVERSITY))
-typedef struct _BF_DIV_COEX_
-{
-	BOOLEAN w_BFer_Client[ODM_ASSOCIATE_ENTRY_NUM];
-	BOOLEAN w_BFee_Client[ODM_ASSOCIATE_ENTRY_NUM];
-	u4Byte	MA_rx_TP[ODM_ASSOCIATE_ENTRY_NUM];
-	u4Byte	MA_rx_TP_DIV[ODM_ASSOCIATE_ENTRY_NUM];
-
-	u1Byte  BDCcoexType_wBfer;
-	u1Byte num_Txbfee_Client;
-	u1Byte num_Txbfer_Client;
-	u1Byte BDC_Try_counter;
-	u1Byte BDC_Hold_counter;
-	u1Byte BDC_Mode;
-	u1Byte BDC_active_Mode;
-	u1Byte BDC_state;
-	u1Byte BDC_RxIdleUpdate_counter;
-	u1Byte num_Client;
-	u1Byte pre_num_Client;
-	u1Byte num_BfTar;
-	u1Byte num_DivTar;
-
-	BOOLEAN bAll_DivSta_Idle;
-	BOOLEAN bAll_BFSta_Idle;
-	BOOLEAN BDC_Try_flag;
-	BOOLEAN BF_pass;
-	BOOLEAN DIV_pass;
-}BDC_T,*pBDC_T;
-#endif
 #endif
 
 #ifdef CONFIG_HL_SMART_ANTENNA_TYPE1
@@ -588,6 +528,8 @@ ODM_AntDivTimers(
 
 #endif //#if (defined(CONFIG_HW_ANTENNA_DIVERSITY))
 
+
+
 VOID
 ODM_AntDivReset(
 	IN		PVOID		pDM_VOID
@@ -605,3 +547,5 @@ odm_AntennaDiversity(
 
 
 #endif //#ifndef	__ODMANTDIV_H__
+
+
