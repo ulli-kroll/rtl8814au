@@ -114,25 +114,7 @@ typedef enum _RT_SPINLOCK_TYPE{
 #endif
 
 
-#if (DM_ODM_SUPPORT_TYPE == ODM_WIN)
-	#define	STA_INFO_T			RT_WLAN_STA
-	#define	PSTA_INFO_T			PRT_WLAN_STA
-
-	#define CONFIG_HW_ANTENNA_DIVERSITY
-	#define CONFIG_SW_ANTENNA_DIVERSITY
-	/*#define CONFIG_HL_SMART_ANTENNA_TYPE1*/
-	/*#define CONFIG_PATH_DIVERSITY*/
-	/*#define CONFIG_RA_DYNAMIC_RTY_LIMIT*/
-	#define CONFIG_ANT_DETECTION
-	#define CONFIG_RA_DBG_CMD
-
-	#define	__func__		__FUNCTION__
-	#define	PHYDM_TESTCHIP_SUPPORT	TESTCHIP_SUPPORT
-	#define bMaskH3Bytes			0xffffff00
-	#define SUCCESS	0
-	#define FAIL	(-1)
-
-#elif (DM_ODM_SUPPORT_TYPE == ODM_AP)
+#if (DM_ODM_SUPPORT_TYPE == ODM_AP)
 
 	// To let ADSL/AP project compile ok; it should be removed after all conflict are solved. Added by Annie, 2011-10-07.
 	#define ADSL_AP_BUILD_WORKAROUND
@@ -145,39 +127,6 @@ typedef enum _RT_SPINLOCK_TYPE{
 	/*#define CONFIG_RA_DYNAMIC_RTY_LIMIT*/
 
 	//2 [ Configure Antenna Diversity ]
-#if defined(CONFIG_RTL_8881A_ANT_SWITCH) || defined(CONFIG_SLOT_0_ANT_SWITCH) || defined(CONFIG_SLOT_1_ANT_SWITCH)
-	#define CONFIG_HW_ANTENNA_DIVERSITY
-	#define ODM_EVM_ENHANCE_ANTDIV
-
-        //----------
-	#if(!defined(CONFIG_NO_2G_DIVERSITY) && !defined(CONFIG_2G5G_CG_TRX_DIVERSITY_8881A) && !defined(CONFIG_2G_CGCS_RX_DIVERSITY) && !defined(CONFIG_2G_CG_TRX_DIVERSITY) && !defined(CONFIG_2G_CG_SMART_ANT_DIVERSITY))
-		#define CONFIG_NO_2G_DIVERSITY
-	#endif
-
-	#ifdef CONFIG_NO_5G_DIVERSITY_8881A
-		#define CONFIG_NO_5G_DIVERSITY
-	#elif  defined(CONFIG_5G_CGCS_RX_DIVERSITY_8881A)
-		#define CONFIG_5G_CGCS_RX_DIVERSITY
-	#elif  defined(CONFIG_5G_CG_TRX_DIVERSITY_8881A)
-		#define CONFIG_5G_CG_TRX_DIVERSITY
-	#elif  defined(CONFIG_2G5G_CG_TRX_DIVERSITY_8881A)
-		#define CONFIG_2G5G_CG_TRX_DIVERSITY
-	#endif
-	#if(!defined(CONFIG_NO_5G_DIVERSITY) && !defined(CONFIG_5G_CGCS_RX_DIVERSITY) && !defined(CONFIG_5G_CG_TRX_DIVERSITY) && !defined(CONFIG_2G5G_CG_TRX_DIVERSITY) && !defined(CONFIG_5G_CG_SMART_ANT_DIVERSITY))
-		#define CONFIG_NO_5G_DIVERSITY
-	#endif
-	//----------
-	#if ( defined(CONFIG_NO_2G_DIVERSITY) && defined(CONFIG_NO_5G_DIVERSITY) )
-		#define CONFIG_NOT_SUPPORT_ANTDIV
-	#elif( !defined(CONFIG_NO_2G_DIVERSITY) && defined(CONFIG_NO_5G_DIVERSITY) )
-		#define CONFIG_2G_SUPPORT_ANTDIV
-	#elif( defined(CONFIG_NO_2G_DIVERSITY) && !defined(CONFIG_NO_5G_DIVERSITY) )
-		#define CONFIG_5G_SUPPORT_ANTDIV
-	#elif( (!defined(CONFIG_NO_2G_DIVERSITY) && !defined(CONFIG_NO_5G_DIVERSITY)) || defined(CONFIG_2G5G_CG_TRX_DIVERSITY) )
-		#define CONFIG_2G5G_SUPPORT_ANTDIV
-	#endif
-	//----------
-#endif
 	#ifdef AP_BUILD_WORKAROUND
 	#include "../typedef.h"
 	#else
