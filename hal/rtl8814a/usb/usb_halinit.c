@@ -1138,46 +1138,6 @@ void _ps_close_RF(_adapter *padapter){
 /*	A lightweight deinit function	*/
 static void rtl8814au_hw_reset(_adapter *Adapter)
 {
-#if 0
-                u8 reg_val=0;
-	if(rtw_read8(Adapter, REG_MCUFWDL)&BIT7)
-	{
-		_8051Reset8812(Adapter);
-		rtw_write8(Adapter, REG_MCUFWDL, 0x00);
-		//before BB reset should do clock gated
-		rtw_write32(Adapter, rFPGA0_XCD_RFPara,
-			rtw_read32(Adapter, rFPGA0_XCD_RFPara)|(BIT6));
-		//reset BB
-		reg_val = rtw_read8(Adapter, REG_SYS_FUNC_EN);
-		reg_val &= ~(BIT(0) | BIT(1));
-		rtw_write8(Adapter, REG_SYS_FUNC_EN, reg_val);
-		//reset RF
-		rtw_write8(Adapter, REG_RF_CTRL, 0);
-		//reset TRX path
-		rtw_write16(Adapter, REG_CR, 0);
-		//reset MAC
-		reg_val = rtw_read8(Adapter, REG_APS_FSMCO+1);
-		reg_val |= BIT(1);
-		reg_val = rtw_write8(Adapter, REG_APS_FSMCO+1, reg_val);       //reg0x5[1] ,auto FSM off
-
-		reg_val = rtw_read8(Adapter, REG_APS_FSMCO+1);
-
-		//check if   reg0x5[1] auto cleared
-		while(reg_val & BIT(1)){
-			rtw_udelay_os(1);
-			reg_val = rtw_read8(Adapter, REG_APS_FSMCO+1);
-		}
-		reg_val |= BIT(0);
-		reg_val = rtw_write8(Adapter, REG_APS_FSMCO+1, reg_val);     //reg0x5[0] ,auto FSM on
-
-		reg_val = rtw_read8(Adapter, REG_SYS_FUNC_EN+1);
-		reg_val &= ~(BIT(4) | BIT(7));
-		rtw_write8(Adapter, REG_SYS_FUNC_EN+1, reg_val);
-		reg_val = rtw_read8(Adapter, REG_SYS_FUNC_EN+1);
-		reg_val |= BIT(4) | BIT(7);
-		rtw_write8(Adapter, REG_SYS_FUNC_EN+1, reg_val);
-	}
-#endif //0
 }
 
 u32 rtl8814au_hal_init(PADAPTER Adapter)
