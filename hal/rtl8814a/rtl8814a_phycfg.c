@@ -2130,15 +2130,6 @@ phy_SwChnlAndSetBwMode8814A(
 
 
 VOID
-PHY_SwChnlAndSetBWModeCallback8814A(
-	IN PVOID            pContext
-)
-{
-	PADAPTER		Adapter = (PADAPTER)pContext;
-	phy_SwChnlAndSetBwMode8814A(Adapter);
-}
-
-VOID
 PHY_HandleSwChnlAndSetBW8814A(
 	IN	PADAPTER			Adapter,
 	IN	BOOLEAN				bSwitchChannel,
