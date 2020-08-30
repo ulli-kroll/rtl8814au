@@ -487,7 +487,6 @@ typedef struct hal_com_data
 	struct hal_spec_t hal_spec;
 
 	u8	RfKFreeEnable;
-	u8	RfKFree_ch_group;
 	BOOLEAN				bCCKinCH14;
 	BB_INIT_REGISTER	RegForRecover[5];
 

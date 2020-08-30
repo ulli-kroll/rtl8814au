@@ -1901,16 +1901,6 @@ phy_SwChnl8814A(
 		return;
 	}
 
-#ifdef CONFIG_RF_GAIN_OFFSET
-	/* <YuChen, 140529> Add for KFree Feature Requested by RF David. */
-	if (kfree_data->flag & KFREE_FLAG_ON) {
-
-		channelIdx = rtw_ch_to_bb_gain_sel(channelToSW);
-
-		pHalData->RfKFree_ch_group = channelIdx;
-
-	}
-#endif
 	{
 		// fc_area
 		if (36 <= channelToSW && channelToSW <= 48)
