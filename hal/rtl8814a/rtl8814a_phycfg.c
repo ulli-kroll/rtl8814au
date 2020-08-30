@@ -1027,12 +1027,6 @@ PHY_SetTxPowerLevel8814(
 	{
 			PHY_SetTxPowerLevelByPath(Adapter, Channel, (u8)path);
 	}
-#if 0 //todo H2C_TXPOWER_INDEX_OFFLOAD ?
-	if(Adapter->MgntInfo.bScanInProgress == FALSE &&  pHalData->RegFWOffload == 2)
-	{
-		HalDownloadTxPowerLevel8814(Adapter, value);
-	}
-#endif //0
 }
 
 /* ULLI : need to move this here */
@@ -1917,11 +1911,6 @@ phy_SwChnl8814A(
 
 	}
 #endif
-	if(pHalData->RegFWOffload == 2)
-	{
-		FillH2CCmd_8814(pAdapter, H2C_CHNL_SWITCH_OFFLOAD, 1, &channelToSW);
-	}
-	else
 	{
 		// fc_area
 		if (36 <= channelToSW && channelToSW <= 48)

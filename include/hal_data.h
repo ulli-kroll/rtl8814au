@@ -194,7 +194,6 @@ typedef struct hal_com_data
 	u16	FirmwareVersionRev;
 	u16	FirmwareSubVersion;
 	u16	FirmwareSignature;
-	u8	RegFWOffload;
 	u8	fw_ractrl;
 	u8	FwRsvdPageStartOffset; /* 2010.06.23. Added by tynli. Reserve page start offset except beacon in TxQ.*/
 	u8	LastHMEBoxNum;	/* H2C - for host message to fw */
