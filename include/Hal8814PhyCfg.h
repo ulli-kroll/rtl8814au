@@ -175,10 +175,6 @@ HAL_HandleSwChnl8814A(
 	);
 
 VOID
-PHY_SwChnlSynchronously8814A(	IN	PADAPTER		pAdapter,
-										IN	u8			channel	);
-
-VOID
 PHY_SwChnlAndSetBWModeCallback8814A(IN PVOID            pContext);
 
 
