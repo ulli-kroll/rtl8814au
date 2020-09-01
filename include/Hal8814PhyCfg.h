@@ -158,24 +158,6 @@ PHY_GetTxBBSwing_8814A(
 //1 6. Channel setting API
 
 VOID
-PHY_SwChnlTimerCallback8814A(
-	IN	PRT_TIMER		pTimer
-	);
-
-VOID
-PHY_SwChnlWorkItemCallback8814A(
-	IN PVOID            pContext
-	);
-
-
-VOID
-HAL_HandleSwChnl8814A(
-	IN	PADAPTER	pAdapter,
-	IN	u8		channel
-	);
-
-
-VOID
 PHY_HandleSwChnlAndSetBW8814A(
 	IN	PADAPTER			Adapter,
 	IN	BOOLEAN				bSwitchChannel,
