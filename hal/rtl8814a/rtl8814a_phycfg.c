@@ -1409,33 +1409,38 @@ phy_SwBand8814A(
 	return ret_value;
 }
 
-
 VOID
-PHY_SetRFEReg8814A(
+PHY_InitRFEReg8814A(
 	IN PADAPTER		Adapter,
-	IN BOOLEAN		bInit,
 	IN u8		Band
 )
 {
 	u8			u1tmp = 0;
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
 
-	if(bInit)
-	{
-		switch(pHalData->RFEType){
-		case 2:case 1:
-			PHY_SetBBReg(Adapter, 0x1994, 0xf, 0xf);								// 0x1994[3:0] = 0xf
-			u1tmp = PlatformEFIORead1Byte(Adapter, REG_GPIO_IO_SEL_8814A);
-			rtw_write8(Adapter, REG_GPIO_IO_SEL_8814A, u1tmp | 0xf0);	// 0x40[23:20] = 0xf
-			break;
-		case 0:
-			PHY_SetBBReg(Adapter, 0x1994, 0xf, 0xf);								// 0x1994[3:0] = 0xf
-			u1tmp = PlatformEFIORead1Byte(Adapter, REG_GPIO_IO_SEL_8814A);
-			rtw_write8(Adapter, REG_GPIO_IO_SEL_8814A, u1tmp | 0xc0);	// 0x40[23:22] = 2b'11
-			break;
-		}
+	switch(pHalData->RFEType){
+	case 2:case 1:
+		PHY_SetBBReg(Adapter, 0x1994, 0xf, 0xf);								// 0x1994[3:0] = 0xf
+		u1tmp = PlatformEFIORead1Byte(Adapter, REG_GPIO_IO_SEL_8814A);
+		rtw_write8(Adapter, REG_GPIO_IO_SEL_8814A, u1tmp | 0xf0);	// 0x40[23:20] = 0xf
+		break;
+	case 0:
+		PHY_SetBBReg(Adapter, 0x1994, 0xf, 0xf);								// 0x1994[3:0] = 0xf
+		u1tmp = PlatformEFIORead1Byte(Adapter, REG_GPIO_IO_SEL_8814A);
+		rtw_write8(Adapter, REG_GPIO_IO_SEL_8814A, u1tmp | 0xc0);	// 0x40[23:22] = 2b'11
+		break;
 	}
-	else if(Band == BAND_ON_2_4G)
+}
+
+VOID
+PHY_SetRFEReg8814A(
+	IN PADAPTER		Adapter,
+	IN u8		Band
+)
+{
+	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
+
+	if(Band == BAND_ON_2_4G)
 	{
 		switch(pHalData->RFEType){
 			case 2:
@@ -1557,7 +1562,7 @@ PHY_SwitchWirelessBand8814A(
 		// AGC table select
 		PHY_SetBBReg(Adapter, rAGC_table_Jaguar2, 0x1F, 0);									// 0x958[4:0] = 5b'00000
 
-		PHY_SetRFEReg8814A(Adapter, FALSE, Band);
+		PHY_SetRFEReg8814A(Adapter, Band);
 
 		// cck_enable
 		//PHY_SetBBReg(Adapter, rOFDMCCKEN_Jaguar, bOFDMEN_Jaguar|bCCKEN_Jaguar, 0x3);
@@ -1588,7 +1593,7 @@ PHY_SwitchWirelessBand8814A(
 		// Postpone to channel switch
 		//PHY_SetBBReg(Adapter, rAGC_table_Jaguar2, 0x1F, 1);									// 0x958[4:0] = 5b'00001
 
-		PHY_SetRFEReg8814A(Adapter, FALSE, Band);
+		PHY_SetRFEReg8814A(Adapter, Band);
 
 		{
 			PHY_SetBBReg(Adapter, rTxPath_Jaguar, 0xf0, 0x0);

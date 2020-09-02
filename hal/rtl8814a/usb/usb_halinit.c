@@ -1483,7 +1483,7 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_INIT_HAL_DM);
 	PHY_IQCalibrate_8814A_Init(&pHalData->odmpriv);
 
 #if (HAL_BB_ENABLE == 1)
-	PHY_SetRFEReg8814A(Adapter, _TRUE, pHalData->CurrentBandType);
+	PHY_InitRFEReg8814A(Adapter, pHalData->CurrentBandType);
 #endif //HAL_BB_ENABLE
 
 	//0x4c6[3] 1: RTS BW = Data BW
