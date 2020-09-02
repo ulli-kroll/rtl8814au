@@ -187,8 +187,7 @@ RtCheckForHangWorkItemCallback8814A(
 
 VOID
 PHY_InitRFEReg8814A(
-	IN PADAPTER		Adapter,
-	IN u8		Band
+	IN PADAPTER		Adapter
 	);
 
 VOID

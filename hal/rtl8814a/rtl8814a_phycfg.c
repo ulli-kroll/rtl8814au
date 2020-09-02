@@ -1411,8 +1411,7 @@ phy_SwBand8814A(
 
 VOID
 PHY_InitRFEReg8814A(
-	IN PADAPTER		Adapter,
-	IN u8		Band
+	IN PADAPTER		Adapter
 )
 {
 	u8			u1tmp = 0;
