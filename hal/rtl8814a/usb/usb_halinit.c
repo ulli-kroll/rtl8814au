@@ -1409,7 +1409,6 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_BB);
 	//pHalData->Rf_Mode = RF_OP_By_SW_3wire;
 
 HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_RF);
-#if (HAL_RF_ENABLE == 1)
 	status = PHY_RFConfig8814A(Adapter);
 	if(status == _FAIL)
 	{
@@ -1419,7 +1418,6 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_RF);
 	//todo:
 	//if(pHalData->rf_type == RF_1T1R && IS_HARDWARE_TYPE_8812AU(Adapter))
 		//PHY_BB8812_Config_1T(Adapter);
-#endif
 
 #if (MP_DRIVER == 1)
 #endif
