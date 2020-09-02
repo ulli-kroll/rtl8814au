@@ -1399,13 +1399,11 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MISC02);
 	//
 
 HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_BB);
-#if (HAL_BB_ENABLE == 1)
 	status = PHY_BBConfig8814(Adapter);
 	if(status == _FAIL)
 	{
 		goto exit;
 	}
-#endif //HAL_BB_ENABLE
 
 	// 92CU use 3-wire to r/w RF
 	//pHalData->Rf_Mode = RF_OP_By_SW_3wire;
@@ -1482,9 +1480,7 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_INIT_HAL_DM);
 
 	PHY_IQCalibrate_8814A_Init(&pHalData->odmpriv);
 
-#if (HAL_BB_ENABLE == 1)
 	PHY_InitRFEReg8814A(Adapter);
-#endif //HAL_BB_ENABLE
 
 	//0x4c6[3] 1: RTS BW = Data BW
 	//0: RTS BW depends on CCA / secondary CCA result.
