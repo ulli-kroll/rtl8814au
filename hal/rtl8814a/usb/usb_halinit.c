@@ -1330,13 +1330,11 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_DOWNLOAD_FW);
 	pHalData->CurrentChannel = 0;//set 0 to trigger switch correct channel
 
 HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MAC);
-#if (HAL_MAC_ENABLE == 1)
 	status = PHY_MACConfig8814(Adapter);
 	if(status == _FAIL)
 	{
 		goto exit;
 	}
-#endif //HAL_MAC_ENABLE
 
 HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MISC01);
 
