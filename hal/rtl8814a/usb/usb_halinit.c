@@ -1048,30 +1048,6 @@ enum {
 	Antenna_Right = 2,
 };
 
-static VOID
-_InitAntenna_Selection_8814A(IN	PADAPTER Adapter)
-{
-
-	HAL_DATA_TYPE	*pHalData	= GET_HAL_DATA(Adapter);
-
-	if(pHalData->AntDivCfg==0)
-		return;
-/*
-	DBG_8192C("==>  %s ....\n",__FUNCTION__);
-
-	rtw_write8(Adapter, REG_LEDCFG2, 0x82);
-
-	PHY_SetBBReg(Adapter, rFPGA0_XAB_RFParameter, BIT13, 0x01);
-
-	if(PHY_QueryBBReg(Adapter, rFPGA0_XA_RFInterfaceOE, 0x300) == MAIN_ANT)
-		pHalData->CurAntenna = MAIN_ANT;
-	else
-		pHalData->CurAntenna = AUX_ANT;
-	DBG_8192C("%s,Cur_ant:(%x)%s\n",__FUNCTION__,pHalData->CurAntenna,(pHalData->CurAntenna == MAIN_ANT)?"MAIN_ANT":"AUX_ANT");
-
-*/
-}
-
 //
 // 2010/08/26 MH Add for selective suspend mode check.
 // If Efuse 0x0e bit1 is not enabled, we can not support selective suspend for Minicard and
@@ -1358,8 +1334,6 @@ _func_enter_;
 
 
 	invalidate_cam_all(Adapter);
-
-	_InitAntenna_Selection_8814A(Adapter);
 
 	// HW SEQ CTRL
 	//set 0x0 to 0xFF by tynli. Default enable HW SEQ NUM.
