@@ -1151,74 +1151,8 @@ u32 rtl8814au_hal_init(PADAPTER Adapter)
 	u32 init_start_time = rtw_get_current_time();
 
 
-#ifdef DBG_HAL_INIT_PROFILING
-
-	enum HAL_INIT_STAGES {
-		HAL_INIT_STAGES_BEGIN = 0,
-		HAL_INIT_STAGES_INIT_PW_ON,
-		HAL_INIT_STAGES_INIT_LLTT,
-		HAL_INIT_STAGES_DOWNLOAD_FW,
-		HAL_INIT_STAGES_MAC,
-		HAL_INIT_STAGES_MISC01,
-		HAL_INIT_STAGES_MISC02,
-		HAL_INIT_STAGES_BB,
-		HAL_INIT_STAGES_RF,
-		HAL_INIT_STAGES_TURN_ON_BLOCK,
-		HAL_INIT_STAGES_INIT_SECURITY,
-		HAL_INIT_STAGES_MISC11,
-		HAL_INIT_STAGES_INIT_HAL_DM,
-		//HAL_INIT_STAGES_RF_PS,
-		HAL_INIT_STAGES_IQK,
-		HAL_INIT_STAGES_PW_TRACK,
-		HAL_INIT_STAGES_LCK,
-		HAL_INIT_STAGES_MISC21,
-		//HAL_INIT_STAGES_INIT_PABIAS,
-		//HAL_INIT_STAGES_ANTENNA_SEL,
-		HAL_INIT_STAGES_MISC31,
-		HAL_INIT_STAGES_END,
-		HAL_INIT_STAGES_NUM
-	};
-
-	char * hal_init_stages_str[] = {
-		"HAL_INIT_STAGES_BEGIN",
-		"HAL_INIT_STAGES_INIT_PW_ON",
-		"HAL_INIT_STAGES_INIT_LLTT",
-		"HAL_INIT_STAGES_DOWNLOAD_FW",
-		"HAL_INIT_STAGES_MAC",
-		"HAL_INIT_STAGES_MISC01",
-		"HAL_INIT_STAGES_MISC02",
-		"HAL_INIT_STAGES_BB",
-		"HAL_INIT_STAGES_RF",
-		"HAL_INIT_STAGES_TURN_ON_BLOCK",
-		"HAL_INIT_STAGES_INIT_SECURITY",
-		"HAL_INIT_STAGES_MISC11",
-		"HAL_INIT_STAGES_INIT_HAL_DM",
-		//"HAL_INIT_STAGES_RF_PS",
-		"HAL_INIT_STAGES_IQK",
-		"HAL_INIT_STAGES_PW_TRACK",
-		"HAL_INIT_STAGES_LCK",
-		"HAL_INIT_STAGES_MISC21",
-		//"HAL_INIT_STAGES_ANTENNA_SEL",
-		"HAL_INIT_STAGES_MISC31",
-		"HAL_INIT_STAGES_END",
-	};
-
-	int hal_init_profiling_i;
-	u32 hal_init_stages_timestamp[HAL_INIT_STAGES_NUM]; //used to record the time of each stage's starting point
-
-	for(hal_init_profiling_i=0;hal_init_profiling_i<HAL_INIT_STAGES_NUM;hal_init_profiling_i++)
-		hal_init_stages_timestamp[hal_init_profiling_i]=0;
-
-	#define HAL_INIT_PROFILE_TAG(stage) hal_init_stages_timestamp[(stage)]=rtw_get_current_time();
-#else //DBG_HAL_INIT_PROFILING
-	#define HAL_INIT_PROFILE_TAG(stage) do {} while(0)
-#endif //DBG_HAL_INIT_PROFILING
-
-
-
 _func_enter_;
 
-HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_BEGIN);
 	if(pwrctrlpriv->bkeepfwalive)
 	{
 		_ps_open_RF(Adapter);
@@ -1277,14 +1211,12 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_BEGIN);
 
 
 
-HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_INIT_PW_ON);
 	status = _InitPowerOn_8814AU(Adapter);
 	if(status == _FAIL){
 		DBG_871X("Failed to init power on!\n");
 		goto exit;
 	}
 
-HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_INIT_LLTT);
 
 	status =  InitLLTTable8814A(Adapter);
 	if(status == _FAIL){
@@ -1298,7 +1230,6 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_INIT_LLTT);
 		_InitRDGSetting_8812A(Adapter);
 	}*/
 
-HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_DOWNLOAD_FW);
 	if (1) {
 		status = FirmwareDownload8814A(Adapter, _FALSE);
 		if (status != _SUCCESS) {
@@ -1329,21 +1260,18 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_DOWNLOAD_FW);
 	// <Roger_Notes> Current Channel will be updated again later.
 	pHalData->CurrentChannel = 0;//set 0 to trigger switch correct channel
 
-HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MAC);
 	status = PHY_MACConfig8814(Adapter);
 	if(status == _FAIL)
 	{
 		goto exit;
 	}
 
-HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MISC01);
 
 	_InitQueuePriority_8814AUsb(Adapter);
 	_InitPageBoundary_8814AUsb(Adapter);
 
 	_InitTransferPageSize_8814AUsb(Adapter);
 
-HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MISC02);
 	// Get Rx PHY status in order to report RSSI and others.
 	_InitDriverInfoSize_8814A(Adapter, DRVINFO_SZ);
 
@@ -1396,7 +1324,6 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MISC02);
 	//d. Initialize BB related configurations.
 	//
 
-HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_BB);
 	status = PHY_BBConfig8814(Adapter);
 	if(status == _FAIL)
 	{
@@ -1406,7 +1333,6 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_BB);
 	// 92CU use 3-wire to r/w RF
 	//pHalData->Rf_Mode = RF_OP_By_SW_3wire;
 
-HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_RF);
 	status = PHY_RFConfig8814A(Adapter);
 	if(status == _FAIL)
 	{
@@ -1430,12 +1356,9 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_RF);
 	rtw_hal_set_chnl_bw(Adapter, Adapter->registrypriv.channel,
 		CHANNEL_WIDTH_20, HAL_PRIME_CHNL_OFFSET_DONT_CARE, HAL_PRIME_CHNL_OFFSET_DONT_CARE);
 
-HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_TURN_ON_BLOCK);
 
-HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_INIT_SECURITY);
 	invalidate_cam_all(Adapter);
 
-HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MISC11);
 	_InitAntenna_Selection_8814A(Adapter);
 
 	// HW SEQ CTRL
@@ -1460,7 +1383,6 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MISC11);
 	//Nav limit , suggest by scott
 	rtw_write8(Adapter, 0x652, 0x0);
 
-HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_INIT_HAL_DM);
 	rtl8814_InitHalDm(Adapter);
 
 	//
@@ -1499,7 +1421,6 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_INIT_HAL_DM);
 
 	//RT_TRACE(COMP_INIT, DBG_TRACE, ("InitializeAdapter8188EUsb() <====\n"));
 
-HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_IQK);
 	// 2010/08/26 MH Merge from 8192CE.
 	if(pwrctrlpriv->rf_pwrstate == rf_on)
 	{
@@ -1518,24 +1439,19 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_IQK);
 		}*/
 	//this should be done by rf team using phydm code
 	//PHY_IQCalibrate_8814A(&pHalData->odmpriv, _FALSE);
-HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_PW_TRACK);
 
 		//ODM_TXPowerTrackingCheck(&pHalData->odmpriv );
 
 
-HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_LCK);
 		//PHY_LCCalibrate_8812A(Adapter);
 	}
 
 
-HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MISC21);
 
 
-//HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_INIT_PABIAS);
 //	_InitPABias(Adapter);
 
 
-HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MISC31);
 
 	//rtw_write8(Adapter, REG_USB_HRPWM, 0);
 
@@ -1562,7 +1478,6 @@ HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MISC31);
 	}
 
 exit:
-HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_END);
 
 	DBG_871X("%s in %dms\n", __FUNCTION__, rtw_get_passing_time_ms(init_start_time));
 
