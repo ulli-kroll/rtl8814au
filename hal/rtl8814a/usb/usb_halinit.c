@@ -1124,7 +1124,6 @@ u32 rtl8814au_hal_init(PADAPTER Adapter)
 
 	rt_rf_power_state		eRfPowerStateToSet;
 
-	u32 init_start_time = rtw_get_current_time();
 
 
 _func_enter_;
@@ -1452,24 +1451,6 @@ _func_enter_;
 	}
 
 exit:
-
-	DBG_871X("%s in %dms\n", __FUNCTION__, rtw_get_passing_time_ms(init_start_time));
-
-	#ifdef DBG_HAL_INIT_PROFILING
-	hal_init_stages_timestamp[HAL_INIT_STAGES_END]=rtw_get_current_time();
-
-	for(hal_init_profiling_i=0;hal_init_profiling_i<HAL_INIT_STAGES_NUM-1;hal_init_profiling_i++) {
-		DBG_871X("DBG_HAL_INIT_PROFILING: %35s, %u, %5u, %5u\n"
-			, hal_init_stages_str[hal_init_profiling_i]
-			, hal_init_stages_timestamp[hal_init_profiling_i]
-			, (hal_init_stages_timestamp[hal_init_profiling_i+1]-hal_init_stages_timestamp[hal_init_profiling_i])
-			, rtw_get_time_interval_ms(hal_init_stages_timestamp[hal_init_profiling_i], hal_init_stages_timestamp[hal_init_profiling_i+1])
-		);
-	}
-	#endif
-
-
-_func_exit_;
 
 	return status;
 }
