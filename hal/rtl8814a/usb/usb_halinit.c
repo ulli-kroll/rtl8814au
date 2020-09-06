@@ -1102,7 +1102,7 @@ rt_rf_power_state RfOnOffDetect(IN	PADAPTER pAdapter )
 
 u32 rtl8814au_hal_init(PADAPTER Adapter)
 {
-	u8	value8 = 0, u1bRegCR;
+	u8	value8 = 0;
 	u16  value16;
 	u8	txpktbuf_bndy;
 	u32	status = _SUCCESS;
@@ -1132,24 +1132,6 @@ _func_enter_;
 		//PHY_LCCalibrate_8812A(Adapter);
 
 		goto exit;
-	}
-
-	// Check if MAC has already power on. by tynli. 2011.05.27.
-	value8 = rtw_read8(Adapter, REG_SYS_CLKR+1);
-	u1bRegCR = rtw_read8(Adapter, REG_CR);
-	DBG_871X(" power-on :REG_SYS_CLKR 0x09=0x%02x. REG_CR 0x100=0x%02x.\n", value8, u1bRegCR);
-	if((value8&BIT3)  && (u1bRegCR != 0 && u1bRegCR != 0xEA))
-	{
-		//pHalData->bMACFuncEnable = _TRUE;
-		DBG_871X(" MAC has already power on.\n");
-	}
-	else
-	{
-		//pHalData->bMACFuncEnable = _FALSE;
-		// Set FwPSState to ALL_ON mode to prevent from the I/O be return because of 32k
-		// state which is set before sleep under wowlan mode. 2012.01.04. by tynli.
-		//pHalData->FwPSState = FW_PS_STATE_ALL_ON_88E;
-		DBG_871X(" MAC has not been powered on yet.\n");
 	}
 
 	//
