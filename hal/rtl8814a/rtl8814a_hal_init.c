@@ -1645,16 +1645,12 @@ hal_EfuseParseBTCoexistInfo8814A(
 VOID
 hal_ReadPROMVersion8814A(
 	IN	PADAPTER	Adapter,
-	IN	u8* 	PROMContent,
-	IN	BOOLEAN 	AutoloadFail
+	IN	u8* 	PROMContent
 	)
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
 
-	if(AutoloadFail){
-		pHalData->EEPROMVersion = EEPROM_Default_Version;
-	}
-	else{
+	{
 		pHalData->EEPROMVersion = *(u8 *)&PROMContent[EEPROM_VERSION_8814];
 		if(pHalData->EEPROMVersion == 0xFF)
 			pHalData->EEPROMVersion = EEPROM_Default_Version;

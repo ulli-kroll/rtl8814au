@@ -1726,7 +1726,7 @@ InitAdapterVariablesByPROM_8814AU(
 	hal_InitPGData_8814A(Adapter, pHalData->efuse_eeprom_data);
 
 	//Hal_EfuseParseIDCode8812A(Adapter, pHalData->efuse_eeprom_data);
-	hal_ReadPROMVersion8814A(Adapter, pHalData->efuse_eeprom_data, 0);
+	hal_ReadPROMVersion8814A(Adapter, pHalData->efuse_eeprom_data);
 	hal_ReadIDs_8814AU(Adapter, pHalData->efuse_eeprom_data);
 	hal_config_macaddr(Adapter, 0);
 	hal_ReadTxPowerInfo8814A(Adapter, pHalData->efuse_eeprom_data, 0);
