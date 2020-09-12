@@ -1900,8 +1900,7 @@ hal_ReadChannelPlan8814A(
 
 void hal_GetRxGainOffset_8814A(
 	PADAPTER	Adapter,
-	pu1Byte		PROMContent,
-	BOOLEAN		AutoloadFail
+	pu1Byte		PROMContent
 	)
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
@@ -1921,7 +1920,6 @@ void hal_GetRxGainOffset_8814A(
 		DBG_871X("%s():Use registrypriv 0x%x 0x%x 0x%x 0x%x !!\n", __func__, pregistrypriv->reg_rxgain_offset_2g, pregistrypriv->reg_rxgain_offset_5gl, pregistrypriv->reg_rxgain_offset_5gm, pregistrypriv->reg_rxgain_offset_5gh);
 
 	} else {
-		DBG_871X("%s(): AutoloadFail = %d!!\n", __func__, AutoloadFail);
 		pHalData->RxGainOffset[0] = PROMContent[EEPROM_IG_OFFSET_4_CD_2G_8814A];
 		pHalData->RxGainOffset[0] |= (PROMContent[EEPROM_IG_OFFSET_4_AB_2G_8814A]) << 8;
 		pHalData->RxGainOffset[1] = PROMContent[EEPROM_IG_OFFSET_4_CD_5GL_8814A];

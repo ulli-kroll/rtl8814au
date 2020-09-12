@@ -270,8 +270,7 @@ VOID hal_ReadPAType_8814A(
 	);
 void hal_GetRxGainOffset_8814A(
 	PADAPTER	Adapter,
-	pu1Byte		PROMContent,
-	BOOLEAN		AutoloadFail
+	pu1Byte		PROMContent
 	);
 void Hal_EfuseParseKFreeData_8814A(
 	IN		PADAPTER		Adapter,
