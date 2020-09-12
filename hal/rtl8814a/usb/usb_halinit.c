@@ -1750,7 +1750,7 @@ InitAdapterVariablesByPROM_8814AU(
 
 	hal_GetRxGainOffset_8814A(Adapter, pHalData->efuse_eeprom_data);
 
-	Hal_EfuseParseKFreeData_8814A(Adapter, pHalData->efuse_eeprom_data, 0);
+	Hal_EfuseParseKFreeData_8814A(Adapter, pHalData->efuse_eeprom_data);
 }
 
 static void hal_ReadPROMContent_8814A(

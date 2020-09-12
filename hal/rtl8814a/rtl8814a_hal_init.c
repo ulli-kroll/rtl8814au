@@ -1938,8 +1938,7 @@ void hal_GetRxGainOffset_8814A(
 
 void Hal_EfuseParseKFreeData_8814A(
 	IN		PADAPTER		Adapter,
-	IN		u8				*PROMContent,
-	IN		BOOLEAN			AutoloadFail)
+	IN		u8				*PROMContent)
 {
 #ifdef CONFIG_RF_GAIN_OFFSET
 

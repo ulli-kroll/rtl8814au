@@ -274,8 +274,7 @@ void hal_GetRxGainOffset_8814A(
 	);
 void Hal_EfuseParseKFreeData_8814A(
 	IN		PADAPTER		Adapter,
-	IN		u8				*PROMContent,
-	IN		BOOLEAN			AutoloadFail);
+	IN		u8				*PROMContent);
 void	hal_ReadRFEType_8814A(PADAPTER Adapter,u8* PROMContent);
 void	hal_EfuseParseBTCoexistInfo8814A(PADAPTER Adapter, u8* hwinfo);
 
