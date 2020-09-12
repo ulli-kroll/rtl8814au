@@ -2193,15 +2193,13 @@ VOID hal_ReadAmplifierType_8814A(
 VOID
 hal_ReadRFEType_8814A(
 	IN	PADAPTER	Adapter,
-	IN	u8*			PROMContent,
-	IN	BOOLEAN		AutoloadFail
+	IN	u8*			PROMContent
 	)
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
 	struct dvobj_priv  *pdvobjpriv = adapter_to_dvobj(Adapter);
 	struct usb_device *udev = pdvobjpriv->pusbdev;
  
-	if(!AutoloadFail)
 	{
 		if (0xFF == PROMContent[EEPROM_RFE_OPTION_8814] || PROMContent[EEPROM_RFE_OPTION_8814] & BIT7) {
 			if(IS_HARDWARE_TYPE_8814AE(Adapter))
@@ -2215,15 +2213,6 @@ hal_ReadRFEType_8814A(
 			pHalData->RFEType = PROMContent[EEPROM_RFE_OPTION_8814] & 0x7F;
 			hal_ReadAmplifierType_8814A(Adapter);
 		}
-	}
-	else
-	{
-		if(IS_HARDWARE_TYPE_8814AE(Adapter))
-			pHalData->RFEType = 0;
-		else if(IS_HARDWARE_TYPE_8814AU(Adapter))
-			pHalData->RFEType = 1;
-
-		hal_ReadAmplifierType_8814A(Adapter);
 	}
 	DBG_871X("RFE Type: 0x%2x\n", pHalData->RFEType);
 	dev_info(&udev->dev, "->rtl8814au: RFEType %d\n", pHalData->RFEType);

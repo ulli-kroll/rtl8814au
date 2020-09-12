@@ -277,7 +277,7 @@ void Hal_EfuseParseKFreeData_8814A(
 	IN		PADAPTER		Adapter,
 	IN		u8				*PROMContent,
 	IN		BOOLEAN			AutoloadFail);
-void	hal_ReadRFEType_8814A(PADAPTER Adapter,u8* PROMContent, BOOLEAN AutoloadFail);
+void	hal_ReadRFEType_8814A(PADAPTER Adapter,u8* PROMContent);
 void	hal_EfuseParseBTCoexistInfo8814A(PADAPTER Adapter, u8* hwinfo);
 
 //void	hal_ReadUsbType_8812AU(PADAPTER Adapter, u8 *PROMContent, BOOLEAN AutoloadFail);

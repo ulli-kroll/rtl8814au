@@ -1743,7 +1743,7 @@ InitAdapterVariablesByPROM_8814AU(
 	hal_ReadThermalMeter_8814A(Adapter, pHalData->efuse_eeprom_data);
 	hal_ReadRemoteWakeup_8814A(Adapter, pHalData->efuse_eeprom_data);
 	hal_ReadAntennaDiversity8814A(Adapter, pHalData->efuse_eeprom_data);
-	hal_ReadRFEType_8814A(Adapter, pHalData->efuse_eeprom_data, 0);
+	hal_ReadRFEType_8814A(Adapter, pHalData->efuse_eeprom_data);
 
 	ReadLEDSetting_8814AU(Adapter, pHalData->efuse_eeprom_data, 0);
 
