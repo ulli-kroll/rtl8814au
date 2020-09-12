@@ -1684,8 +1684,7 @@ hal_CustomizeByCustomerID_8814AU(
 VOID
 hal_ReadUsbModeSwitch_8814AU(
 	IN	PADAPTER	Adapter,
-	IN	u8*			PROMContent,
-	IN	BOOLEAN		AutoloadFail
+	IN	u8*			PROMContent
 	)
 {
 #if 0
@@ -1746,7 +1745,7 @@ InitAdapterVariablesByPROM_8814AU(
 
 	ReadLEDSetting_8814AU(Adapter, pHalData->efuse_eeprom_data);
 
-	hal_ReadUsbModeSwitch_8814AU(Adapter, pHalData->efuse_eeprom_data, 0);
+	hal_ReadUsbModeSwitch_8814AU(Adapter, pHalData->efuse_eeprom_data);
 	hal_CustomizeByCustomerID_8814AU(Adapter);
 
 	hal_GetRxGainOffset_8814A(Adapter, pHalData->efuse_eeprom_data, 0);
