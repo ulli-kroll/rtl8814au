@@ -1738,7 +1738,7 @@ InitAdapterVariablesByPROM_8814AU(
 	//
 	hal_EfuseParseBTCoexistInfo8814A(Adapter, pHalData->efuse_eeprom_data, 0);
 
-	hal_ReadChannelPlan8814A(Adapter, pHalData->efuse_eeprom_data, 0);
+	hal_ReadChannelPlan8814A(Adapter, pHalData->efuse_eeprom_data);
 	hal_EfuseParseXtal_8814A(Adapter, pHalData->efuse_eeprom_data, 0);
 	hal_ReadThermalMeter_8814A(Adapter, pHalData->efuse_eeprom_data, 0);
 	hal_ReadRemoteWakeup_8814A(Adapter, pHalData->efuse_eeprom_data, 0);

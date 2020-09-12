@@ -1900,8 +1900,7 @@ void hal_ReadRemoteWakeup_8814A(
 VOID
 hal_ReadChannelPlan8814A(
 	IN	PADAPTER		padapter,
-	IN	u8*				hwinfo,
-	IN	BOOLEAN			AutoLoadFail
+	IN	u8*				hwinfo
 	)
 {
 	padapter->mlmepriv.ChannelPlan = hal_com_config_channel_plan(
@@ -1909,7 +1908,7 @@ hal_ReadChannelPlan8814A(
 		, hwinfo?hwinfo[EEPROM_ChannelPlan_8814]:0xFF
 		, padapter->registrypriv.channel_plan
 		, RTW_CHPLAN_REALTEK_DEFINE
-		, AutoLoadFail
+		, 0
 	);
 
 	DBG_871X("mlmepriv.ChannelPlan = 0x%02x\n", padapter->mlmepriv.ChannelPlan);

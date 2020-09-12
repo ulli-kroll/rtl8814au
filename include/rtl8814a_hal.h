@@ -254,7 +254,7 @@ void	hal_ReadPROMVersion8814A(PADAPTER padapter, u8 *hwinfo);
 void	hal_ReadTxPowerInfo8814A(PADAPTER padapter, u8* hwinfo);
 void	hal_ReadBoardType8814A(PADAPTER pAdapter, u8* hwinfo);
 void	hal_ReadThermalMeter_8814A(PADAPTER	Adapter, u8* PROMContent,BOOLEAN 	AutoloadFail);
-void	hal_ReadChannelPlan8814A(PADAPTER padapter, u8 *hwinfo, BOOLEAN AutoLoadFail);
+void	hal_ReadChannelPlan8814A(PADAPTER padapter, u8 *hwinfo);
 void	hal_EfuseParseXtal_8814A(PADAPTER pAdapter, u8* hwinfo,BOOLEAN AutoLoadFail);
 void	hal_ReadAntennaDiversity8814A(PADAPTER pAdapter,u8* PROMContent,BOOLEAN AutoLoadFail);
 void	hal_Read_TRX_antenna_8814A(PADAPTER	Adapter, u8 *PROMContent);
