@@ -1703,8 +1703,7 @@ hal_ReadUsbModeSwitch_8814AU(
 static VOID
 ReadLEDSetting_8814AU(
 	IN	PADAPTER	Adapter,
-	IN	u8*		PROMContent,
-	IN	BOOLEAN		AutoloadFail
+	IN	u8*		PROMContent
 	)
 {
 	struct led_priv *pledpriv = &(Adapter->ledpriv);
@@ -1745,7 +1744,7 @@ InitAdapterVariablesByPROM_8814AU(
 	hal_ReadAntennaDiversity8814A(Adapter, pHalData->efuse_eeprom_data);
 	hal_ReadRFEType_8814A(Adapter, pHalData->efuse_eeprom_data);
 
-	ReadLEDSetting_8814AU(Adapter, pHalData->efuse_eeprom_data, 0);
+	ReadLEDSetting_8814AU(Adapter, pHalData->efuse_eeprom_data);
 
 	hal_ReadUsbModeSwitch_8814AU(Adapter, pHalData->efuse_eeprom_data, 0);
 	hal_CustomizeByCustomerID_8814AU(Adapter);
