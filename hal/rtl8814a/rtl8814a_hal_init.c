@@ -2018,21 +2018,15 @@ void Hal_EfuseParseKFreeData_8814A(
 VOID
 hal_EfuseParseXtal_8814A(
 	IN	PADAPTER	pAdapter,
-	IN	u8*			hwinfo,
-	IN	BOOLEAN		AutoLoadFail
+	IN	u8*			hwinfo
 	)
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(pAdapter);
 
-	if(!AutoLoadFail)
 	{
 		pHalData->CrystalCap = hwinfo[EEPROM_XTAL_8814];
 		if(pHalData->CrystalCap == 0xFF)
 			pHalData->CrystalCap = EEPROM_Default_CrystalCap_8814;	 /* what value should 8814 set? */
-	}
-	else
-	{
-		pHalData->CrystalCap = EEPROM_Default_CrystalCap_8814;
 	}
 	DBG_871X("CrystalCap: 0x%2x\n", pHalData->CrystalCap);
 }
