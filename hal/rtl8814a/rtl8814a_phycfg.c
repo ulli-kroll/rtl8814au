@@ -1145,7 +1145,7 @@ PHY_GetTxBBSwing_8814A(
     PDM_ODM_T		pDM_Odm = &pHalData->odmpriv;
     PODM_RF_CAL_T  	pRFCalibrateInfo = &(pDM_Odm->RFCalibrateInfo);
     s8 			bbSwing_2G = -1 * (0xFF);
-    s8 			bbSwing_5G = -1 * GetRegTxBBSwing_5G(Adapter);
+    s8 			bbSwing_5G = -1 * (0xFF);
     u32          		out = 0x200;
     const s8		AUTO = -1;
 
@@ -1229,7 +1229,7 @@ PHY_GetTxBBSwing_8814A(
 		}
 		else
 		{
-			if (GetRegTxBBSwing_5G(Adapter) == AUTO)
+			if ((0xFF) == AUTO)
 			{
 				EFUSE_ShadowRead(Adapter, 1, EEPROM_TX_BBSWING_5G_8814, (u32 *)&swing);
 				if (swing == 0xFF)
