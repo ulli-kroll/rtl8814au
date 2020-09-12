@@ -2034,8 +2034,7 @@ hal_EfuseParseXtal_8814A(
 VOID
 hal_ReadAntennaDiversity8814A(
 	IN	PADAPTER		pAdapter,
-	IN	u8*				PROMContent,
-	IN	BOOLEAN			AutoLoadFail
+	IN	u8*				PROMContent
 	)
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(pAdapter);
