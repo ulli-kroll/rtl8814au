@@ -2028,10 +2028,6 @@ hal_ReadAntennaDiversity8814A(
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(pAdapter);
 
-	pHalData->TRxAntDivType = NO_ANTDIV;
-
-	DBG_871X("SWAS: bHwAntDiv = %x, TRxAntDivType = %x\n",
-                                                0, pHalData->TRxAntDivType);
 }
 
 VOID

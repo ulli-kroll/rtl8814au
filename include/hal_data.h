@@ -398,7 +398,6 @@ typedef struct hal_com_data
 	/****** antenna diversity ******/
 	u8	CurAntenna;
 	u8	AntDetection;
-	u8	TRxAntDivType;
 	u8	ant_path; //for 8723B s0/s1 selection
 	u32	AntennaTxPath;					/* Antenna path Tx */
 	u32	AntennaRxPath;					/* Antenna path Rx */
