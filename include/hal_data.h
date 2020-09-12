@@ -235,7 +235,6 @@ typedef struct hal_com_data
 
 
 	/****** EEPROM setting.******/
-	u8	bautoload_fail_flag;
 	u8	efuse_file_status;
 	u8	macaddr_file_status;
 	u8	EepromOrEfuse;

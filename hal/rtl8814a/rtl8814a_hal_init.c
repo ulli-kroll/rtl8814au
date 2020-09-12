@@ -3667,7 +3667,7 @@ void InitPGData8814A(PADAPTER padapter)
 	u16 val16;
 	PHAL_DATA_TYPE pHalData = GET_HAL_DATA(padapter);
 
-	if (_FALSE == pHalData->bautoload_fail_flag)
+	if (0)
 	{
 		// autoload OK.
 		if (is_boot_from_eeprom(padapter))

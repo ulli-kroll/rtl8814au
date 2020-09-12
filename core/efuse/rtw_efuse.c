@@ -1017,7 +1017,7 @@ void EFUSE_ShadowMapUpdate(
 
 	EFUSE_GetEfuseDefinition(pAdapter, efuseType, TYPE_EFUSE_MAP_LEN, (PVOID)&mapLen, bPseudoTest);
 
-	if (pHalData->bautoload_fail_flag == _TRUE)
+	if (0)
 	{
 		_rtw_memset(pHalData->efuse_eeprom_data, 0xFF, mapLen);
 	}

@@ -1152,7 +1152,7 @@ PHY_GetTxBBSwing_8814A(
 	RT_TRACE(COMP_MP, DBG_LOUD, ("===> PHY_GetTxBBSwing_8814A, bbSwing_2G: %d, bbSwing_5G: %d\n",
 										  (s4Byte)bbSwing_2G, (s4Byte)bbSwing_5G));
 
-    if ( pHalData->bautoload_fail_flag )
+    if (0)
     {
 		if ( Band == BAND_ON_2_4G )
 		{

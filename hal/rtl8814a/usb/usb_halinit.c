@@ -1599,7 +1599,7 @@ hal_InitPGData_8814A(
 	u32			i;
 	u16			value16;
 
-	if(_FALSE == pHalData->bautoload_fail_flag)
+	if(0)
 	{ // autoload OK.
 		// hal_ReadeFuse_8814A is FW offload read efuse, todo
 	//#if ((DEV_BUS_TYPE==RT_USB_INTERFACE))  && (MP_DRIVER != 1)
@@ -1737,33 +1737,33 @@ InitAdapterVariablesByPROM_8814AU(
 	hal_InitPGData_8814A(Adapter, pHalData->efuse_eeprom_data);
 
 	//Hal_EfuseParseIDCode8812A(Adapter, pHalData->efuse_eeprom_data);
-	hal_ReadPROMVersion8814A(Adapter, pHalData->efuse_eeprom_data, pHalData->bautoload_fail_flag);
-	hal_ReadIDs_8814AU(Adapter, pHalData->efuse_eeprom_data, pHalData->bautoload_fail_flag);
-	hal_config_macaddr(Adapter, pHalData->bautoload_fail_flag);
-	hal_ReadTxPowerInfo8814A(Adapter, pHalData->efuse_eeprom_data, pHalData->bautoload_fail_flag);
-	hal_ReadBoardType8814A(Adapter, pHalData->efuse_eeprom_data, pHalData->bautoload_fail_flag);
-	hal_Read_TRX_antenna_8814A(Adapter, pHalData->efuse_eeprom_data, pHalData->bautoload_fail_flag);
+	hal_ReadPROMVersion8814A(Adapter, pHalData->efuse_eeprom_data, 0);
+	hal_ReadIDs_8814AU(Adapter, pHalData->efuse_eeprom_data, 0);
+	hal_config_macaddr(Adapter, 0);
+	hal_ReadTxPowerInfo8814A(Adapter, pHalData->efuse_eeprom_data, 0);
+	hal_ReadBoardType8814A(Adapter, pHalData->efuse_eeprom_data, 0);
+	hal_Read_TRX_antenna_8814A(Adapter, pHalData->efuse_eeprom_data, 0);
 
 	//
 	// Read Bluetooth co-exist and initialize
 	//
-	hal_EfuseParseBTCoexistInfo8814A(Adapter, pHalData->efuse_eeprom_data, pHalData->bautoload_fail_flag);
+	hal_EfuseParseBTCoexistInfo8814A(Adapter, pHalData->efuse_eeprom_data, 0);
 
-	hal_ReadChannelPlan8814A(Adapter, pHalData->efuse_eeprom_data, pHalData->bautoload_fail_flag);
-	hal_EfuseParseXtal_8814A(Adapter, pHalData->efuse_eeprom_data, pHalData->bautoload_fail_flag);
-	hal_ReadThermalMeter_8814A(Adapter, pHalData->efuse_eeprom_data, pHalData->bautoload_fail_flag);
-	hal_ReadRemoteWakeup_8814A(Adapter, pHalData->efuse_eeprom_data, pHalData->bautoload_fail_flag);
-	hal_ReadAntennaDiversity8814A(Adapter, pHalData->efuse_eeprom_data, pHalData->bautoload_fail_flag);
-	hal_ReadRFEType_8814A(Adapter, pHalData->efuse_eeprom_data, pHalData->bautoload_fail_flag);
+	hal_ReadChannelPlan8814A(Adapter, pHalData->efuse_eeprom_data, 0);
+	hal_EfuseParseXtal_8814A(Adapter, pHalData->efuse_eeprom_data, 0);
+	hal_ReadThermalMeter_8814A(Adapter, pHalData->efuse_eeprom_data, 0);
+	hal_ReadRemoteWakeup_8814A(Adapter, pHalData->efuse_eeprom_data, 0);
+	hal_ReadAntennaDiversity8814A(Adapter, pHalData->efuse_eeprom_data, 0);
+	hal_ReadRFEType_8814A(Adapter, pHalData->efuse_eeprom_data, 0);
 
-	ReadLEDSetting_8814AU(Adapter, pHalData->efuse_eeprom_data, pHalData->bautoload_fail_flag);
+	ReadLEDSetting_8814AU(Adapter, pHalData->efuse_eeprom_data, 0);
 
-	hal_ReadUsbModeSwitch_8814AU(Adapter, pHalData->efuse_eeprom_data, pHalData->bautoload_fail_flag);
+	hal_ReadUsbModeSwitch_8814AU(Adapter, pHalData->efuse_eeprom_data, 0);
 	hal_CustomizeByCustomerID_8814AU(Adapter);
 
-	hal_GetRxGainOffset_8814A(Adapter, pHalData->efuse_eeprom_data, pHalData->bautoload_fail_flag);
+	hal_GetRxGainOffset_8814A(Adapter, pHalData->efuse_eeprom_data, 0);
 
-	Hal_EfuseParseKFreeData_8814A(Adapter, pHalData->efuse_eeprom_data, pHalData->bautoload_fail_flag);
+	Hal_EfuseParseKFreeData_8814A(Adapter, pHalData->efuse_eeprom_data, 0);
 }
 
 static void hal_ReadPROMContent_8814A(
@@ -1776,10 +1776,9 @@ static void hal_ReadPROMContent_8814A(
 	/* check system boot selection */
 	eeValue = rtw_read8(Adapter, REG_9346CR);
 	pHalData->EepromOrEfuse		= (eeValue & BOOT_FROM_EEPROM) ? _TRUE : _FALSE;
-	pHalData->bautoload_fail_flag	= 0;
 
 	DBG_871X("Boot from %s, Autoload %s !\n", (pHalData->EepromOrEfuse ? "EEPROM" : "EFUSE"),
-				(pHalData->bautoload_fail_flag ? "Fail" : "OK") );
+				((0) ? "Fail" : "OK") );
 
 	//pHalData->EEType = IS_BOOT_FROM_EEPROM(Adapter) ? EEPROM_93C46 : EEPROM_BOOT_EFUSE;
 
