@@ -2886,16 +2886,13 @@ exit:
 	return ret;
 }
 
-int hal_config_macaddr(_adapter *adapter, bool autoload_fail)
+int hal_config_macaddr(_adapter *adapter)
 {
 	HAL_DATA_TYPE *hal_data = GET_HAL_DATA(adapter);
 	u8 addr[ETH_ALEN];
 	int addr_offset = hal_efuse_macaddr_offset(adapter);
 	u8 *hw_addr = NULL;
 	int ret = _SUCCESS;
-
-	if (autoload_fail)
-		goto bypass_hw_pg;
 
 	if (addr_offset != -1)
 		hw_addr = &hal_data->efuse_eeprom_data[addr_offset];

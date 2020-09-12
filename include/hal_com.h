@@ -283,7 +283,7 @@ hal_com_config_channel_plan(
 	IN	BOOLEAN		AutoLoadFail
 	);
 
-int hal_config_macaddr(_adapter *adapter, bool autoload_fail);
+int hal_config_macaddr(_adapter *adapter);
 
 BOOLEAN
 HAL_IsLegalChannel(
