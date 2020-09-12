@@ -264,7 +264,6 @@ VOID hal_ReadAmplifierType_8814A(
 VOID hal_ReadPAType_8814A(
 	IN	PADAPTER	Adapter,
 	IN	u8*			PROMContent,
-	IN	BOOLEAN		AutoloadFail,
 	OUT u8*		pPAType,
 	OUT u8*		pLNAType
 	);

@@ -2039,7 +2039,6 @@ VOID
 hal_ReadPAType_8814A(
 	IN	PADAPTER	Adapter,
 	IN	u8*			PROMContent,
-	IN	BOOLEAN		AutoloadFail,
 	OUT u8*		pPAType,
 	OUT u8*		pLNAType
 	)
@@ -2047,7 +2046,6 @@ hal_ReadPAType_8814A(
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
 	u8			LNAType_AB, LNAType_CD;
 
-	if( ! AutoloadFail )
 	{
 		u8			RFEType = PROMContent[EEPROM_RFE_OPTION_8814];
 
@@ -2094,34 +2092,6 @@ hal_ReadPAType_8814A(
 
 			(*pLNAType) |= 	((LNAType_AB & BIT3) >> 3 | (LNAType_AB & BIT7) >> 6 |
 							(LNAType_CD & BIT3) >> 1 | (LNAType_CD & BIT7) >> 4);
-		}
-		else
-		{
-			pHalData->ExternalPA_5G  = (GetRegAmplifierType5G(Adapter)&ODM_BOARD_EXT_PA_5G)  ? 1 : 0;
-			pHalData->ExternalLNA_5G = (GetRegAmplifierType5G(Adapter)&ODM_BOARD_EXT_LNA_5G) ? 1 : 0;
-		}
-	}
-	else
-	{
-		pHalData->ExternalPA_2G  = EEPROM_Default_PAType;
-		pHalData->ExternalPA_5G  = 0xFF;
-		pHalData->ExternalLNA_2G = EEPROM_Default_LNAType;
-		pHalData->ExternalLNA_5G = 0xFF;
-
-		if (GetRegAmplifierType2G(Adapter) == 0)
-		{
-			pHalData->ExternalPA_2G  = 0;
-			pHalData->ExternalLNA_2G = 0;
-		}
-		else
-		{
-			pHalData->ExternalPA_2G  = (GetRegAmplifierType2G(Adapter)&ODM_BOARD_EXT_PA)  ? 1 : 0;
-			pHalData->ExternalLNA_2G = (GetRegAmplifierType2G(Adapter)&ODM_BOARD_EXT_LNA) ? 1 : 0;
-		}
-		if (GetRegAmplifierType5G(Adapter) == 0)
-		{
-			pHalData->ExternalPA_5G  = 0;
-			pHalData->ExternalLNA_5G = 0;
 		}
 		else
 		{
