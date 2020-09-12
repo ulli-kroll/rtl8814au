@@ -284,7 +284,6 @@ struct registry_priv
 	u8	RegEnableTxPowerByRate;
 	u8	RegPowerBase;
 	u8	RegPwrTblSel;
-	s8	TxBBSwing_5G;
 	u8	AmplifierType_2G;
 	u8	AmplifierType_5G;
 	u8	bEn_RFE;
@@ -324,7 +323,7 @@ struct registry_priv
 #define GetRegAmplifierType2G(_Adapter)	(_Adapter->registrypriv.AmplifierType_2G)
 #define GetRegAmplifierType5G(_Adapter)	(_Adapter->registrypriv.AmplifierType_5G)
 
-#define GetRegTxBBSwing_5G(_Adapter)	(_Adapter->registrypriv.TxBBSwing_5G)
+#define GetRegTxBBSwing_5G(_Adapter)	(0xFF)
 
 #define GetRegbENRFEType(_Adapter)	(_Adapter->registrypriv.bEn_RFE)
 #define GetRegGLNAType(_Adapter)	(_Adapter->registrypriv.GLNA_Type)

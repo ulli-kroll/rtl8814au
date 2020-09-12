@@ -336,10 +336,6 @@ uint rtw_GLNA_type = CONFIG_RTW_GLNA_TYPE;
 module_param(rtw_GLNA_type, uint, 0644);
 MODULE_PARM_DESC(rtw_GLNA_type, "default init value:0");
 
-uint rtw_TxBBSwing_5G = 0xFF;
-module_param(rtw_TxBBSwing_5G, uint, 0644);
-MODULE_PARM_DESC(rtw_TxBBSwing_5G, "default init value:0xFF");
-
 uint rtw_OffEfuseMask = 0;
 module_param(rtw_OffEfuseMask, uint, 0644);
 MODULE_PARM_DESC(rtw_OffEfuseMask, "default open Efuse Mask value:0");
@@ -533,7 +529,6 @@ _func_enter_;
 	registry_par->RegEnableTxPowerByRate = (u8)rtw_tx_pwr_by_rate;
 
 	registry_par->RegPowerBase = 14;
-	registry_par->TxBBSwing_5G = (s8)rtw_TxBBSwing_5G;
 	registry_par->bEn_RFE = 1;
 	registry_par->AmplifierType_2G = (u8)rtw_amplifier_type_2g;
 	registry_par->AmplifierType_5G = (u8)rtw_amplifier_type_5g;
