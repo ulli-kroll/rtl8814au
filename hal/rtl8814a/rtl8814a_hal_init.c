@@ -1612,14 +1612,12 @@ BT_InitHalVars(
 VOID
 hal_EfuseParseBTCoexistInfo8814A(
 	IN PADAPTER			Adapter,
-	IN u8*			hwinfo,
-	IN BOOLEAN			AutoLoadFail
+	IN u8*			hwinfo
 	)
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
 	u8			tempval=0x0;
 
-	if(!AutoLoadFail)
 	{
 		tempval = hwinfo[EEPROM_RF_BOARD_OPTION_8814];
 		if( ((tempval & 0xe0)>>5) == 0x1)// [7:5]
@@ -1629,12 +1627,6 @@ hal_EfuseParseBTCoexistInfo8814A(
 		pHalData->EEPROMBluetoothType = BT_RTL8814A;
 
 		tempval = hwinfo[EEPROM_RF_BT_SETTING_8814];
-		pHalData->EEPROMBluetoothAntNum = Ant_x1;
-	}
-	else
-	{
-		pHalData->EEPROMBluetoothCoexist = 0;
-		pHalData->EEPROMBluetoothType = BT_RTL8814A;
 		pHalData->EEPROMBluetoothAntNum = Ant_x1;
 	}
 
