@@ -1773,8 +1773,7 @@ hal_ReadBoardType8814A(
 VOID
 hal_Read_TRX_antenna_8814A(
 	IN	PADAPTER	Adapter,
-	IN	u8	*PROMContent,
-	IN	BOOLEAN		AutoloadFail
+	IN	u8	*PROMContent
 	)
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
@@ -1782,7 +1781,7 @@ hal_Read_TRX_antenna_8814A(
 	struct dvobj_priv  *pdvobjpriv = adapter_to_dvobj(Adapter);
 	struct usb_device *udev = pdvobjpriv->pusbdev;
 
-	if (!AutoloadFail) {
+	{
 		u8 trx_antenna_option = PROMContent[EEPROM_TRX_ANTENNA_OPTION_8814];
 
 		dev_info(&udev->dev, "->rtl8814au: trx_antenna_option %d\n", trx_antenna_option);
@@ -1808,10 +1807,6 @@ hal_Read_TRX_antenna_8814A(
 			DBG_871X("unknown EEPROM RF set, default to 2T4R\n");
 			dev_info(&udev->dev, "->rtl8814au: trx_antenna 2T4R\n");
 		}
-	} else {
-		trx_antenna = RF_2T4R;
-		DBG_871X("AutoloadFail, default to 2T4R\n");
-			dev_info(&udev->dev, "->rtl8814au: AutoloadFail trx_antenna 2T4R\n");
 	}
 
 	/*

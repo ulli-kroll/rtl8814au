@@ -1731,7 +1731,7 @@ InitAdapterVariablesByPROM_8814AU(
 	hal_config_macaddr(Adapter);
 	hal_ReadTxPowerInfo8814A(Adapter, pHalData->efuse_eeprom_data);
 	hal_ReadBoardType8814A(Adapter, pHalData->efuse_eeprom_data);
-	hal_Read_TRX_antenna_8814A(Adapter, pHalData->efuse_eeprom_data, 0);
+	hal_Read_TRX_antenna_8814A(Adapter, pHalData->efuse_eeprom_data);
 
 	//
 	// Read Bluetooth co-exist and initialize
