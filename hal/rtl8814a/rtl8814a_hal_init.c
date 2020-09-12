@@ -1833,15 +1833,13 @@ hal_Read_TRX_antenna_8814A(
 VOID
 hal_ReadThermalMeter_8814A(
 	IN	PADAPTER	Adapter,
-	IN	u8* 		PROMContent,
-	IN	BOOLEAN 	AutoloadFail
+	IN	u8* 		PROMContent
 	)
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
 
 	pHalData->EEPROMThermalMeter = 0xff;
 
-	if(!AutoloadFail)
 		pHalData->EEPROMThermalMeter = PROMContent[EEPROM_THERMAL_METER_8814];
 
 #if 0 /* ToDo: check with RF */
