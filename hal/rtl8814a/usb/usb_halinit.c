@@ -1776,7 +1776,7 @@ static void hal_ReadPROMContent_8814A(
 	/* check system boot selection */
 	eeValue = rtw_read8(Adapter, REG_9346CR);
 	pHalData->EepromOrEfuse		= (eeValue & BOOT_FROM_EEPROM) ? _TRUE : _FALSE;
-	pHalData->bautoload_fail_flag	= (eeValue & EEPROM_EN) ? _FALSE : _TRUE;
+	pHalData->bautoload_fail_flag	= 0;
 
 	DBG_871X("Boot from %s, Autoload %s !\n", (pHalData->EepromOrEfuse ? "EEPROM" : "EFUSE"),
 				(pHalData->bautoload_fail_flag ? "Fail" : "OK") );
