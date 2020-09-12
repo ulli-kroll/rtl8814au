@@ -324,7 +324,6 @@ struct registry_priv
 #define GetRegAmplifierType2G(_Adapter)	(_Adapter->registrypriv.AmplifierType_2G)
 #define GetRegAmplifierType5G(_Adapter)	(_Adapter->registrypriv.AmplifierType_5G)
 
-#define GetRegTxBBSwing_2G(_Adapter)	(0xFF)
 #define GetRegTxBBSwing_5G(_Adapter)	(_Adapter->registrypriv.TxBBSwing_5G)
 
 #define GetRegbENRFEType(_Adapter)	(_Adapter->registrypriv.bEn_RFE)

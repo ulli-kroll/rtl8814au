@@ -1144,7 +1144,7 @@ PHY_GetTxBBSwing_8814A(
     HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(GetDefaultAdapter(Adapter));
     PDM_ODM_T		pDM_Odm = &pHalData->odmpriv;
     PODM_RF_CAL_T  	pRFCalibrateInfo = &(pDM_Odm->RFCalibrateInfo);
-    s8 			bbSwing_2G = -1 * GetRegTxBBSwing_2G(Adapter);
+    s8 			bbSwing_2G = -1 * (0xFF);
     s8 			bbSwing_5G = -1 * GetRegTxBBSwing_5G(Adapter);
     u32          		out = 0x200;
     const s8		AUTO = -1;
@@ -1209,7 +1209,7 @@ PHY_GetTxBBSwing_8814A(
 
 		if (Band == BAND_ON_2_4G)
 		{
-			if (GetRegTxBBSwing_2G(Adapter) == AUTO)
+			if ((0xFF) == AUTO)
 			{
 				EFUSE_ShadowRead(Adapter, 1, EEPROM_TX_BBSWING_2G_8814, (u32 *)&swing);
 				if (swing == 0xFF)
