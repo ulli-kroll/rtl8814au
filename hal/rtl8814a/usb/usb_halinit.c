@@ -1560,22 +1560,11 @@ unsigned int rtl8814au_inirp_deinit(PADAPTER Adapter)
 VOID
 hal_ReadIDs_8814AU(
 	IN	PADAPTER	Adapter,
-	IN	pu1Byte		PROMContent,
-	IN	BOOLEAN		AutoloadFail
+	IN	pu1Byte		PROMContent
 	)
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
 
-	if( !AutoloadFail )
-	{
-		pHalData->EEPROMVID = EF2Byte( *(pu2Byte)&PROMContent[EEPROM_VID_8814AU] );
-		pHalData->EEPROMPID = EF2Byte( *(pu2Byte)&PROMContent[EEPROM_PID_8814AU] );
-
-		// Customer ID, 0x00 and 0xff are reserved for Realtek.
-		pHalData->EEPROMCustomerID = *(pu1Byte)&PROMContent[EEPROM_CustomID_8814];
-		pHalData->EEPROMSubCustomerID = EEPROM_Default_SubCustomerID;
-	}
-	else
 	{
 		pHalData->EEPROMVID 			= EEPROM_Default_VID;
 		pHalData->EEPROMPID 			= EEPROM_Default_PID;
@@ -1738,7 +1727,7 @@ InitAdapterVariablesByPROM_8814AU(
 
 	//Hal_EfuseParseIDCode8812A(Adapter, pHalData->efuse_eeprom_data);
 	hal_ReadPROMVersion8814A(Adapter, pHalData->efuse_eeprom_data, 0);
-	hal_ReadIDs_8814AU(Adapter, pHalData->efuse_eeprom_data, 0);
+	hal_ReadIDs_8814AU(Adapter, pHalData->efuse_eeprom_data);
 	hal_config_macaddr(Adapter, 0);
 	hal_ReadTxPowerInfo8814A(Adapter, pHalData->efuse_eeprom_data, 0);
 	hal_ReadBoardType8814A(Adapter, pHalData->efuse_eeprom_data, 0);
