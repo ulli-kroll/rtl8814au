@@ -1861,19 +1861,13 @@ hal_ReadThermalMeter_8814A(
 
 void hal_ReadRemoteWakeup_8814A(
 	PADAPTER		padapter,
-	IN	u8*			hwinfo,
-	IN	BOOLEAN			AutoLoadFail
+	IN	u8*			hwinfo
 	)
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
 	struct pwrctrl_priv *pwrctl = adapter_to_pwrctl(padapter);
 	u8 tmpvalue;
 
-	if(AutoLoadFail){
-		pwrctl->bHWPowerdown = _FALSE;
-		pwrctl->bSupportRemoteWakeup = _FALSE;
-	}
-	else
 	{
 		// decide hw if support remote wakeup function
 		// if hw supported, 8051 (SIE) will generate WeakUP signal( D+/D- toggle) when autoresume

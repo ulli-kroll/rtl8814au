@@ -282,7 +282,7 @@ void	hal_EfuseParseBTCoexistInfo8814A(PADAPTER Adapter, u8* hwinfo);
 
 //void	hal_ReadUsbType_8812AU(PADAPTER Adapter, u8 *PROMContent, BOOLEAN AutoloadFail);
 //int 	FirmwareDownloadBT(PADAPTER Adapter, PRT_MP_FIRMWARE pFirmware);
-void	hal_ReadRemoteWakeup_8814A(PADAPTER padapter, u8* hwinfo, BOOLEAN AutoLoadFail);
+void	hal_ReadRemoteWakeup_8814A(PADAPTER padapter, u8* hwinfo);
 u8	MgntQuery_NssTxRate(u16 Rate);
 
 //BOOLEAN HalDetectPwrDownMode8812(PADAPTER Adapter);
