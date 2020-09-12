@@ -1152,58 +1152,6 @@ PHY_GetTxBBSwing_8814A(
 	RT_TRACE(COMP_MP, DBG_LOUD, ("===> PHY_GetTxBBSwing_8814A, bbSwing_2G: %d, bbSwing_5G: %d\n",
 										  (s4Byte)bbSwing_2G, (s4Byte)bbSwing_5G));
 
-    if (0)
-    {
-		if ( Band == BAND_ON_2_4G )
-		{
-			pRFCalibrateInfo->BBSwingDiff2G = bbSwing_2G;
-			if      (bbSwing_2G == 0)  out = 0x200; //  0 dB
-			else if (bbSwing_2G == -3) out = 0x16A; // -3 dB
-			else if (bbSwing_2G == -6) out = 0x101; // -6 dB
-			else if (bbSwing_2G == -9) out = 0x0B6; // -9 dB
-			else
-			{
-				if ( pHalData->ExternalPA_2G )
-				{
-					pRFCalibrateInfo->BBSwingDiff2G = -3;
-					out = 0x16A;
-				}
-				else
-				{
-					pRFCalibrateInfo->BBSwingDiff2G = 0;
-					out = 0x200;
-				}
-	            }
-	        }
-		else if ( Band == BAND_ON_5G )
-		{
-			pRFCalibrateInfo->BBSwingDiff5G = bbSwing_5G;
-			if(bbSwing_5G == 0)  out = 0x200; //  0 dB
-			else if (bbSwing_5G == -3) out = 0x16A; // -3 dB
-			else if (bbSwing_5G == -6) out = 0x101; // -6 dB
-			else if (bbSwing_5G == -9) out = 0x0B6; // -9 dB
-			else
-			{
-				if (pHalData->ExternalPA_5G)
-				{
-					pRFCalibrateInfo->BBSwingDiff5G = -3;
-					out = 0x16A;
-				}
-				else
-				{
-					pRFCalibrateInfo->BBSwingDiff5G = 0;
-					out = 0x200;
-				}
-			}
-		}
-		else
-		{
-			pRFCalibrateInfo->BBSwingDiff2G = -3;
-			pRFCalibrateInfo->BBSwingDiff5G = -3;
-			out = 0x16A; // -3 dB
-		}
-	}
-	else
 	{
 		u32 swing = 0, onePathSwing = 0;
 
