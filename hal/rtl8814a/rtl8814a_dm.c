@@ -169,8 +169,6 @@ static void Init_ODM_ComInfo_8814(PADAPTER	Adapter)
 	ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_FAB_VER,fab_ver);
 	ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_CUT_VER,cut_ver);
 
- 	ODM_CmnInfoInit(pDM_Odm, ODM_CMNINFO_RF_ANTENNA_TYPE, NO_ANTDIV);
-
 	ODM_CmnInfoInit(pDM_Odm, ODM_CMNINFO_IQKFWOFFLOAD, pHalData->RegIQKFWOffload);
 
 	#ifdef CONFIG_DISABLE_ODM
@@ -218,7 +216,6 @@ static void Update_ODM_ComInfo_8814(PADAPTER	Adapter)
 
 	ODM_CmnInfoUpdate(pDM_Odm,ODM_CMNINFO_ABILITY,SupportAbility);
 
-	ODM_CmnInfoInit(pDM_Odm, ODM_CMNINFO_RF_ANTENNA_TYPE, NO_ANTDIV);
 #ifdef CONFIG_RF_GAIN_OFFSET
 	/* wait for phydm kfree ready.ODM_CmnInfoInit(pDM_Odm, ODM_CMNINFO_REGRFKFREEENABLE, adapter->registrypriv.RegRfKFreeEnable);*/
 #endif

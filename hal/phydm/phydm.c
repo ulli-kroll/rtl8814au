@@ -763,10 +763,6 @@ ODM_CmnInfoInit(
 			pDM_Odm->RFEType = (u1Byte)Value;
 			break;
 
-		case    ODM_CMNINFO_RF_ANTENNA_TYPE:
-			pDM_Odm->AntDivType= (u1Byte)Value;
-			break;
-
 		case	ODM_CMNINFO_BOARD_TYPE:
 			pDM_Odm->BoardType = (u1Byte)Value;
 			break;

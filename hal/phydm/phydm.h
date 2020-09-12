@@ -465,7 +465,6 @@ typedef enum _ODM_Common_Info_Definition
 	ODM_CMNINFO_DBG_LEVEL,				// u4Byte
 	ODM_CMNINFO_RA_THRESHOLD_HIGH,		// u1Byte
 	ODM_CMNINFO_RA_THRESHOLD_LOW,		// u1Byte
-	ODM_CMNINFO_RF_ANTENNA_TYPE,		// u1Byte
 	ODM_CMNINFO_BT_ENABLED,
 	ODM_CMNINFO_BT_HS_CONNECT_PROCESS,
 	ODM_CMNINFO_BT_HS_RSSI,
@@ -666,7 +665,6 @@ typedef  struct DM_Out_Source_Dynamic_Mechanism_Structure
 
 	BOOLEAN			bDualMacSmartConcurrent;
 	u4Byte			BK_SupportAbility;
-	u1Byte			AntDivType;
 	BOOLEAN			ConfigBBRF;
 	u1Byte			odm_Regulation2_4G;
 	u1Byte			odm_Regulation5G;
