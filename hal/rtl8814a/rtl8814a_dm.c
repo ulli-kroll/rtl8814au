@@ -179,8 +179,6 @@ static void Init_ODM_ComInfo_8814(PADAPTER	Adapter)
 	SupportAbility =	ODM_RF_CALIBRATION|
 					ODM_RF_TX_PWR_TRACK
 					;
-	/*if(pHalData->AntDivCfg)
-		SupportAbility |= ODM_BB_ANT_DIV;*/
 	#endif
 
 	ODM_CmnInfoUpdate(pDM_Odm,ODM_CMNINFO_ABILITY,SupportAbility);

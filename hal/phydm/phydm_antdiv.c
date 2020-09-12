@@ -36,7 +36,6 @@ ODM_StopAntennaSwitchDm(
 {
 	PDM_ODM_T		pDM_Odm = (PDM_ODM_T)pDM_VOID;
 	// disable ODM antenna diversity
-	pDM_Odm->SupportAbility &= ~ODM_BB_ANT_DIV;
 	ODM_RT_TRACE(pDM_Odm,ODM_COMP_ANT_DIV, ODM_DBG_LOUD, ("STOP Antenna Diversity \n"));
 }
 

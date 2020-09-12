@@ -509,7 +509,6 @@ typedef enum _ODM_Support_Ability_Definition
 	ODM_BB_FA_CNT					= BIT3,
 	ODM_BB_RSSI_MONITOR			= BIT4,
 	ODM_BB_CCK_PD				= BIT5,
-	ODM_BB_ANT_DIV				= BIT6,
 	ODM_BB_PWR_SAVE				= BIT7,
 	ODM_BB_PWR_TRAIN				= BIT8,
 	ODM_BB_RATE_ADAPTIVE			= BIT9,

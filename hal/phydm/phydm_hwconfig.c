@@ -1002,12 +1002,8 @@ odm_Process_RSSIForDM(
 	isCCKrate = (pPktinfo->DataRate <= ODM_RATE11M )?TRUE :FALSE;
 	pDM_Odm->RxRate = pPktinfo->DataRate;
 
-	//--------------Statistic for antenna/path diversity------------------
-	if(pDM_Odm->SupportAbility & ODM_BB_ANT_DIV)
-	{
-	}
 	#if(defined(CONFIG_PATH_DIVERSITY))
-	else if(pDM_Odm->SupportAbility & ODM_BB_PATH_DIV)
+	if(pDM_Odm->SupportAbility & ODM_BB_PATH_DIV)
 	{
 		phydm_process_rssi_for_path_div(pDM_Odm,pPhyInfo,pPktinfo);
 	}
