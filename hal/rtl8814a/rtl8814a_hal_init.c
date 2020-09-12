@@ -1755,23 +1755,17 @@ hal_ReadTxPowerInfo8814A(
 VOID
 hal_ReadBoardType8814A(
 	IN	PADAPTER	Adapter,
-	IN	u8*		PROMContent,
-	IN	BOOLEAN		AutoloadFail
+	IN	u8*		PROMContent
 	)
 {
 
 
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
 
-	if(!AutoloadFail)
 	{
 		pHalData->InterfaceSel = (PROMContent[EEPROM_RF_BOARD_OPTION_8814]&0xE0)>>5;
 		if(PROMContent[EEPROM_RF_BOARD_OPTION_8814] == 0xFF)
 			pHalData->InterfaceSel = (EEPROM_DEFAULT_BOARD_OPTION&0xE0)>>5;
-	}
-	else
-	{
-		pHalData->InterfaceSel = 0;
 	}
 	RT_TRACE(COMP_INIT, DBG_LOUD, ("Board Type: 0x%2x\n", pHalData->InterfaceSel));
 }
