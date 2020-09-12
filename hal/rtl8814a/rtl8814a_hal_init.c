@@ -1660,8 +1660,7 @@ hal_ReadPROMVersion8814A(
 void
 hal_ReadTxPowerInfo8814A(
 	IN	PADAPTER 		Adapter,
-	IN	u8*				PROMContent,
-	IN	BOOLEAN			AutoLoadFail
+	IN	u8*				PROMContent
 	)
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
@@ -1669,7 +1668,7 @@ hal_ReadTxPowerInfo8814A(
 	TxPowerInfo5G	pwrInfo5G;
 	u8	rfPath, ch, group, TxCount;
 
-	hal_ReadPowerValueFromPROM8814A(Adapter, &pwrInfo24G,&pwrInfo5G, PROMContent, AutoLoadFail);
+	hal_ReadPowerValueFromPROM8814A(Adapter, &pwrInfo24G,&pwrInfo5G, PROMContent, 0);
 
 	//if(!AutoLoadFail)
 	//	pHalData->bTXPowerDataReadFromEEPORM = _TRUE;
@@ -1743,18 +1742,12 @@ hal_ReadTxPowerInfo8814A(
 
 
 	// 2010/10/19 MH Add Regulator recognize for CU.
-	if(!AutoLoadFail)
 	{
 		struct registry_priv  *registry_par = &Adapter->registrypriv;
 
 		pHalData->EEPROMRegulatory = (PROMContent[EEPROM_RF_BOARD_OPTION_8814]&0x7);	//bit0~2
 		if(PROMContent[EEPROM_RF_BOARD_OPTION_8814] == 0xFF)
 			pHalData->EEPROMRegulatory = (EEPROM_DEFAULT_BOARD_OPTION&0x7);	//bit0~2
-	}
-	else
-	{
-		pHalData->EEPROMRegulatory = 0;
-
 	}
 	DBG_871X("EEPROMRegulatory = 0x%x\n", pHalData->EEPROMRegulatory);
 

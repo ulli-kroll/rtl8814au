@@ -251,7 +251,7 @@ u8	GetEEPROMSize8814A(PADAPTER padapter);
 void InitPGData8814A(PADAPTER padapter);
 
 void	hal_ReadPROMVersion8814A(PADAPTER padapter, u8 *hwinfo);
-void	hal_ReadTxPowerInfo8814A(PADAPTER padapter, u8* hwinfo,BOOLEAN	AutoLoadFail);
+void	hal_ReadTxPowerInfo8814A(PADAPTER padapter, u8* hwinfo);
 void	hal_ReadBoardType8814A(PADAPTER pAdapter, u8* hwinfo,BOOLEAN AutoLoadFail);
 void	hal_ReadThermalMeter_8814A(PADAPTER	Adapter, u8* PROMContent,BOOLEAN 	AutoloadFail);
 void	hal_ReadChannelPlan8814A(PADAPTER padapter, u8 *hwinfo, BOOLEAN AutoLoadFail);
