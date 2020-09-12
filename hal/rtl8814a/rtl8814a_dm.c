@@ -211,9 +211,6 @@ static void Update_ODM_ComInfo_8814(PADAPTER	Adapter)
 		SupportAbility |= ODM_BB_ADAPTIVITY;
 	}
 
-	if(pHalData->AntDivCfg)
-		SupportAbility |= ODM_BB_ANT_DIV;
-
 #if (MP_DRIVER==1)
 #endif//(MP_DRIVER==1)
 
