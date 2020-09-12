@@ -1305,13 +1305,12 @@ hal_ReadPowerValueFromPROM8814A(
 	IN	PADAPTER 		Adapter,
 	IN	PTxPowerInfo24G	pwrInfo24G,
 	IN	PTxPowerInfo5G	pwrInfo5G,
-	IN	u8*				PROMContent,
-	IN	BOOLEAN			AutoLoadFail
+	IN	u8*				PROMContent
 	)
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
 	u32 rfPath, eeAddr=EEPROM_TX_PWR_INX_8814, group,TxCount=0;
-
+	BOOLEAN AutoLoadFail = 0;
 	_rtw_memset(pwrInfo24G, 0, sizeof(TxPowerInfo24G));
 	_rtw_memset(pwrInfo5G, 0, sizeof(TxPowerInfo5G));
 
@@ -1668,7 +1667,7 @@ hal_ReadTxPowerInfo8814A(
 	TxPowerInfo5G	pwrInfo5G;
 	u8	rfPath, ch, group, TxCount;
 
-	hal_ReadPowerValueFromPROM8814A(Adapter, &pwrInfo24G,&pwrInfo5G, PROMContent, 0);
+	hal_ReadPowerValueFromPROM8814A(Adapter, &pwrInfo24G,&pwrInfo5G, PROMContent);
 
 	//if(!AutoLoadFail)
 	//	pHalData->bTXPowerDataReadFromEEPORM = _TRUE;
