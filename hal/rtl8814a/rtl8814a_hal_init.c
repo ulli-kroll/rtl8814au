@@ -3661,26 +3661,6 @@ GetEEPROMSize8814A(
 	return 4; // <20120713, Kordan> The default value of HW is 6 ?!!
 }
 
-/*
-void CheckAutoloadState8812A(PADAPTER padapter)
-{
-
-	u8 val8;
-	PHAL_DATA_TYPE pHalData = GET_HAL_DATA(padapter);
-
-
-	// check system boot selection
-	val8 = rtw_read8(padapter, REG_9346CR);
-	pHalData->EepromOrEfuse = (val8 & BOOT_FROM_EEPROM) ? _TRUE : _FALSE;
-	pHalData->bautoload_fail_flag = (val8 & EEPROM_EN) ? _FALSE : _TRUE;
-
-	DBG_8192C("%s: 9346CR(%#x)=0x%02x, Boot from %s, Autoload %s!\n",
-			__FUNCTION__, REG_9346CR, val8,
-			(pHalData->EepromOrEfuse ? "EEPROM" : "EFUSE"),
-			(pHalData->bautoload_fail_flag ? "Fail" : "OK"));
-}
-*/
-
 void InitPGData8814A(PADAPTER padapter)
 {
 	u32 i;
