@@ -314,18 +314,6 @@ _BTC_FILES += hal/btc/halbtc8814a2ant.o
 endif
 endif
 
-########### HAL_RTL8814B #################################
-ifeq ($(CONFIG_RTL8814B), y)
-RTL871X := rtl8814b
-ifeq ($(CONFIG_USB_HCI), y)
-MODULE_NAME = 8814bu
-endif
-ifeq ($(CONFIG_PCI_HCI), y)
-MODULE_NAME = 8814be
-endif
-
-endif
-
 ########### AUTO_CFG  #################################
 
 ifeq ($(CONFIG_AUTOCFG_CP), y)
