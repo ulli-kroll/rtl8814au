@@ -259,7 +259,6 @@ ifeq ($(CONFIG_RTL8814A), y)
 #EXTRA_CFLAGS += -DCONFIG_MP_VHT_HW_TX_MODE
 #CONFIG_MP_VHT_HW_TX_MODE = y
 ##########################################
-RTL871X = rtl8814a
 ifeq ($(CONFIG_USB_HCI), y)
 MODULE_NAME = 8814au
 endif
@@ -273,40 +272,40 @@ endif
 EXTRA_CFLAGS += -DCONFIG_RTL8814A
 
 _HAL_INTFS_FILES +=  hal/HalPwrSeqCmd.o \
-					hal/$(RTL871X)/Hal8814PwrSeq.o \
-					hal/$(RTL871X)/$(RTL871X)_xmit.o\
-					hal/$(RTL871X)/$(RTL871X)_sreset.o
+					hal/rtl8814a/Hal8814PwrSeq.o \
+					hal/rtl8814a/rtl8814a_xmit.o\
+					hal/rtl8814a/rtl8814a_sreset.o
 
-_HAL_INTFS_FILES +=	hal/$(RTL871X)/$(RTL871X)_hal_init.o \
-			hal/$(RTL871X)/$(RTL871X)_phycfg.o \
-			hal/$(RTL871X)/$(RTL871X)_rf6052.o \
-			hal/$(RTL871X)/$(RTL871X)_dm.o \
-			hal/$(RTL871X)/$(RTL871X)_rxdesc.o \
-			hal/$(RTL871X)/$(RTL871X)_cmd.o \
-			hal/$(RTL871X)/hal8814a_fw.o
+_HAL_INTFS_FILES +=	hal/rtl8814a/rtl8814a_hal_init.o \
+			hal/rtl8814a/rtl8814a_phycfg.o \
+			hal/rtl8814a/rtl8814a_rf6052.o \
+			hal/rtl8814a/rtl8814a_dm.o \
+			hal/rtl8814a/rtl8814a_rxdesc.o \
+			hal/rtl8814a/rtl8814a_cmd.o \
+			hal/rtl8814a/hal8814a_fw.o
 
 
 _HAL_INTFS_FILES +=	\
-			hal/$(RTL871X)/$(HCI_NAME)/$(HCI_NAME)_halinit.o \
-			hal/$(RTL871X)/$(HCI_NAME)/rtl$(MODULE_NAME)_led.o \
-			hal/$(RTL871X)/$(HCI_NAME)/rtl$(MODULE_NAME)_xmit.o \
-			hal/$(RTL871X)/$(HCI_NAME)/rtl$(MODULE_NAME)_recv.o
+			hal/rtl8814a/$(HCI_NAME)/$(HCI_NAME)_halinit.o \
+			hal/rtl8814a/$(HCI_NAME)/rtl$(MODULE_NAME)_led.o \
+			hal/rtl8814a/$(HCI_NAME)/rtl$(MODULE_NAME)_xmit.o \
+			hal/rtl8814a/$(HCI_NAME)/rtl$(MODULE_NAME)_recv.o
 
 ifeq ($(CONFIG_SDIO_HCI), y)
-_HAL_INTFS_FILES += hal/$(RTL871X)/$(HCI_NAME)/$(HCI_NAME)_ops.o
+_HAL_INTFS_FILES += hal/rtl8814a/$(HCI_NAME)/$(HCI_NAME)_ops.o
 else
 ifeq ($(CONFIG_GSPI_HCI), y)
-_HAL_INTFS_FILES += hal/$(RTL871X)/$(HCI_NAME)/$(HCI_NAME)_ops.o
+_HAL_INTFS_FILES += hal/rtl8814a/$(HCI_NAME)/$(HCI_NAME)_ops.o
 else
-_HAL_INTFS_FILES += hal/$(RTL871X)/$(HCI_NAME)/$(HCI_NAME)_ops_linux.o
+_HAL_INTFS_FILES += hal/rtl8814a/$(HCI_NAME)/$(HCI_NAME)_ops_linux.o
 endif
 endif
 
 ifeq ($(CONFIG_USB_HCI), y)
-_HAL_INTFS_FILES +=hal/efuse/$(RTL871X)/HalEfuseMask8814A_USB.o
+_HAL_INTFS_FILES +=hal/efuse/rtl8814a/HalEfuseMask8814A_USB.o
 endif
 ifeq ($(CONFIG_PCI_HCI), y)
-_HAL_INTFS_FILES +=hal/efuse/$(RTL871X)/HalEfuseMask8814A_PCIE.o
+_HAL_INTFS_FILES +=hal/efuse/rtl8814a/HalEfuseMask8814A_PCIE.o
 endif
 
 ifeq ($(CONFIG_BT_COEXIST), y)
@@ -328,7 +327,7 @@ $(shell cp $(TopDIR)/autoconf_rtl8189f_$(HCI_NAME)_linux.h $(TopDIR)/include/aut
 else ifeq ($(CONFIG_RTL8723C),y)
 $(shell cp $(TopDIR)/autoconf_rtl8723c_$(HCI_NAME)_linux.h $(TopDIR)/include/autoconf.h)
 else
-$(shell cp $(TopDIR)/autoconf_$(RTL871X)_$(HCI_NAME)_linux.h $(TopDIR)/include/autoconf.h)
+$(shell cp $(TopDIR)/autoconf_rtl8814a_$(HCI_NAME)_linux.h $(TopDIR)/include/autoconf.h)
 endif
 endif
 
