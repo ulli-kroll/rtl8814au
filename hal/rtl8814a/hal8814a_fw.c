@@ -22,6 +22,14 @@
 
 #include "drv_types.h"
 
+#if 0
+  from hal/phydm/phydm_types.h
+ /*Define Different SW team support*/
+#define	ODM_AP		0x01	/*BIT(0)*/
+#define	ODM_CE		0x04	/*BIT(2)*/
+#define	ODM_WIN		0x08	/*BIT(3)*/
+#endif
+
 #ifdef LOAD_FW_HEADER_FROM_DRIVER
 
 #if (defined(CONFIG_AP_WOWLAN) || (DM_ODM_SUPPORT_TYPE & (ODM_AP)))

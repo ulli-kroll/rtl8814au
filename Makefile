@@ -496,6 +496,12 @@ else
 EXTRA_CFLAGS += -DCONFIG_RTW_UP_MAPPING_RULE=0
 endif
 
+# from hal/phydm/phydm_types.h
+# /*Define Different SW team support*/
+# #define	ODM_AP			0x01	/*BIT(0)*/
+# #define	ODM_CE			0x04	/*BIT(2)*/
+# #define	ODM_WIN		0x08	/*BIT(3)*/
+
 EXTRA_CFLAGS += -DDM_ODM_SUPPORT_TYPE=0x04
 
 ifeq ($(CONFIG_PLATFORM_I386_PC), y)
