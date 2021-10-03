@@ -259,15 +259,7 @@ ifeq ($(CONFIG_RTL8814A), y)
 #EXTRA_CFLAGS += -DCONFIG_MP_VHT_HW_TX_MODE
 #CONFIG_MP_VHT_HW_TX_MODE = y
 ##########################################
-ifeq ($(CONFIG_USB_HCI), y)
-MODULE_NAME = 8814au
-endif
-ifeq ($(CONFIG_PCI_HCI), y)
-MODULE_NAME = 8814ae
-endif
-ifeq ($(CONFIG_SDIO_HCI), y)
-MODULE_NAME = 8814as
-endif
+MODULE_NAME = rtl8814au
 
 EXTRA_CFLAGS += -DCONFIG_RTL8814A
 
@@ -287,9 +279,9 @@ _HAL_INTFS_FILES +=	hal/rtl8814a/rtl8814a_hal_init.o \
 
 _HAL_INTFS_FILES +=	\
 			hal/rtl8814a/$(HCI_NAME)/$(HCI_NAME)_halinit.o \
-			hal/rtl8814a/$(HCI_NAME)/rtl$(MODULE_NAME)_led.o \
-			hal/rtl8814a/$(HCI_NAME)/rtl$(MODULE_NAME)_xmit.o \
-			hal/rtl8814a/$(HCI_NAME)/rtl$(MODULE_NAME)_recv.o
+			hal/rtl8814a/$(HCI_NAME)/rtl8814au_led.o \
+			hal/rtl8814a/$(HCI_NAME)/rtl8814au_xmit.o \
+			hal/rtl8814a/$(HCI_NAME)/rtl8814au_recv.o
 
 ifeq ($(CONFIG_SDIO_HCI), y)
 _HAL_INTFS_FILES += hal/rtl8814a/$(HCI_NAME)/$(HCI_NAME)_ops.o
