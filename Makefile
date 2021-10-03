@@ -551,11 +551,6 @@ endif
 
 endif
 
-USER_MODULE_NAME ?=
-ifneq ($(USER_MODULE_NAME),)
-MODULE_NAME := $(USER_MODULE_NAME)
-endif
-
 ifneq ($(KERNELRELEASE),)
 
 ########### this part for *.mk ############################
