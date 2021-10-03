@@ -556,26 +556,6 @@ ifneq ($(KERNELRELEASE),)
 ########### this part for *.mk ############################
 include $(src)/hal/phydm/phydm.mk
 
-########### HAL_RTL8822B #################################
-ifeq ($(CONFIG_RTL8822B), y)
-include $(src)/rtl8822b.mk
-endif
-
-########### HAL_RTL8821C #################################
-ifeq ($(CONFIG_RTL8821C), y)
-include $(src)/rtl8821c.mk
-endif
-
-########### HAL_RTL8822C #################################
-ifeq ($(CONFIG_RTL8822C), y)
-include $(src)/rtl8822c.mk
-endif
-
-########### HAL_RTL8814B #################################
-ifeq ($(CONFIG_RTL8814B), y)
-include $(src)/rtl8814b.mk
-endif
-
 rtk_core :=	core/rtw_cmd.o \
 		core/rtw_security.o \
 		core/rtw_debug.o \
