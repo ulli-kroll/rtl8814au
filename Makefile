@@ -154,9 +154,6 @@ _HAL_INTFS_FILES :=	hal/hal_intf.o \
 			hal/led/hal_usb_led.o
 
 
-EXTRA_CFLAGS += -I$(src)/platform
-_PLATFORM_FILES := platform/platform_ops.o
-
 EXTRA_CFLAGS += -I$(src)/hal/btc
 
 ########### HAL_RTL8814A #################################
@@ -634,7 +631,6 @@ $(MODULE_NAME)-y += $(_OS_INTFS_FILES)
 $(MODULE_NAME)-y += $(_HAL_INTFS_FILES)
 $(MODULE_NAME)-y += $(_PHYDM_FILES)
 $(MODULE_NAME)-y += $(_BTC_FILES)
-$(MODULE_NAME)-y += $(_PLATFORM_FILES)
 
 $(MODULE_NAME)-$(CONFIG_MP_INCLUDED) += core/rtw_mp.o
 
@@ -715,7 +711,6 @@ clean:
 	cd core ; rm -fr *.mod.c *.mod *.o .*.cmd *.ko
 	cd os_dep/linux ; rm -fr *.mod.c *.mod *.o .*.cmd *.ko
 	cd os_dep ; rm -fr *.mod.c *.mod *.o .*.cmd *.ko
-	cd platform ; rm -fr *.mod.c *.mod *.o .*.cmd *.ko
 	rm -fr Module.symvers ; rm -fr Module.markers ; rm -fr modules.order
 	rm -fr *.mod.c *.mod *.o .*.cmd *.ko *~
 	rm -fr .tmp_versions
