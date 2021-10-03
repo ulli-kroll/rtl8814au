@@ -188,27 +188,10 @@ CONFIG_DRVEXT_MODULE = n
 export TopDIR ?= $(shell pwd)
 
 ########### COMMON  #################################
-ifeq ($(CONFIG_GSPI_HCI), y)
-HCI_NAME = gspi
-endif
-
-ifeq ($(CONFIG_SDIO_HCI), y)
-HCI_NAME = sdio
-endif
-
-ifeq ($(CONFIG_USB_HCI), y)
-HCI_NAME = usb
-endif
-
-ifeq ($(CONFIG_PCI_HCI), y)
-HCI_NAME = pci
-endif
-
-
 _OS_INTFS_FILES :=	os_dep/osdep_service.o \
 			os_dep/linux/os_intfs.o \
-			os_dep/linux/$(HCI_NAME)_intf.o \
-			os_dep/linux/$(HCI_NAME)_ops_linux.o \
+			os_dep/linux/usb_intf.o \
+			os_dep/linux/usb_ops_linux.o \
 			os_dep/linux/ioctl_linux.o \
 			os_dep/linux/xmit_linux.o \
 			os_dep/linux/mlme_linux.o \
@@ -224,12 +207,12 @@ endif
 
 ifeq ($(CONFIG_SDIO_HCI), y)
 _OS_INTFS_FILES += os_dep/linux/custom_gpio_linux.o
-_OS_INTFS_FILES += os_dep/linux/$(HCI_NAME)_ops_linux.o
+_OS_INTFS_FILES += os_dep/linux/usb_ops_linux.o
 endif
 
 ifeq ($(CONFIG_GSPI_HCI), y)
 _OS_INTFS_FILES += os_dep/linux/custom_gpio_linux.o
-_OS_INTFS_FILES += os_dep/linux/$(HCI_NAME)_ops_linux.o
+_OS_INTFS_FILES += os_dep/linux/usb_ops_linux.o
 endif
 
 
@@ -243,9 +226,9 @@ _HAL_INTFS_FILES :=	hal/hal_intf.o \
 			hal/hal_btcoex.o \
 			hal/hal_mp.o \
 			hal/hal_mcc.o \
-			hal/hal_hci/hal_$(HCI_NAME).o \
+			hal/hal_hci/hal_usb.o \
 			hal/led/hal_led.o \
-			hal/led/hal_$(HCI_NAME)_led.o
+			hal/led/hal_usb_led.o
 
 
 EXTRA_CFLAGS += -I$(src)/platform
@@ -278,18 +261,18 @@ _HAL_INTFS_FILES +=	hal/rtl8814a/rtl8814a_hal_init.o \
 
 
 _HAL_INTFS_FILES +=	\
-			hal/rtl8814a/$(HCI_NAME)/$(HCI_NAME)_halinit.o \
-			hal/rtl8814a/$(HCI_NAME)/rtl8814au_led.o \
-			hal/rtl8814a/$(HCI_NAME)/rtl8814au_xmit.o \
-			hal/rtl8814a/$(HCI_NAME)/rtl8814au_recv.o
+			hal/rtl8814a/usb/usb_halinit.o \
+			hal/rtl8814a/usb/rtl8814au_led.o \
+			hal/rtl8814a/usb/rtl8814au_xmit.o \
+			hal/rtl8814a/usb/rtl8814au_recv.o
 
 ifeq ($(CONFIG_SDIO_HCI), y)
-_HAL_INTFS_FILES += hal/rtl8814a/$(HCI_NAME)/$(HCI_NAME)_ops.o
+_HAL_INTFS_FILES += hal/rtl8814a/usb/usb_ops.o
 else
 ifeq ($(CONFIG_GSPI_HCI), y)
-_HAL_INTFS_FILES += hal/rtl8814a/$(HCI_NAME)/$(HCI_NAME)_ops.o
+_HAL_INTFS_FILES += hal/rtl8814a/usb/usb_ops.o
 else
-_HAL_INTFS_FILES += hal/rtl8814a/$(HCI_NAME)/$(HCI_NAME)_ops_linux.o
+_HAL_INTFS_FILES += hal/rtl8814a/usb/usb_ops_linux.o
 endif
 endif
 
@@ -310,16 +293,16 @@ endif
 ifeq ($(CONFIG_AUTOCFG_CP), y)
 
 ifeq ($(CONFIG_MULTIDRV), y)
-$(shell cp $(TopDIR)/autoconf_multidrv_$(HCI_NAME)_linux.h $(TopDIR)/include/autoconf.h)
+$(shell cp $(TopDIR)/autoconf_multidrv_usb_linux.h $(TopDIR)/include/autoconf.h)
 else
 ifeq ($(CONFIG_RTL8188E)$(CONFIG_SDIO_HCI),yy)
-$(shell cp $(TopDIR)/autoconf_rtl8189e_$(HCI_NAME)_linux.h $(TopDIR)/include/autoconf.h)
+$(shell cp $(TopDIR)/autoconf_rtl8189e_usb_linux.h $(TopDIR)/include/autoconf.h)
 else ifeq ($(CONFIG_RTL8188F)$(CONFIG_SDIO_HCI),yy)
-$(shell cp $(TopDIR)/autoconf_rtl8189f_$(HCI_NAME)_linux.h $(TopDIR)/include/autoconf.h)
+$(shell cp $(TopDIR)/autoconf_rtl8189f_usb_linux.h $(TopDIR)/include/autoconf.h)
 else ifeq ($(CONFIG_RTL8723C),y)
-$(shell cp $(TopDIR)/autoconf_rtl8723c_$(HCI_NAME)_linux.h $(TopDIR)/include/autoconf.h)
+$(shell cp $(TopDIR)/autoconf_rtl8723c_usb_linux.h $(TopDIR)/include/autoconf.h)
 else
-$(shell cp $(TopDIR)/autoconf_rtl8814a_$(HCI_NAME)_linux.h $(TopDIR)/include/autoconf.h)
+$(shell cp $(TopDIR)/autoconf_rtl8814a_usb_linux.h $(TopDIR)/include/autoconf.h)
 endif
 endif
 
