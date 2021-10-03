@@ -186,22 +186,8 @@ _HAL_INTFS_FILES +=	\
 			hal/rtl8814a/usb/rtl8814au_xmit.o \
 			hal/rtl8814a/usb/rtl8814au_recv.o
 
-ifeq ($(CONFIG_SDIO_HCI), y)
-_HAL_INTFS_FILES += hal/rtl8814a/usb/usb_ops.o
-else
-ifeq ($(CONFIG_GSPI_HCI), y)
-_HAL_INTFS_FILES += hal/rtl8814a/usb/usb_ops.o
-else
 _HAL_INTFS_FILES += hal/rtl8814a/usb/usb_ops_linux.o
-endif
-endif
-
-ifeq ($(CONFIG_USB_HCI), y)
 _HAL_INTFS_FILES +=hal/efuse/rtl8814a/HalEfuseMask8814A_USB.o
-endif
-ifeq ($(CONFIG_PCI_HCI), y)
-_HAL_INTFS_FILES +=hal/efuse/rtl8814a/HalEfuseMask8814A_PCIE.o
-endif
 
 ifeq ($(CONFIG_BT_COEXIST), y)
 _BTC_FILES += hal/btc/halbtc8814a2ant.o
@@ -532,23 +518,6 @@ endif
 
 ifeq ($(CONFIG_CUSTOMER_HUAWEI), y)
 EXTRA_CFLAGS += -DCONFIG_HUAWEI_PROC
-endif
-
-ifeq ($(CONFIG_MULTIDRV), y)
-
-ifeq ($(CONFIG_SDIO_HCI), y)
-MODULE_NAME := rtw_sdio
-endif
-
-ifeq ($(CONFIG_USB_HCI), y)
-MODULE_NAME := rtw_usb
-endif
-
-ifeq ($(CONFIG_PCI_HCI), y)
-MODULE_NAME := rtw_pci
-endif
-
-
 endif
 
 ifneq ($(KERNELRELEASE),)
