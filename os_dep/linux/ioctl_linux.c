@@ -3256,163 +3256,6 @@ static int rtw_wx_get_nick(struct net_device *dev,
 
 }
 
-static int rtw_wx_read32(struct net_device *dev,
-			 struct iw_request_info *info,
-			 union iwreq_data *wrqu, char *extra)
-{
-	PADAPTER padapter;
-	struct iw_point *p;
-	u16 len;
-	u32 addr;
-	u32 data32;
-	u32 bytes;
-	u8 *ptmp;
-	int ret;
-
-
-	ret = 0;
-	padapter = (PADAPTER)rtw_netdev_priv(dev);
-	p = &wrqu->data;
-	len = p->length;
-	if (0 == len)
-		return -EINVAL;
-
-	ptmp = (u8 *)rtw_malloc(len);
-	if (NULL == ptmp)
-		return -ENOMEM;
-
-	if (copy_from_user(ptmp, p->pointer, len)) {
-		ret = -EFAULT;
-		goto exit;
-	}
-
-	bytes = 0;
-	addr = 0;
-	sscanf(ptmp, "%d,%x", &bytes, &addr);
-
-	switch (bytes) {
-	case 1:
-		data32 = rtw_read8(padapter, addr);
-		sprintf(extra, "0x%02X", data32);
-		break;
-	case 2:
-		data32 = rtw_read16(padapter, addr);
-		sprintf(extra, "0x%04X", data32);
-		break;
-	case 4:
-		data32 = rtw_read32(padapter, addr);
-		sprintf(extra, "0x%08X", data32);
-		break;
-
-	#if defined(CONFIG_SDIO_HCI) && defined(CONFIG_SDIO_INDIRECT_ACCESS) && defined(DBG_SDIO_INDIRECT_ACCESS)
-	case 11:
-		data32 = rtw_sd_iread8(padapter, addr);
-		sprintf(extra, "0x%02X", data32);
-		break;
-	case 12:
-		data32 = rtw_sd_iread16(padapter, addr);
-		sprintf(extra, "0x%04X", data32);
-		break;
-	case 14:
-		data32 = rtw_sd_iread32(padapter, addr);
-		sprintf(extra, "0x%08X", data32);
-		break;
-	#endif
-	default:
-		RTW_INFO("%s: usage> read [bytes],[address(hex)]\n", __func__);
-		ret = -EINVAL;
-		goto exit;
-	}
-	RTW_INFO("%s: addr=0x%08X data=%s\n", __func__, addr, extra);
-
-exit:
-	rtw_mfree(ptmp, len);
-
-	return 0;
-}
-
-static int rtw_wx_write32(struct net_device *dev,
-			  struct iw_request_info *info,
-			  union iwreq_data *wrqu, char *extra)
-{
-	PADAPTER padapter = (PADAPTER)rtw_netdev_priv(dev);
-
-	u32 addr;
-	u32 data32;
-	u32 bytes;
-
-
-	bytes = 0;
-	addr = 0;
-	data32 = 0;
-	sscanf(extra, "%d,%x,%x", &bytes, &addr, &data32);
-
-	switch (bytes) {
-	case 1:
-		rtw_write8(padapter, addr, (u8)data32);
-		RTW_INFO("%s: addr=0x%08X data=0x%02X\n", __func__, addr, (u8)data32);
-		break;
-	case 2:
-		rtw_write16(padapter, addr, (u16)data32);
-		RTW_INFO("%s: addr=0x%08X data=0x%04X\n", __func__, addr, (u16)data32);
-		break;
-	case 4:
-		rtw_write32(padapter, addr, data32);
-		RTW_INFO("%s: addr=0x%08X data=0x%08X\n", __func__, addr, data32);
-		break;
-	default:
-		RTW_INFO("%s: usage> write [bytes],[address(hex)],[data(hex)]\n", __func__);
-		return -EINVAL;
-	}
-
-	return 0;
-}
-
-static int rtw_wx_read_rf(struct net_device *dev,
-			  struct iw_request_info *info,
-			  union iwreq_data *wrqu, char *extra)
-{
-	_adapter *padapter = (_adapter *)rtw_netdev_priv(dev);
-	u32 path, addr, data32;
-
-
-	path = *(u32 *)extra;
-	addr = *((u32 *)extra + 1);
-	data32 = rtw_hal_read_rfreg(padapter, path, addr, 0xFFFFF);
-	/*	RTW_INFO("%s: path=%d addr=0x%02x data=0x%05x\n", __func__, path, addr, data32); */
-	/*
-	 * IMPORTANT!!
-	 * Only when wireless private ioctl is at odd order,
-	 * "extra" would be copied to user space.
-	 */
-	sprintf(extra, "0x%05x", data32);
-
-	return 0;
-}
-
-static int rtw_wx_write_rf(struct net_device *dev,
-			   struct iw_request_info *info,
-			   union iwreq_data *wrqu, char *extra)
-{
-	_adapter *padapter = (_adapter *)rtw_netdev_priv(dev);
-	u32 path, addr, data32;
-
-
-	path = *(u32 *)extra;
-	addr = *((u32 *)extra + 1);
-	data32 = *((u32 *)extra + 2);
-	/*	RTW_INFO("%s: path=%d addr=0x%02x data=0x%05x\n", __func__, path, addr, data32); */
-	rtw_hal_write_rfreg(padapter, path, addr, 0xFFFFF, data32);
-
-	return 0;
-}
-
-static int rtw_wx_priv_null(struct net_device *dev, struct iw_request_info *a,
-			    union iwreq_data *wrqu, char *b)
-{
-	return -1;
-}
-
 #ifdef CONFIG_RTW_80211K
 extern void rm_dbg_cmd(_adapter *padapter, char *s);
 static int rtw_wx_priv_rrm(struct net_device *dev, struct iw_request_info *a,
@@ -3441,58 +3284,9 @@ static int dummy(struct net_device *dev, struct iw_request_info *a,
 
 }
 
-static int rtw_wx_set_channel_plan(struct net_device *dev,
-				   struct iw_request_info *info,
-				   union iwreq_data *wrqu, char *extra)
-{
-	_adapter *padapter = (_adapter *)rtw_netdev_priv(dev);
-	u8 channel_plan_req = (u8)(*((int *)wrqu));
 
-	if (_SUCCESS != rtw_set_channel_plan(padapter, channel_plan_req))
-		return -EPERM;
 
-	return 0;
-}
 
-static int rtw_wx_set_mtk_wps_probe_ie(struct net_device *dev,
-				       struct iw_request_info *a,
-				       union iwreq_data *wrqu, char *b)
-{
-#ifdef CONFIG_PLATFORM_MT53XX
-	_adapter *padapter = (_adapter *)rtw_netdev_priv(dev);
-	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
-
-#endif
-	return 0;
-}
-
-static int rtw_wx_get_sensitivity(struct net_device *dev,
-				  struct iw_request_info *info,
-				  union iwreq_data *wrqu, char *buf)
-{
-#ifdef CONFIG_PLATFORM_MT53XX
-	_adapter *padapter = (_adapter *)rtw_netdev_priv(dev);
-
-	/*	Modified by Albert 20110914 */
-	/*	This is in dbm format for MTK platform. */
-	wrqu->qual.level = padapter->recvpriv.rssi;
-	RTW_INFO(" level = %u\n",  wrqu->qual.level);
-#endif
-	return 0;
-}
-
-static int rtw_wx_set_mtk_wps_ie(struct net_device *dev,
-				 struct iw_request_info *info,
-				 union iwreq_data *wrqu, char *extra)
-{
-#ifdef CONFIG_PLATFORM_MT53XX
-	_adapter *padapter = (_adapter *)rtw_netdev_priv(dev);
-
-	return rtw_set_wpa_ie(padapter, wrqu->data.pointer, wrqu->data.length);
-#else
-	return 0;
-#endif
-}
 
 #ifdef MP_IOCTL_HDL
 static void rtw_dbg_mode_hdl(_adapter *padapter, u32 id, u8 *pdata, u32 len)
@@ -12294,13 +12088,6 @@ static const char iw_priv_type_size[] = {
 	0,                              /* Not defined */
 };
 
-static int get_priv_size(__u16 args)
-{
-	int num = args & IW_PRIV_SIZE_MASK;
-	int type = (args & IW_PRIV_TYPE_MASK) >> 12;
-
-	return num * iw_priv_type_size[type];
-}
 /* copy from net/wireless/wext.c end */
 
 int rtw_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
