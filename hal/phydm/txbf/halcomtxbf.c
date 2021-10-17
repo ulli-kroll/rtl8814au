@@ -43,8 +43,6 @@ void hal_com_txbf_config_gtab(
 {
 	struct dm_struct *dm = (struct dm_struct *)dm_void;
 
-	if (dm->support_ic_type & ODM_RTL8822B)
-		hal_txbf_8822b_config_gtab(dm);
 }
 
 void phydm_beamform_set_sounding_enter(
@@ -184,14 +182,8 @@ void hal_com_txbf_enter_work_item_callback(
 
 	PHYDM_DBG(dm, DBG_TXBF, "[%s] Start!\n", __func__);
 
-	if (dm->support_ic_type & (ODM_RTL8812 | ODM_RTL8821))
-		hal_txbf_jaguar_enter(dm, idx);
-	else if (dm->support_ic_type & ODM_RTL8192E)
-		hal_txbf_8192e_enter(dm, idx);
-	else if (dm->support_ic_type & ODM_RTL8814A)
+	if (dm->support_ic_type & ODM_RTL8814A)
 		hal_txbf_8814a_enter(dm, idx);
-	else if (dm->support_ic_type & ODM_RTL8822B)
-		hal_txbf_8822b_enter(dm, idx);
 }
 
 void hal_com_txbf_leave_work_item_callback(
@@ -214,14 +206,8 @@ void hal_com_txbf_leave_work_item_callback(
 
 	PHYDM_DBG(dm, DBG_TXBF, "[%s] Start!\n", __func__);
 
-	if (dm->support_ic_type & (ODM_RTL8812 | ODM_RTL8821))
-		hal_txbf_jaguar_leave(dm, idx);
-	else if (dm->support_ic_type & ODM_RTL8192E)
-		hal_txbf_8192e_leave(dm, idx);
-	else if (dm->support_ic_type & ODM_RTL8814A)
+	if (dm->support_ic_type & ODM_RTL8814A)
 		hal_txbf_8814a_leave(dm, idx);
-	else if (dm->support_ic_type & ODM_RTL8822B)
-		hal_txbf_8822b_leave(dm, idx);
 }
 
 void hal_com_txbf_fw_ndpa_work_item_callback(
@@ -243,14 +229,8 @@ void hal_com_txbf_fw_ndpa_work_item_callback(
 
 	PHYDM_DBG(dm, DBG_TXBF, "[%s] Start!\n", __func__);
 
-	if (dm->support_ic_type & (ODM_RTL8812 | ODM_RTL8821))
-		hal_txbf_jaguar_fw_txbf(dm, idx);
-	else if (dm->support_ic_type & ODM_RTL8192E)
-		hal_txbf_8192e_fw_tx_bf(dm, idx);
-	else if (dm->support_ic_type & ODM_RTL8814A)
+	if (dm->support_ic_type & ODM_RTL8814A)
 		hal_txbf_8814a_fw_txbf(dm, idx);
-	else if (dm->support_ic_type & ODM_RTL8822B)
-		hal_txbf_8822b_fw_txbf(dm, idx);
 }
 
 void hal_com_txbf_clk_work_item_callback(
@@ -294,11 +274,7 @@ void hal_com_txbf_rate_work_item_callback(
 
 	PHYDM_DBG(dm, DBG_TXBF, "[%s] Start!\n", __func__);
 
-	if (dm->support_ic_type & ODM_RTL8812)
-		hal_txbf_8812a_set_ndpa_rate(dm, BW, rate);
-	else if (dm->support_ic_type & ODM_RTL8192E)
-		hal_txbf_8192e_set_ndpa_rate(dm, BW, rate);
-	else if (dm->support_ic_type & ODM_RTL8814A)
+	if (dm->support_ic_type & ODM_RTL8814A)
 		hal_txbf_8814a_set_ndpa_rate(dm, BW, rate);
 }
 
@@ -341,14 +317,8 @@ void hal_com_txbf_status_work_item_callback(
 
 	PHYDM_DBG(dm, DBG_TXBF, "[%s] Start!\n", __func__);
 
-	if (dm->support_ic_type & (ODM_RTL8812 | ODM_RTL8821))
-		hal_txbf_jaguar_status(dm, idx);
-	else if (dm->support_ic_type & ODM_RTL8192E)
-		hal_txbf_8192e_status(dm, idx);
-	else if (dm->support_ic_type & ODM_RTL8814A)
+	if (dm->support_ic_type & ODM_RTL8814A)
 		hal_txbf_8814a_status(dm, idx);
-	else if (dm->support_ic_type & ODM_RTL8822B)
-		hal_txbf_8822b_status(dm, idx);
 }
 
 void hal_com_txbf_reset_tx_path_work_item_callback(
