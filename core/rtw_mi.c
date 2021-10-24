@@ -201,10 +201,6 @@ void rtw_mi_status_by_ifbmp(struct dvobj_priv *dvobj, u8 ifbmp, struct mi_state 
 			if (check_fwstate(&iface->mlmepriv, _FW_LINKED) == _TRUE) {
 				MSTATE_STA_LD_NUM(mstate)++;
 
-				#ifdef CONFIG_TDLS
-				if (iface->tdlsinfo.link_established == _TRUE)
-					MSTATE_TDLS_LD_NUM(mstate)++;
-				#endif
 				#ifdef CONFIG_P2P
 				if (MLME_IS_GC(iface))
 					MSTATE_P2P_GC_NUM(mstate)++;
@@ -292,9 +288,6 @@ inline void rtw_mi_status_merge(struct mi_state *d, struct mi_state *a)
 	d->sta_num += a->sta_num;
 	d->ld_sta_num += a->ld_sta_num;
 	d->lg_sta_num += a->lg_sta_num;
-#ifdef CONFIG_TDLS
-	d->ld_tdls_num += a->ld_tdls_num;
-#endif
 #ifdef CONFIG_AP_MODE
 	d->ap_num += a->ap_num;
 	d->ld_ap_num += a->ld_ap_num;
@@ -322,9 +315,6 @@ void dump_mi_status(void *sel, struct dvobj_priv *dvobj)
 	RTW_PRINT_SEL(sel, "sta_num:%d\n", DEV_STA_NUM(dvobj));
 	RTW_PRINT_SEL(sel, "linking_sta_num:%d\n", DEV_STA_LG_NUM(dvobj));
 	RTW_PRINT_SEL(sel, "linked_sta_num:%d\n", DEV_STA_LD_NUM(dvobj));
-#ifdef CONFIG_TDLS
-	RTW_PRINT_SEL(sel, "linked_tdls_num:%d\n", DEV_TDLS_LD_NUM(dvobj));
-#endif
 #ifdef CONFIG_AP_MODE
 	RTW_PRINT_SEL(sel, "ap_num:%d\n", DEV_AP_NUM(dvobj));
 	RTW_PRINT_SEL(sel, "starting_ap_num:%d\n", DEV_AP_STARTING_NUM(dvobj));

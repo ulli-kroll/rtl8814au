@@ -27,9 +27,6 @@ struct mi_state {
 	u8 sta_num;			/* WIFI_STATION_STATE */
 	u8 ld_sta_num;		/* WIFI_STATION_STATE && _FW_LINKED */
 	u8 lg_sta_num;		/* WIFI_STATION_STATE && _FW_UNDER_LINKING */
-#ifdef CONFIG_TDLS
-	u8 ld_tdls_num;		/* adapter.tdlsinfo.link_established */
-#endif
 #ifdef CONFIG_AP_MODE
 	u8 ap_num;			/* WIFI_AP_STATE && _FW_LINKED */
 	u8 starting_ap_num;	/*WIFI_FW_AP_STATE*/
@@ -64,11 +61,7 @@ struct mi_state {
 #define MSTATE_STA_LD_NUM(_mstate)		((_mstate)->ld_sta_num)
 #define MSTATE_STA_LG_NUM(_mstate)		((_mstate)->lg_sta_num)
 
-#ifdef CONFIG_TDLS
-#define MSTATE_TDLS_LD_NUM(_mstate)		((_mstate)->ld_tdls_num)
-#else
 #define MSTATE_TDLS_LD_NUM(_mstate)		0
-#endif
 
 #ifdef CONFIG_AP_MODE
 #define MSTATE_AP_NUM(_mstate)			((_mstate)->ap_num)
