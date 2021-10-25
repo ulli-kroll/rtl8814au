@@ -40,10 +40,6 @@
 #define _FALSE		0
 
 
-#ifdef PLATFORM_FREEBSD
-	#include <osdep_service_bsd.h>
-#endif
-
 #ifdef PLATFORM_LINUX
 	#include <linux/version.h>
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 11, 0))
@@ -319,9 +315,7 @@ void rtw_list_splice(_list *list, _list *head);
 void rtw_list_splice_init(_list *list, _list *head);
 void rtw_list_splice_tail(_list *list, _list *head);
 
-#ifndef PLATFORM_FREEBSD
 extern void	rtw_list_delete(_list *plist);
-#endif /* PLATFORM_FREEBSD */
 
 void rtw_hlist_head_init(rtw_hlist_head *h);
 void rtw_hlist_add_head(rtw_hlist_node *n, rtw_hlist_head *h);
@@ -335,9 +329,7 @@ extern void	_rtw_up_sema(_sema	*sema);
 extern u32	_rtw_down_sema(_sema *sema);
 extern void	_rtw_mutex_init(_mutex *pmutex);
 extern void	_rtw_mutex_free(_mutex *pmutex);
-#ifndef PLATFORM_FREEBSD
 extern void	_rtw_spinlock_init(_lock *plock);
-#endif /* PLATFORM_FREEBSD */
 extern void	_rtw_spinlock_free(_lock *plock);
 extern void	_rtw_spinlock(_lock	*plock);
 extern void	_rtw_spinunlock(_lock	*plock);
@@ -417,9 +409,6 @@ static __inline void thread_enter(char *name)
 #ifdef PLATFORM_LINUX
 	allow_signal(SIGTERM);
 #endif
-#ifdef PLATFORM_FREEBSD
-	printf("%s", "RTKTHREAD_enter");
-#endif
 }
 void thread_exit(_completion *comp);
 void _rtw_init_completion(_completion *comp);
@@ -460,7 +449,7 @@ __inline static void flush_signals_thread(void)
 __inline static _OS_STATUS res_to_status(sint res)
 {
 
-#if defined(PLATFORM_LINUX) || defined (PLATFORM_MPIXEL) || defined (PLATFORM_FREEBSD)
+#if defined(PLATFORM_LINUX) || defined (PLATFORM_MPIXEL)
 	return res;
 #endif
 
@@ -654,9 +643,7 @@ extern int rtw_retrieve_from_file(const char *path, u8 *buf, u32 sz);
 extern int rtw_store_to_file(const char *path, u8 *buf, u32 sz);
 
 
-#ifndef PLATFORM_FREEBSD
 extern void rtw_free_netdev(struct net_device *netdev);
-#endif /* PLATFORM_FREEBSD */
 
 
 extern u64 rtw_modular64(u64 x, u64 y);

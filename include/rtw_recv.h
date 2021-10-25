@@ -377,7 +377,7 @@ struct recv_priv {
 #endif /* CONFIG_USB_INTERRUPT_IN_PIPE */
 
 #endif
-#if defined(PLATFORM_LINUX) || defined(PLATFORM_FREEBSD)
+#if defined(PLATFORM_LINUX)
 	_tasklet irq_prepare_beacon_tasklet;
 	_tasklet recv_tasklet;
 
@@ -391,7 +391,7 @@ struct recv_priv {
 	struct ifqueue rx_indicate_queue;
 #endif /* CONFIG_RX_INDICATE_QUEUE */
 
-#endif /* defined(PLATFORM_LINUX) || defined(PLATFORM_FREEBSD) */
+#endif /* defined(PLATFORM_LINUX) */
 
 	u8 *pallocated_recv_buf;
 	u8 *precv_buf;    /* 4 alignment */
@@ -515,8 +515,6 @@ struct recv_buf {
 
 #if defined(PLATFORM_LINUX)
 	_pkt *pskb;
-#elif defined(PLATFORM_FREEBSD) /* skb solution */
-	struct sk_buff *pskb;
 #endif
 };
 

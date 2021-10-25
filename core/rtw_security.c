@@ -2118,7 +2118,6 @@ BIP_exit:
 }
 #endif /* CONFIG_IEEE80211W */
 
-#ifndef PLATFORM_FREEBSD
 #if defined(CONFIG_TDLS)
 /* compress 512-bits */
 static int sha256_compress(struct sha256_state *md, unsigned char *buf)
@@ -2394,7 +2393,6 @@ static void hmac_sha256_vector(u8 *key, size_t key_len, size_t num_elem,
 	sha256_vector(2, _addr, _len, mac);
 }
 #endif /* CONFIG_TDLS */
-#endif /* PLATFORM_FREEBSD */
 /**
  * sha256_prf - SHA256-based Pseudo-Random Function (IEEE 802.11r, 8.5.1.5.2)
  * @key: Key for PRF
@@ -2408,46 +2406,6 @@ static void hmac_sha256_vector(u8 *key, size_t key_len, size_t num_elem,
  * This function is used to derive new, cryptographically separate keys from a
  * given key.
  */
-#ifndef PLATFORM_FREEBSD /* Baron */
-#if defined(CONFIG_TDLS)
-static void sha256_prf(u8 *key, size_t key_len, char *label,
-		       u8 *data, size_t data_len, u8 *buf, size_t buf_len)
-{
-	u16 counter = 1;
-	size_t pos, plen;
-	u8 hash[SHA256_MAC_LEN];
-	u8 *addr[4];
-	size_t len[4];
-	u8 counter_le[2], length_le[2];
-
-	addr[0] = counter_le;
-	len[0] = 2;
-	addr[1] = (u8 *) label;
-	len[1] = os_strlen(label);
-	addr[2] = data;
-	len[2] = data_len;
-	addr[3] = length_le;
-	len[3] = sizeof(length_le);
-
-	WPA_PUT_LE16(length_le, buf_len * 8);
-	pos = 0;
-	while (pos < buf_len) {
-		plen = buf_len - pos;
-		WPA_PUT_LE16(counter_le, counter);
-		if (plen >= SHA256_MAC_LEN) {
-			hmac_sha256_vector(key, key_len, 4, addr, len,
-					   &buf[pos]);
-			pos += SHA256_MAC_LEN;
-		} else {
-			hmac_sha256_vector(key, key_len, 4, addr, len, hash);
-			_rtw_memcpy(&buf[pos], hash, plen);
-			break;
-		}
-		counter++;
-	}
-}
-#endif
-#endif /* PLATFORM_FREEBSD Baron */
 
 /* AES tables*/
 const u32 Te0[256] = {
@@ -2626,7 +2584,6 @@ const u8 rcons[] = {
  *
  * @return	the number of rounds for the given cipher key size.
  */
-#ifndef PLATFORM_FREEBSD /* Baron */
 static void rijndaelKeySetupEnc(u32 rk[/*44*/], const u8 cipherKey[])
 {
 	int i;
@@ -2843,7 +2800,6 @@ int omac1_aes_128(const u8 *key, const u8 *data, size_t data_len, u8 *mac)
 {
 	return omac1_aes_128_vector(key, 1, &data, &data_len, mac);
 }
-#endif /* PLATFORM_FREEBSD Baron */
 
 #ifdef CONFIG_RTW_MESH_AEK
 /* for AES-SIV */
