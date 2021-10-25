@@ -2704,10 +2704,6 @@ u8 rtw_init_drv_sw(_adapter *padapter)
 	rtw_wapi_init(padapter);
 #endif
 
-#ifdef CONFIG_BR_EXT
-	_rtw_spinlock_init(&padapter->br_ext_lock);
-#endif /* CONFIG_BR_EXT */
-
 #ifdef CONFIG_BEAMFORMING
 #ifdef RTW_BEAMFORMING_VERSION_2
 	rtw_bf_init(padapter);
@@ -2820,10 +2816,6 @@ u8 rtw_free_drv_sw(_adapter *padapter)
 	#endif
 	/* add for CONFIG_IEEE80211W, none 11w also can use */
 	_rtw_spinlock_free(&padapter->security_key_mutex);
-
-#ifdef CONFIG_BR_EXT
-	_rtw_spinlock_free(&padapter->br_ext_lock);
-#endif /* CONFIG_BR_EXT */
 
 	free_mlme_ext_priv(&padapter->mlmeextpriv);
 
@@ -3460,47 +3452,6 @@ void rtw_os_ndevs_deinit(struct dvobj_priv *dvobj)
 	rtw_os_ndevs_free(dvobj);
 }
 
-#ifdef CONFIG_BR_EXT
-void netdev_br_init(struct net_device *netdev)
-{
-	_adapter *adapter = (_adapter *)rtw_netdev_priv(netdev);
-
-#if (LINUX_VERSION_CODE > KERNEL_VERSION(2, 6, 35))
-	rcu_read_lock();
-#endif
-
-	/* if(check_fwstate(pmlmepriv, WIFI_STATION_STATE|WIFI_ADHOC_STATE) == _TRUE) */
-	{
-		/* struct net_bridge	*br = netdev->br_port->br; */ /* ->dev->dev_addr; */
-		#if (LINUX_VERSION_CODE <= KERNEL_VERSION(2, 6, 35))
-		if (netdev->br_port)
-		#else
-		if (rcu_dereference(adapter->pnetdev->rx_handler_data))
-		#endif
-		{
-			struct net_device *br_netdev;
-
-			br_netdev = rtw_get_bridge_ndev_by_name(CONFIG_BR_EXT_BRNAME);
-			if (br_netdev) {
-				memcpy(adapter->br_mac, br_netdev->dev_addr, ETH_ALEN);
-				dev_put(br_netdev);
-				RTW_INFO(FUNC_NDEV_FMT" bind bridge dev "NDEV_FMT"("MAC_FMT")\n"
-					, FUNC_NDEV_ARG(netdev), NDEV_ARG(br_netdev), MAC_ARG(br_netdev->dev_addr));
-			} else {
-				RTW_INFO(FUNC_NDEV_FMT" can't get bridge dev by name \"%s\"\n"
-					, FUNC_NDEV_ARG(netdev), CONFIG_BR_EXT_BRNAME);
-			}
-		}
-
-		adapter->ethBrExtInfo.addPPPoETag = 1;
-	}
-
-#if (LINUX_VERSION_CODE > KERNEL_VERSION(2, 6, 35))
-	rcu_read_unlock();
-#endif
-}
-#endif /* CONFIG_BR_EXT */
-
 #ifdef CONFIG_NEW_NETDEV_HDL
 int _netdev_open(struct net_device *pnetdev)
 {
@@ -3573,12 +3524,6 @@ int _netdev_open(struct net_device *pnetdev)
 		#endif
 		/* rtw_netif_carrier_on(pnetdev); */ /* call this func when rtw_joinbss_event_callback return success */
 		rtw_netif_wake_queue(pnetdev);
-
-		#ifdef CONFIG_BR_EXT
-		if (is_primary_adapter(padapter))
-			netdev_br_init(pnetdev);
-		#endif /* CONFIG_BR_EXT */
-
 
 		padapter->bup = _TRUE;
 		padapter->net_closed = _FALSE;
@@ -3705,10 +3650,6 @@ int _netdev_open(struct net_device *pnetdev)
 
 	/* rtw_netif_carrier_on(pnetdev); */ /* call this func when rtw_joinbss_event_callback return success */
 	rtw_netif_wake_queue(pnetdev);
-
-#ifdef CONFIG_BR_EXT
-	netdev_br_init(pnetdev);
-#endif /* CONFIG_BR_EXT */
 
 #ifdef CONFIG_BT_COEXIST_SOCKET_TRX
 	if (is_primary_adapter(padapter) && (_TRUE == pHalData->EEPROMBluetoothCoexist)) {
@@ -4082,14 +4023,6 @@ static int netdev_close(struct net_device *pnetdev)
 		rtw_free_network_queue(padapter, _TRUE);
 #endif
 	}
-
-#ifdef CONFIG_BR_EXT
-	/* if (OPMODE & (WIFI_STATION_STATE | WIFI_ADHOC_STATE)) */
-	{
-		/* void nat25_db_cleanup(_adapter *priv); */
-		nat25_db_cleanup(padapter);
-	}
-#endif /* CONFIG_BR_EXT */
 
 #ifdef CONFIG_P2P
 	if (!rtw_p2p_chk_role(&padapter->wdinfo, P2P_ROLE_DISABLE))

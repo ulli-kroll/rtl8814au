@@ -25,9 +25,6 @@
 	#ifndef CONFIG_CONCURRENT_MODE
 		#define CONFIG_CONCURRENT_MODE
 	#endif
-	#ifndef CONFIG_BR_EXT
-		#define CONFIG_BR_EXT
-	#endif
 	#ifndef CONFIG_RTW_REPEATER_SON_ID
 		#define CONFIG_RTW_REPEATER_SON_ID			0x02040608
 	#endif
