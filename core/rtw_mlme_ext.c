@@ -9997,11 +9997,7 @@ static int issue_action_ba(_adapter *padapter, unsigned char *raddr, unsigned ch
 			} while (pmlmeinfo->dialogToken == 0);
 			pframe = rtw_set_fixed_ie(pframe, 1, &(pmlmeinfo->dialogToken), &(pattrib->pktlen));
 
-#if defined(CONFIG_RTL8188E) && defined(CONFIG_SDIO_HCI)
-			BA_para_set = (0x0802 | ((tid & 0xf) << 2)); /* immediate ack & 16 buffer size */
-#else
 			BA_para_set = (0x1002 | ((tid & 0xf) << 2)); /* immediate ack & 64 buffer size */
-#endif
 
 #ifdef CONFIG_TX_AMSDU
 			if (padapter->tx_amsdu >= 1) /* TX AMSDU  enabled */
@@ -10687,7 +10683,7 @@ unsigned int send_beacon(_adapter *padapter)
 #endif
 
 /* CONFIG_PCI_BCN_POLLING is for pci interface beacon polling mode */
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)|| defined(CONFIG_PCI_BCN_POLLING) 
+#if defined(CONFIG_USB_HCI) || defined(CONFIG_PCI_BCN_POLLING) 
 	u8 bxmitok = _FALSE;
 	int issue = 0;
 	int poll = 0;
@@ -10769,7 +10765,7 @@ unsigned int send_beacon(_adapter *padapter)
 		return _SUCCESS;
 	}
 
-#endif /*defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)*/
+#endif /*defined(CONFIG_USB_HCI) */
 
 }
 

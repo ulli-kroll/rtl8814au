@@ -2085,9 +2085,6 @@ u32 rtw_start_drv_threads(_adapter *padapter)
 	RTW_INFO(FUNC_ADPT_FMT" enter\n", FUNC_ADPT_ARG(padapter));
 
 #ifdef CONFIG_XMIT_THREAD_MODE
-#if defined(CONFIG_SDIO_HCI)
-	if (is_primary_adapter(padapter))
-#endif
 	{
 		if (padapter->xmitThread == NULL) {
 			RTW_INFO(FUNC_ADPT_FMT " start RTW_XMIT_THREAD\n", FUNC_ADPT_ARG(padapter));
@@ -2159,10 +2156,6 @@ void rtw_stop_drv_threads(_adapter *padapter)
 
 #ifdef CONFIG_XMIT_THREAD_MODE
 	/* Below is to termindate tx_thread... */
-#if defined(CONFIG_SDIO_HCI)
-	/* Only wake-up primary adapter */
-	if (is_primary_adapter(padapter))
-#endif  /*SDIO_HCI */
 	{
 		if (padapter->xmitThread) {
 			_rtw_up_sema(&padapter->xmitpriv.xmit_sema);
@@ -4547,13 +4540,6 @@ int rtw_suspend_wow(_adapter *padapter)
 		/* 0. Power off LED */
 		rtw_led_control(padapter, LED_CTL_POWER_OFF);
 
-#if defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
-		/* 2.only for SDIO disable interrupt */
-		rtw_intf_stop(padapter);
-
-		/* 2.1 clean interrupt */
-		rtw_hal_clear_interrupt(padapter);
-#endif /* CONFIG_SDIO_HCI */
 
 		/* 1. stop thread */
 		rtw_set_drv_stopped(padapter);	/*for stop thread*/
@@ -4564,13 +4550,6 @@ int rtw_suspend_wow(_adapter *padapter)
 		/* #ifdef CONFIG_LPS */
 		/* rtw_set_ps_mode(padapter, PS_MODE_ACTIVE, 0, 0, "WOWLAN"); */
 		/* #endif */
-
-		#ifdef CONFIG_SDIO_HCI
-		/* 2.2 free irq */
-		#if !(CONFIG_RTW_SDIO_KEEP_IRQ)
-		sdio_free_irq(adapter_to_dvobj(padapter));
-		#endif
-		#endif/*CONFIG_SDIO_HCI*/
 
 #ifdef CONFIG_RUNTIME_PORT_SWITCH
 		if (rtw_port_switch_chk(padapter)) {
@@ -4669,25 +4648,12 @@ int rtw_suspend_ap_wow(_adapter *padapter)
 
 	/* 0. Power off LED */
 	rtw_led_control(padapter, LED_CTL_POWER_OFF);
-#ifdef CONFIG_SDIO_HCI
-	/* 2.only for SDIO disable interrupt*/
-	rtw_intf_stop(padapter);
-
-	/* 2.1 clean interrupt */
-	rtw_hal_clear_interrupt(padapter);
-#endif /* CONFIG_SDIO_HCI */
 
 	/* 1. stop thread */
 	rtw_set_drv_stopped(padapter);	/*for stop thread*/
 	rtw_mi_stop_drv_threads(padapter);
 	rtw_clr_drv_stopped(padapter);	/*for 32k command*/
 
-	#ifdef CONFIG_SDIO_HCI
-	/* 2.2 free irq */
-	#if !(CONFIG_RTW_SDIO_KEEP_IRQ)
-	sdio_free_irq(adapter_to_dvobj(padapter));
-	#endif
-	#endif/*CONFIG_SDIO_HCI*/
 
 #ifdef CONFIG_RUNTIME_PORT_SWITCH
 	if (rtw_port_switch_chk(padapter)) {
@@ -4776,13 +4742,6 @@ int rtw_suspend_normal(_adapter *padapter)
 #endif
 	rtw_dev_unload(padapter);
 
-	#ifdef CONFIG_SDIO_HCI
-	sdio_deinit(adapter_to_dvobj(padapter));
-
-	#if !(CONFIG_RTW_SDIO_KEEP_IRQ)
-	sdio_free_irq(adapter_to_dvobj(padapter));
-	#endif
-	#endif /*CONFIG_SDIO_HCI*/
 
 	RTW_INFO("<== "FUNC_ADPT_FMT" exit....\n", FUNC_ADPT_ARG(padapter));
 	return ret;
@@ -4922,19 +4881,10 @@ int rtw_resume_process_wow(_adapter *padapter)
 
 		pwrpriv->bFwCurrentInPSMode = _FALSE;
 
-#if defined(CONFIG_SDIO_HCI) || defined(CONFIG_PCI_HCI)
+#if defined(CONFIG_PCI_HCI)
 		rtw_mi_intf_stop(padapter);
 		rtw_hal_clear_interrupt(padapter);
 #endif
-
-		#ifdef CONFIG_SDIO_HCI
-		#if !(CONFIG_RTW_SDIO_KEEP_IRQ)
-		if (sdio_alloc_irq(adapter_to_dvobj(padapter)) != _SUCCESS) {
-			ret = -1;
-			goto exit;
-		}
-		#endif
-		#endif/*CONFIG_SDIO_HCI*/
 
 		/* Disable WOW, set H2C command */
 		poidparam.subcode = WOWLAN_DISABLE;
@@ -5073,14 +5023,6 @@ int rtw_resume_process_ap_wow(_adapter *padapter)
 
 	rtw_hal_clear_interrupt(padapter);
 
-	#ifdef CONFIG_SDIO_HCI
-	#if !(CONFIG_RTW_SDIO_KEEP_IRQ)
-	if (sdio_alloc_irq(adapter_to_dvobj(padapter)) != _SUCCESS) {
-		ret = -1;
-		goto exit;
-	}
-	#endif
-	#endif/*CONFIG_SDIO_HCI*/
 	/* Disable WOW, set H2C command */
 	poidparam.subcode = WOWLAN_AP_DISABLE;
 	rtw_hal_set_hwreg(padapter, HW_VAR_WOWLAN, (u8 *)&poidparam);
@@ -5209,25 +5151,10 @@ int rtw_resume_process_normal(_adapter *padapter)
 
 	RTW_INFO("==> "FUNC_ADPT_FMT" entry....\n", FUNC_ADPT_ARG(padapter));
 
-	#ifdef CONFIG_SDIO_HCI
-	/* interface init */
-	if (sdio_init(adapter_to_dvobj(padapter)) != _SUCCESS) {
-		ret = -1;
-		goto exit;
-	}
-	#endif/*CONFIG_SDIO_HCI*/
 
 	rtw_clr_surprise_removed(padapter);
 	rtw_hal_disable_interrupt(padapter);
 
-	#ifdef CONFIG_SDIO_HCI
-	#if !(CONFIG_RTW_SDIO_KEEP_IRQ)
-	if (sdio_alloc_irq(adapter_to_dvobj(padapter)) != _SUCCESS) {
-		ret = -1;
-		goto exit;
-	}
-	#endif
-	#endif/*CONFIG_SDIO_HCI*/
 
 	rtw_mi_reset_drv_sw(padapter);
 

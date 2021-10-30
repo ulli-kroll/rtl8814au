@@ -10296,10 +10296,6 @@ static int rtw_tdls_get(struct net_device *dev,
 #include <rtl8188e_hal.h>
 extern void rtl8188e_cal_txdesc_chksum(struct tx_desc *ptxdesc);
 #define cal_txdesc_chksum rtl8188e_cal_txdesc_chksum
-#ifdef CONFIG_SDIO_HCI || defined(CONFIG_GSPI_HCI)
-extern void rtl8188es_fill_default_txdesc(struct xmit_frame *pxmitframe, u8 *pbuf);
-#define fill_default_txdesc rtl8188es_fill_default_txdesc
-#endif /* CONFIG_SDIO_HCI */
 #endif /* CONFIG_RTL8188E */
 #if defined(CONFIG_RTL8723B)
 extern void rtl8723b_cal_txdesc_chksum(struct tx_desc *ptxdesc);
@@ -10330,10 +10326,6 @@ extern void rtl8723b_fill_default_txdesc(struct xmit_frame *pxmitframe, u8 *pbuf
 #if defined(CONFIG_RTL8192E)
 extern void rtl8192e_cal_txdesc_chksum(struct tx_desc *ptxdesc);
 #define cal_txdesc_chksum rtl8192e_cal_txdesc_chksum
-#ifdef CONFIG_SDIO_HCI || defined(CONFIG_GSPI_HCI)
-extern void rtl8192es_fill_default_txdesc(struct xmit_frame *pxmitframe, u8 *pbuf);
-#define fill_default_txdesc rtl8192es_fill_default_txdesc
-#endif /* CONFIG_SDIO_HCI */
 #endif /* CONFIG_RTL8192E */
 
 #if defined(CONFIG_RTL8192F)
