@@ -30,9 +30,6 @@ typedef struct txdescriptor_8814 {
 
 
 
-#ifdef CONFIG_SDIO_HCI
-	#define SET_TX_DESC_SDIO_TXSEQ_8814A(__pTxDesc, __Value)			SET_BITS_TO_LE_4BYTE(__pTxDesc+28, 16, 8, __Value)
-#endif /* CONFIG_SDIO_HCI */
 
 /* -----------------------------------------------------------------
  *	RTL8814A TX BUFFER DESC
@@ -221,7 +218,7 @@ typedef struct txdescriptor_8814 {
 #ifdef CONFIG_PCI_HCI
 	#define SET_TX_DESC_TX_BUFFER_SIZE_8814A(__pTxDesc, __Value)		SET_BITS_TO_LE_4BYTE(__pTxDesc+28, 0, 16, __Value)
 #endif
-#if defined(CONFIG_SDIO_HCI)|| defined(CONFIG_USB_HCI)
+#if defined(CONFIG_USB_HCI)
 	#define SET_TX_DESC_TX_DESC_CHECKSUM_8814A(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+28, 0, 16, __Value)
 #endif
 #define SET_TX_DESC_NTX_MAP_8814A(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+28, 20, 4, __Value)
@@ -236,9 +233,6 @@ typedef struct txdescriptor_8814 {
 #define SET_TX_DESC_HWSEQ_EN_8814A(__pTxDesc, __Value)			SET_BITS_TO_LE_4BYTE(__pTxDesc+32, 15, 1, __Value)
 #if defined(CONFIG_PCI_HCI)|| defined(CONFIG_USB_HCI)
 	#define SET_TX_DESC_NEXT_HEAD_PAGE_L_8814A(__pTxDesc, __Value)(__pTxDesc, __Value)	SET_BITS_TO_LE_4BYTE(__pTxDesc+32, 16, 8, __Value)
-#endif
-#ifdef CONFIG_SDIO_HCI
-	#define SET_TX_DESC_SDIO_SEQ_8814A(__pTxDesc, __Value)(__pTxDesc, __Value) 			SET_BITS_TO_LE_4BYTE(__pTxDesc+32, 16, 8, __Value) /* 20130415 KaiYuan add for 8814AS */
 #endif
 #define SET_TX_DESC_TAIL_PAGE_L_8814A(__pTxDesc, __Value)(__pTxDesc, __Value)			SET_BITS_TO_LE_4BYTE(__pTxDesc+32, 24, 8, __Value)
 

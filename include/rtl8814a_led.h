@@ -27,10 +27,6 @@
 	void rtl8814ae_InitSwLeds(PADAPTER padapter);
 	void rtl8814ae_DeInitSwLeds(PADAPTER padapter);
 #endif /* CONFIG_PCI_HCI */
-#ifdef CONFIG_SDIO_HCI
-	void rtl8814s_InitSwLeds(PADAPTER padapter);
-	void rtl8814s_DeInitSwLeds(PADAPTER padapter);
-#endif /* CONFIG_SDIO_HCI */
 
 #endif /* __RTL8814A_LED_H__ */
 #endif /*CONFIG_RTW_SW_LED*/

@@ -42,15 +42,6 @@
 	* #endif */
 
 
-#elif defined(CONFIG_SDIO_HCI)
-	#if 0
-		/* temp solution */
-		#ifdef CONFIG_SDIO_RX_COPY
-			#define MAX_RECVBUF_SZ (10240)
-		#else /*  !CONFIG_SDIO_RX_COPY */
-			#define MAX_RECVBUF_SZ	MAX_RX_DMA_BUFFER_SIZE_8821
-		#endif /*  !CONFIG_SDIO_RX_COPY */
-	#endif
 #endif
 
 
@@ -171,10 +162,6 @@
 
 #if 0
 	/* temp solution */
-	#ifdef CONFIG_SDIO_HCI
-		s32 InitRecvPriv8821AS(PADAPTER padapter);
-		void FreeRecvPriv8821AS(PADAPTER padapter);
-	#endif /*  CONFIG_SDIO_HCI */
 #endif
 
 void rtl8814_query_rx_desc_status(union recv_frame *precvframe, u8 *pdesc);

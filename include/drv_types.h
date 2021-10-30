@@ -529,14 +529,7 @@ typedef struct rtw_if_operations {
 				 size_t len, bool fixed);
 } RTW_IF_OPS, *PRTW_IF_OPS;
 
-#ifdef CONFIG_SDIO_HCI
-	#include <drv_types_sdio.h>
-	#define INTF_DATA	SDIO_DATA
-	#define INTF_OPS	PRTW_IF_OPS
-#elif defined(CONFIG_GSPI_HCI)
-	#include <drv_types_gspi.h>
-	#define INTF_DATA GSPI_DATA
-#elif defined(CONFIG_PCI_HCI)
+#if defined(CONFIG_PCI_HCI)
 	#include <drv_types_pci.h>
 #endif
 
@@ -1016,10 +1009,6 @@ struct halmacpriv {
 	struct halmac_indicator *indicator;
 
 	/* Hardware parameters */
-#ifdef CONFIG_SDIO_HCI
-	/* Store hardware tx queue page number setting */
-	u16 txpage[HW_QUEUE_ENTRY];
-#endif /* CONFIG_SDIO_HCI */
 };
 #endif /* RTW_HALMAC */
 
@@ -1353,12 +1342,6 @@ static inline struct device *dvobj_to_dev(struct dvobj_priv *dvobj)
 
 #ifdef CONFIG_USB_HCI
 	return &dvobj->pusbintf->dev;
-#endif
-#ifdef CONFIG_SDIO_HCI
-	return &dvobj->intf_data.func->dev;
-#endif
-#ifdef CONFIG_GSPI_HCI
-	return &dvobj->intf_data.func->dev;
 #endif
 #ifdef CONFIG_PCI_HCI
 	return &dvobj->ppcidev->dev;
@@ -1778,18 +1761,6 @@ int rtw_suspend_free_assoc_resource(_adapter *padapter);
 	#include <usb_osintf.h>
 	#include <usb_ops.h>
 	#include <usb_hal.h>
-#endif
-
-#ifdef CONFIG_SDIO_HCI
-	#include <sdio_osintf.h>
-	#include <sdio_ops.h>
-	#include <sdio_hal.h>
-#endif
-
-#ifdef CONFIG_GSPI_HCI
-	#include <gspi_osintf.h>
-	#include <gspi_ops.h>
-	#include <gspi_hal.h>
 #endif
 
 #ifdef CONFIG_PCI_HCI

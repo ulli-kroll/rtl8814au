@@ -16,32 +16,7 @@
 #define _RTW_XMIT_H_
 
 
-#if defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
-	#ifdef CONFIG_TX_AGGREGATION
-		#ifdef CONFIG_RTL8822C
-			#ifdef CONFIG_SDIO_TX_FORMAT_DUMMY_AUTO
-				#define MAX_XMITBUF_SZ	(51200)
-			#else
-				#define MAX_XMITBUF_SZ	(32764)
-			#endif
-		#else
-			#define MAX_XMITBUF_SZ	(20480)	/* 20k */
-		#endif
-		/* #define SDIO_TX_AGG_MAX	5 */
-	#else
-		#define MAX_XMITBUF_SZ (1664)
-		#define SDIO_TX_AGG_MAX	1
-	#endif
-
-	#if defined CONFIG_SDIO_HCI
-		#define NR_XMITBUFF	(16)
-		#define SDIO_TX_DIV_NUM (2)
-	#endif
-	#if defined(CONFIG_GSPI_HCI)
-		#define NR_XMITBUFF	(128)
-	#endif
-
-#elif defined (CONFIG_USB_HCI)
+#if defined (CONFIG_USB_HCI)
 
 	#ifdef CONFIG_USB_TX_AGGREGATION
 		#if defined(CONFIG_PLATFORM_ARM_SUNxI) || defined(CONFIG_PLATFORM_ARM_SUN6I) || defined(CONFIG_PLATFORM_ARM_SUN7I) || defined(CONFIG_PLATFORM_ARM_SUN8I) || defined(CONFIG_PLATFORM_ARM_SUN50IW1P1)
@@ -212,10 +187,6 @@
 	#define EARLY_MODE_INFO_SIZE	8
 #endif
 
-
-#if defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
-	#define TXDESC_OFFSET TXDESC_SIZE
-#endif
 
 #ifdef CONFIG_USB_HCI
 	#ifdef USB_PACKET_OFFSET_SZ
@@ -615,16 +586,6 @@ struct xmit_buf {
 
 #endif
 
-#if defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
-	u8 *phead;
-	u8 *pdata;
-	u8 *ptail;
-	u8 *pend;
-	u32 ff_hwaddr;
-	u8	pg_num;
-	u8	agg_num;
-#endif
-
 #ifdef CONFIG_PCI_HCI
 #ifdef CONFIG_TRX_BD_ARCH
 	/*struct tx_buf_desc *buf_desc;*/
@@ -654,11 +615,6 @@ struct xmit_frame {
 	u8	*buf_addr;
 
 	struct xmit_buf *pxmitbuf;
-
-#if defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
-	u8	pg_num;
-	u8	agg_num;
-#endif
 
 #ifdef CONFIG_USB_HCI
 #ifdef CONFIG_USB_TX_AGGREGATION
@@ -807,18 +763,6 @@ struct	xmit_priv	{
 	_tasklet xmit_tasklet;
 #endif
 
-#if defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
-#ifdef CONFIG_SDIO_TX_TASKLET
-	_tasklet xmit_tasklet;
-#else
-	_thread_hdl_	SdioXmitThread;
-	_sema		SdioXmitSema;
-	#ifdef SDIO_FREE_XMIT_BUF_SEMA
-	_sema		sdio_free_xmitbuf_sema;
-	#endif
-#endif /* CONFIG_SDIO_TX_TASKLET */
-#endif /* CONFIG_SDIO_HCI */
-
 	_queue free_xmitbuf_queue;
 	_queue pending_xmitbuf_queue;
 	u8 *pallocated_xmitbuf;
@@ -835,11 +779,7 @@ struct	xmit_priv	{
 	u16	nqos_ssn;
 #ifdef CONFIG_TX_EARLY_MODE
 
-#ifdef CONFIG_SDIO_HCI
-#define MAX_AGG_PKT_NUM 20
-#else
 #define MAX_AGG_PKT_NUM 256 /* Max tx ampdu coounts		 */
-#endif
 
 	struct agg_pkt_info agg_pkt[MAX_AGG_PKT_NUM];
 #endif

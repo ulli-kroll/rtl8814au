@@ -23,13 +23,6 @@
 #endif
 	#include <hal_btcoex_wifionly.h>
 
-#ifdef CONFIG_SDIO_HCI
-	#include <hal_sdio.h>
-#endif
-#ifdef CONFIG_GSPI_HCI
-	#include <hal_gspi.h>
-#endif
-
 #if defined(CONFIG_RTW_ACS) || defined(CONFIG_BACKGROUND_NOISE_MONITOR)
 #include "../hal/hal_dm_acs.h"
 #endif
@@ -622,73 +615,6 @@ typedef struct hal_com_data {
 	u8 rxagg_dma_size;
 	u8 rxagg_dma_timeout;
 #endif /* RTW_RX_AGGREGATION */
-
-#if defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
-	/*  */
-	/* For SDIO Interface HAL related */
-	/*  */
-
-	/*  */
-	/* SDIO ISR Related */
-	/*
-	*	u32			IntrMask[1];
-	*	u32			IntrMaskToSet[1];
-	*	LOG_INTERRUPT		InterruptLog; */
-	u32			sdio_himr;
-	u32			sdio_hisr;
-#ifndef RTW_HALMAC
-	/*  */
-	/* SDIO Tx FIFO related. */
-	/*  */
-	/* HIQ, MID, LOW, PUB free pages; padapter->xmitpriv.free_txpg */
-#ifdef CONFIG_RTL8192F
-	u16			SdioTxFIFOFreePage[SDIO_TX_FREE_PG_QUEUE];
-#else
-	u8			SdioTxFIFOFreePage[SDIO_TX_FREE_PG_QUEUE];
-#endif/*CONFIG_RTL8192F*/
-#ifdef CONFIG_SDIO_TX_ENABLE_AVAL_INT
-	u8			sdio_avail_int_en_q;
-#endif
-	_lock		SdioTxFIFOFreePageLock;
-	u8			SdioTxOQTMaxFreeSpace;
-	u8			SdioTxOQTFreeSpace;
-#else /* RTW_HALMAC */
-	u16			SdioTxOQTFreeSpace;
-#endif /* RTW_HALMAC */
-
-	/*  */
-	/* SDIO Rx FIFO related. */
-	/*  */
-	u8			SdioRxFIFOCnt;
-#ifdef CONFIG_RTL8822C
-	u32			SdioRxFIFOSize;
-#else
-	u16			SdioRxFIFOSize;
-#endif
-
-#ifndef RTW_HALMAC
-	u32			sdio_tx_max_len[SDIO_MAX_TX_QUEUE];/* H, N, L, used for sdio tx aggregation max length per queue */
-#else
-#ifdef CONFIG_RTL8821C
-	u16			tx_high_page;
-	u16			tx_low_page;
-	u16			tx_normal_page;
-	u16			tx_extra_page;
-	u16			tx_pub_page;
-	u8			max_oqt_size;
-	#ifdef XMIT_BUF_SIZE
-	u32			max_xmit_size_vovi;
-	u32			max_xmit_size_bebk;
-	#endif /*XMIT_BUF_SIZE*/
-	u16			max_xmit_page;
-	u16			max_xmit_page_vo;
-	u16			max_xmit_page_vi;
-	u16			max_xmit_page_be;
-	u16			max_xmit_page_bk;
-
-#endif /*#ifdef CONFIG_RTL8821C*/
-#endif /* !RTW_HALMAC */
-#endif /* CONFIG_SDIO_HCI */
 
 #ifdef CONFIG_USB_HCI
 

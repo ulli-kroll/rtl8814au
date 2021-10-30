@@ -203,15 +203,6 @@ int rtw_halmac_bt_wake_cfg(struct dvobj_priv *d, u8 enable);
 int rtw_halmac_pno_scanoffload(struct dvobj_priv *d, u32 enable);
 #endif
 
-#ifdef CONFIG_SDIO_HCI
-int rtw_halmac_query_tx_page_num(struct dvobj_priv *);
-int rtw_halmac_get_tx_queue_page_num(struct dvobj_priv *, u8 queue, u32 *page);
-u32 rtw_halmac_sdio_get_tx_addr(struct dvobj_priv *, u8 *desc, u32 size);
-int rtw_halmac_sdio_tx_allowed(struct dvobj_priv *, u8 *buf, u32 size);
-u32 rtw_halmac_sdio_get_rx_addr(struct dvobj_priv *, u8 *seq);
-int rtw_halmac_sdio_set_tx_format(struct dvobj_priv *d, enum halmac_sdio_tx_format format);
-#endif /* CONFIG_SDIO_HCI */
-
 #ifdef CONFIG_USB_HCI
 u8 rtw_halmac_usb_get_bulkout_id(struct dvobj_priv *, u8 *buf, u32 size);
 int rtw_halmac_usb_get_txagg_desc_num(struct dvobj_priv *d, u8 *num);

@@ -4816,10 +4816,6 @@ void rtw_hal_switch_gpio_wl_ctrl(_adapter *padapter, u8 index, u8 enable)
 	*/
 
 	if ((index == 13 || index == 14)
-		#if defined(CONFIG_RTL8821A) && defined(CONFIG_SDIO_HCI)
-		/* 8821A's LED2 circuit(used by HW_LED strategy) needs enable WL GPIO control of GPIO[14:13], can't disable */
-		&& (!IS_HW_LED_STRATEGY(rtw_led_get_strategy(padapter)) || enable)
-		#endif
 	)
 		rtw_hal_set_hwreg(padapter, HW_SET_GPIO_WL_CTRL, (u8 *)(&enable));
 }
@@ -5192,12 +5188,6 @@ static u8 rtw_hal_pause_rx_dma(_adapter *adapter)
 			ret = _SUCCESS;
 			break;
 		}
-#if defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
-		else {
-			res = RecvOnePkt(adapter);
-			RTW_PRINT("RecvOnePkt Result: %d\n", res);
-		}
-#endif /* CONFIG_SDIO_HCI || CONFIG_GSPI_HCI */
 
 #ifdef CONFIG_USB_HCI
 		else {
@@ -5231,41 +5221,6 @@ static u8 rtw_hal_pause_rx_dma(_adapter *adapter)
 	return ret;
 }
 
-#if defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
-#ifndef RTW_HALMAC
-static u8 rtw_hal_enable_cpwm2(_adapter *adapter)
-{
-	u8 ret = 0;
-	int res = 0;
-	u32 tmp = 0;
-#ifdef CONFIG_GPIO_WAKEUP
-	return _SUCCESS;
-#else
-	RTW_PRINT("%s\n", __func__);
-
-	res = sdio_local_read(adapter, SDIO_REG_HIMR, 4, (u8 *)&tmp);
-	if (!res)
-		RTW_INFO("read SDIO_REG_HIMR: 0x%08x\n", tmp);
-	else
-		RTW_INFO("sdio_local_read fail\n");
-
-	tmp = SDIO_HIMR_CPWM2_MSK;
-
-	res = sdio_local_write(adapter, SDIO_REG_HIMR, 4, (u8 *)&tmp);
-
-	if (!res) {
-		res = sdio_local_read(adapter, SDIO_REG_HIMR, 4, (u8 *)&tmp);
-		RTW_INFO("read again SDIO_REG_HIMR: 0x%08x\n", tmp);
-		ret = _SUCCESS;
-	} else {
-		RTW_INFO("sdio_local_write fail\n");
-		ret = _FAIL;
-	}
-	return ret;
-#endif /* CONFIG_CPIO_WAKEUP */
-}
-#endif
-#endif /* CONFIG_SDIO_HCI, CONFIG_GSPI_HCI */
 #endif /* CONFIG_WOWLAN || CONFIG_AP_WOWLAN */
 
 #ifdef CONFIG_WOWLAN
@@ -6234,13 +6189,6 @@ static void rtw_hal_ap_wow_enable(_adapter *padapter)
 	res = rtw_hal_pause_rx_dma(padapter);
 	if (res == _FAIL)
 		RTW_PRINT("[WARNING] pause RX DMA fail\n");
-
-#if defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
-	/* Enable CPWM2 only. */
-	res = rtw_hal_enable_cpwm2(padapter);
-	if (res == _FAIL)
-		RTW_PRINT("[WARNING] enable cpwm2 fail\n");
-#endif
 
 #ifdef CONFIG_GPIO_WAKEUP
 	rtw_hal_switch_gpio_wl_ctrl(padapter, WAKEUP_GPIO_IDX, _TRUE);
@@ -9942,12 +9890,6 @@ static void rtw_hal_wow_enable(_adapter *adapter)
 		}
 	}
 
-#if defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
-	/* Enable CPWM2 only. */
-	res = rtw_hal_enable_cpwm2(adapter);
-	if (res == _FAIL)
-		RTW_PRINT("[WARNING] enable cpwm2 fail\n");
-#endif
 #ifdef CONFIG_GPIO_WAKEUP
 	rtw_hal_switch_gpio_wl_ctrl(adapter, WAKEUP_GPIO_IDX, _TRUE);
 #endif
