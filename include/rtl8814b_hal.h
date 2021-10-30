@@ -222,12 +222,6 @@
 /* General Functions */
 void rtl8814b_init_hal_spec(PADAPTER);				/* hal/hal_com.c */
 
-#ifdef CONFIG_MP_INCLUDED
-/* MP Functions */
-#include <rtw_mp.h>		/* struct mp_priv */
-void rtl8814b_prepare_mp_txdesc(PADAPTER, struct mp_priv *);	/* rtw_mp.c */
-void rtl8814b_mp_config_rfpath(PADAPTER);			/* hal_mp.c */
-#endif
 void hw_var_set_dl_rsvd_page(PADAPTER adapter, u8 mstatus);
 
 #ifdef CONFIG_USB_HCI

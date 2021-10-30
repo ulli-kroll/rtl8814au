@@ -225,9 +225,6 @@ extern char *rtw_fw_file_path;
 #ifdef CONFIG_WOWLAN
 extern char *rtw_fw_wow_file_path;
 #endif
-#ifdef CONFIG_MP_INCLUDED
-extern char *rtw_fw_mp_bt_file_path;
-#endif /* CONFIG_MP_INCLUDED */
 #endif /* CONFIG_FILE_FWIMG */
 
 /* rtl8814_hal_init.c */

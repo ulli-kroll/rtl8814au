@@ -144,11 +144,6 @@ u8 get_tssivalue(struct dm_struct *dm, enum pwrtrack_method method, u8 rf_path)
 		tx_rate = mpt_to_mgnt_rate(p_mpt_ctx->mpt_rate_index);
 #endif
 #elif (DM_ODM_SUPPORT_TYPE & ODM_CE)
-#ifdef CONFIG_MP_INCLUDED
-		PMPT_CONTEXT p_mpt_ctx = &(adapter->mppriv.mpt_ctx);
-
-		tx_rate = mpt_to_mgnt_rate(p_mpt_ctx->mpt_rate_index);
-#endif
 #endif
 #endif
 	} else {
@@ -555,11 +550,6 @@ void set_tx_agc_bb_swing_offset(struct dm_struct *dm,
 		tx_rate = mpt_to_mgnt_rate(p_mpt_ctx->mpt_rate_index);
 #endif
 #elif (DM_ODM_SUPPORT_TYPE & ODM_CE)
-#ifdef CONFIG_MP_INCLUDED
-		PMPT_CONTEXT p_mpt_ctx = &(adapter->mppriv.mpt_ctx);
-
-		tx_rate = mpt_to_mgnt_rate(p_mpt_ctx->mpt_rate_index);
-#endif
 #endif
 #endif
 	} else {
@@ -1205,11 +1195,6 @@ void power_tracking_by_mix_mode(struct dm_struct *dm,
 		tx_rate = mpt_to_mgnt_rate(p_mpt_ctx->mpt_rate_index);
 #endif
 #elif (DM_ODM_SUPPORT_TYPE & ODM_CE)
-#ifdef CONFIG_MP_INCLUDED
-		PMPT_CONTEXT p_mpt_ctx = &(adapter->mppriv.mpt_ctx);
-
-		tx_rate = mpt_to_mgnt_rate(p_mpt_ctx->mpt_rate_index);
-#endif
 #endif
 #endif
 	} else {
@@ -1412,11 +1397,6 @@ void get_delta_swing_table_8814a(void *dm_void, u8 **temperature_up_a,
 		tx_rate = mpt_to_mgnt_rate(p_mpt_ctx->mpt_rate_index);
 #endif
 #elif (DM_ODM_SUPPORT_TYPE & ODM_CE)
-#ifdef CONFIG_MP_INCLUDED
-		PMPT_CONTEXT p_mpt_ctx = &(adapter->mppriv.mpt_ctx);
-
-		tx_rate = mpt_to_mgnt_rate(p_mpt_ctx->mpt_rate_index);
-#endif
 #endif
 #endif
 	} else {
@@ -1497,11 +1477,6 @@ void get_delta_swing_table_8814a_path_cd(void *dm_void, u8 **temperature_up_c,
 		tx_rate = mpt_to_mgnt_rate(p_mpt_ctx->mpt_rate_index);
 #endif
 #elif (DM_ODM_SUPPORT_TYPE & ODM_CE)
-#ifdef CONFIG_MP_INCLUDED
-		PMPT_CONTEXT p_mpt_ctx = &(adapter->mppriv.mpt_ctx);
-
-		tx_rate = mpt_to_mgnt_rate(p_mpt_ctx->mpt_rate_index);
-#endif
 #endif
 #endif
 	} else {

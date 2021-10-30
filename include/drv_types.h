@@ -122,10 +122,6 @@ typedef struct _ADAPTER _adapter, ADAPTER, *PADAPTER;
 	#include <rtw_wapi.h>
 #endif /* CONFIG_WAPI_SUPPORT */
 
-#ifdef CONFIG_MP_INCLUDED
-	#include <rtw_mp.h>
-#endif /* CONFIG_MP_INCLUDED */
-
 #ifdef CONFIG_IOL
 	#include <rtw_iol.h>
 #endif /* CONFIG_IOL */
@@ -206,9 +202,6 @@ struct registry_priv {
 	u16	max_bss_cnt;
 	u8	ack_policy;
 	u8	mp_mode;
-#if defined(CONFIG_MP_INCLUDED) && defined(CONFIG_RTW_CUSTOMER_STR)
-	u8 mp_customer_str;
-#endif
 	u8  mp_dm;
 	u8	software_encrypt;
 	u8	software_decrypt;
@@ -1440,10 +1433,6 @@ struct _ADAPTER {
 #ifdef CONFIG_RTW_NAPI
 	struct	napi_struct napi;
 	u8	napi_state;
-#endif
-
-#ifdef CONFIG_MP_INCLUDED
-	struct	mp_priv	mppriv;
 #endif
 
 #ifdef CONFIG_AP_MODE

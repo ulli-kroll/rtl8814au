@@ -1459,14 +1459,6 @@ u8 _rtw_sitesurvey_condition_check(const char *caller, _adapter *adapter, bool c
 	struct registry_priv *registry_par = &adapter->registrypriv;
 #endif
 
-#ifdef CONFIG_MP_INCLUDED
-	if (rtw_mp_mode_check(adapter)) {
-		RTW_INFO("%s ("ADPT_FMT") MP mode block Scan request\n", caller, ADPT_ARG(adapter));
-		ss_condition = SS_DENY_MP_MODE;
-		goto _exit;
-	}
-#endif
-
 #ifdef DBG_LA_MODE
 	if(registry_par->la_mode_en == 1 && MLME_IS_ASOC(adapter)) {
 		RTW_INFO("%s ("ADPT_FMT") LA debug mode block Scan request\n", caller, ADPT_ARG(adapter));

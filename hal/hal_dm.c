@@ -469,12 +469,6 @@ void Init_ODM_ComInfo(_adapter *adapter)
 	/*halrf info hook*/
 	/* waiting for PhyDMV034 support*/
 	halrf_cmn_info_hook(pDM_Odm, HALRF_CMNINFO_MANUAL_RF_SUPPORTABILITY, &(adapter->registrypriv.halrf_ability));
-#ifdef CONFIG_MP_INCLUDED
-	halrf_cmn_info_hook(pDM_Odm, HALRF_CMNINFO_CON_TX, &(adapter->mppriv.mpt_ctx.is_start_cont_tx));
-	halrf_cmn_info_hook(pDM_Odm, HALRF_CMNINFO_SINGLE_TONE, &(adapter->mppriv.mpt_ctx.is_single_tone));
-	halrf_cmn_info_hook(pDM_Odm, HALRF_CMNINFO_CARRIER_SUPPRESSION, &(adapter->mppriv.mpt_ctx.is_carrier_suppression));
-	halrf_cmn_info_hook(pDM_Odm, HALRF_CMNINFO_MP_RATE_INDEX, &(adapter->mppriv.mpt_ctx.mpt_rate_index));
-#endif/*CONFIG_MP_INCLUDED*/
 	for (i = 0; i < ODM_ASSOCIATE_ENTRY_NUM; i++)
 		phydm_cmn_sta_info_hook(pDM_Odm, i, NULL);
 

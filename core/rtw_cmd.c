@@ -1178,10 +1178,6 @@ void rtw_getbbrfreg_cmdrsp_callback(_adapter	*padapter,  struct cmd_obj *pcmd)
 	rtw_mfree((unsigned char *) pcmd->parmbuf, pcmd->cmdsz);
 	rtw_mfree((unsigned char *) pcmd, sizeof(struct cmd_obj));
 
-#ifdef CONFIG_MP_INCLUDED
-	if (padapter->registrypriv.mp_mode == 1)
-		padapter->mppriv.workparam.bcompleted = _TRUE;
-#endif
 }
 
 void rtw_readtssi_cmdrsp_callback(_adapter	*padapter,  struct cmd_obj *pcmd)
@@ -1190,10 +1186,6 @@ void rtw_readtssi_cmdrsp_callback(_adapter	*padapter,  struct cmd_obj *pcmd)
 	rtw_mfree((unsigned char *) pcmd->parmbuf, pcmd->cmdsz);
 	rtw_mfree((unsigned char *) pcmd, sizeof(struct cmd_obj));
 
-#ifdef CONFIG_MP_INCLUDED
-	if (padapter->registrypriv.mp_mode == 1)
-		padapter->mppriv.workparam.bcompleted = _TRUE;
-#endif
 
 }
 
@@ -4712,188 +4704,6 @@ exit:
 	return res;
 }
 
-#ifdef CONFIG_MP_INCLUDED
-static s32 rtw_mp_cmd_hdl(_adapter *padapter, u8 mp_cmd_id)
-{
-	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
-	int ret = H2C_SUCCESS;
-	uint status = _SUCCESS;
-
-	if (mp_cmd_id == MP_START) {
-		if (padapter->registrypriv.mp_mode == 0) {
-			rtw_intf_stop(padapter);
-			rtw_hal_deinit(padapter);
-			padapter->registrypriv.mp_mode = 1;
-#if (CONFIG_BTCOEX_SUPPORT_WIFI_ONLY_CFG == 1)
-		padapter->mppriv.CureFuseBTCoex = pHalData->EEPROMBluetoothCoexist;
-		pHalData->EEPROMBluetoothCoexist = _FALSE;
-#endif
-#ifdef CONFIG_RF_POWER_TRIM
-			if (!IS_HARDWARE_TYPE_8814A(padapter) && !IS_HARDWARE_TYPE_8822B(padapter) && !IS_HARDWARE_TYPE_8822C(padapter)) {
-				padapter->registrypriv.RegPwrTrimEnable = 1;
-				rtw_hal_read_chip_info(padapter);
-			}
-#endif /*CONFIG_RF_POWER_TRIM*/
-			rtw_reset_drv_sw(padapter);
-#ifdef CONFIG_NEW_NETDEV_HDL
-			if (!rtw_is_hw_init_completed(padapter)) {
-				status = rtw_hal_init(padapter);
-				if (status == _FAIL) {
-					ret = H2C_REJECTED;
-					goto exit;
-				}
-				rtw_hal_iface_init(padapter);
-			}
-#else
-			status = rtw_hal_init(padapter);
-			if (status == _FAIL) {
-				ret = H2C_REJECTED;
-				goto exit;
-			}
-#endif /*CONFIG_NEW_NETDEV_HDL*/
-#ifndef RTW_HALMAC
-			rtw_intf_start(padapter);
-#endif /* !RTW_HALMAC */
-#ifdef RTW_HALMAC /*for New IC*/
-			MPT_InitializeAdapter(padapter, 1);
-#endif /* CONFIG_MP_INCLUDED */
-		}
-
-		if (padapter->registrypriv.mp_mode == 0) {
-			ret = H2C_REJECTED;
-			goto exit;
-		}
-
-		if (padapter->mppriv.mode == MP_OFF) {
-			if (mp_start_test(padapter) == _FAIL) {
-				ret = H2C_REJECTED;
-				goto exit;
-			}
-			padapter->mppriv.mode = MP_ON;
-			MPT_PwrCtlDM(padapter, 0);
-		}
-		padapter->mppriv.bmac_filter = _FALSE;
-#ifdef CONFIG_RTL8723B
-#ifdef CONFIG_USB_HCI
-		rtw_write32(padapter, 0x765, 0x0000);
-		rtw_write32(padapter, 0x948, 0x0280);
-#else
-		rtw_write32(padapter, 0x765, 0x0000);
-		rtw_write32(padapter, 0x948, 0x0000);
-#endif
-#ifdef CONFIG_FOR_RTL8723BS_VQ0
-		rtw_write32(padapter, 0x765, 0x0000);
-		rtw_write32(padapter, 0x948, 0x0280);
-#endif
-		rtw_write8(padapter, 0x66, 0x27); /*Open BT uart Log*/
-		rtw_write8(padapter, 0xc50, 0x20); /*for RX init Gain*/
-#endif
-		odm_write_dig(&pHalData->odmpriv, 0x20);
-
-	} else if (mp_cmd_id == MP_STOP) {
-		if (padapter->registrypriv.mp_mode == 1) {
-			MPT_DeInitAdapter(padapter);
-			rtw_intf_stop(padapter);
-			rtw_hal_deinit(padapter);
-			padapter->registrypriv.mp_mode = 0;
-#if (CONFIG_BTCOEX_SUPPORT_WIFI_ONLY_CFG == 1)
-			pHalData->EEPROMBluetoothCoexist = padapter->mppriv.CureFuseBTCoex;
-#endif
-			rtw_reset_drv_sw(padapter);
-#ifdef CONFIG_NEW_NETDEV_HDL
-			if (!rtw_is_hw_init_completed(padapter)) {
-				status = rtw_hal_init(padapter);
-				if (status == _FAIL) {
-					ret = H2C_REJECTED;
-					goto exit;
-				}
-				rtw_hal_iface_init(padapter);
-			}
-#else
-			status = rtw_hal_init(padapter);
-			if (status == _FAIL) {
-				ret = H2C_REJECTED;
-				goto exit;
-			}
-#endif /*CONFIG_NEW_NETDEV_HDL*/
-#ifndef RTW_HALMAC
-			rtw_intf_start(padapter);
-#endif /* !RTW_HALMAC */
-		}
-
-		if (padapter->mppriv.mode != MP_OFF) {
-			mp_stop_test(padapter);
-			padapter->mppriv.mode = MP_OFF;
-		}
-
-	} else {
-		RTW_INFO(FUNC_ADPT_FMT"invalid id:%d\n", FUNC_ADPT_ARG(padapter), mp_cmd_id);
-		ret = H2C_PARAMETERS_ERROR;
-		rtw_warn_on(1);
-	}
-
-exit:
-	return ret;
-}
-
-u8 rtw_mp_cmd(_adapter *adapter, u8 mp_cmd_id, u8 flags)
-{
-	struct cmd_obj *cmdobj;
-	struct drvextra_cmd_parm *parm;
-	struct cmd_priv *pcmdpriv = &adapter->cmdpriv;
-	struct submit_ctx sctx;
-	u8	res = _SUCCESS;
-
-	parm = (struct drvextra_cmd_parm *)rtw_zmalloc(sizeof(struct drvextra_cmd_parm));
-	if (parm == NULL) {
-		res = _FAIL;
-		goto exit;
-	}
-
-	parm->ec_id = MP_CMD_WK_CID;
-	parm->type = mp_cmd_id;
-	parm->size = 0;
-	parm->pbuf = NULL;
-
-	if (flags & RTW_CMDF_DIRECTLY) {
-		/* no need to enqueue, do the cmd hdl directly and free cmd parameter */
-		if (H2C_SUCCESS != rtw_mp_cmd_hdl(adapter, mp_cmd_id))
-			res = _FAIL;
-		rtw_mfree((u8 *)parm, sizeof(*parm));
-	} else {
-		/* need enqueue, prepare cmd_obj and enqueue */
-		cmdobj = (struct cmd_obj *)rtw_zmalloc(sizeof(*cmdobj));
-		if (cmdobj == NULL) {
-			res = _FAIL;
-			rtw_mfree((u8 *)parm, sizeof(*parm));
-			goto exit;
-		}
-
-		init_h2fwcmd_w_parm_no_rsp(cmdobj, parm, GEN_CMD_CODE(_Set_Drv_Extra));
-
-		if (flags & RTW_CMDF_WAIT_ACK) {
-			cmdobj->sctx = &sctx;
-			rtw_sctx_init(&sctx, 10 * 1000);
-		}
-
-		res = rtw_enqueue_cmd(pcmdpriv, cmdobj);
-
-		if (res == _SUCCESS && (flags & RTW_CMDF_WAIT_ACK)) {
-			rtw_sctx_wait(&sctx, __func__);
-			_enter_critical_mutex(&pcmdpriv->sctx_mutex, NULL);
-			if (sctx.status == RTW_SCTX_SUBMITTED)
-				cmdobj->sctx = NULL;
-			_exit_critical_mutex(&pcmdpriv->sctx_mutex, NULL);
-			if (sctx.status != RTW_SCTX_DONE_SUCCESS)
-				res = _FAIL;
-		}
-	}
-
-exit:
-	return res;
-}
-#endif	/*CONFIG_MP_INCLUDED*/
-
 #ifdef CONFIG_RTW_CUSTOMER_STR
 static s32 rtw_customer_str_cmd_hdl(_adapter *adapter, u8 write, const u8 *cstr)
 {
@@ -5598,9 +5408,6 @@ u8 rtw_drvextra_cmd_hdl(_adapter *padapter, unsigned char *pbuf)
 		rtw_hal_fill_h2c_cmd(padapter, pdrvextra_cmd->pbuf[0], pdrvextra_cmd->size - 1, &pdrvextra_cmd->pbuf[1]);
 		break;
 	case MP_CMD_WK_CID:
-#ifdef CONFIG_MP_INCLUDED
-		ret = rtw_mp_cmd_hdl(padapter, pdrvextra_cmd->type);
-#endif
 		break;
 #ifdef CONFIG_RTW_CUSTOMER_STR
 	case CUSTOMER_STR_WK_CID:
@@ -5827,10 +5634,6 @@ void rtw_getrttbl_cmd_cmdrsp_callback(_adapter	*padapter,  struct cmd_obj *pcmd)
 {
 
 	rtw_free_cmd_obj(pcmd);
-#ifdef CONFIG_MP_INCLUDED
-	if (padapter->registrypriv.mp_mode == 1)
-		padapter->mppriv.workparam.bcompleted = _TRUE;
-#endif
 
 
 }

@@ -2977,14 +2977,6 @@ bypass_p2p_chk:
 #else
 
 
-#ifdef CONFIG_MP_INCLUDED
-	if (rtw_mp_mode_check(padapter)) {
-		RTW_INFO("MP mode block Scan request\n");
-		ret = -EPERM;
-		goto exit;
-	}
-#endif
-
 #ifdef CONFIG_P2P
 	if (pwdinfo->driver_interface == DRIVER_CFG80211) {
 		if (request->n_ssids && ssids
@@ -6627,14 +6619,6 @@ static s32 cfg80211_rtw_remain_on_channel(struct wiphy *wiphy,
 		err = -EFAULT;
 		goto exit;
 	}
-
-#ifdef CONFIG_MP_INCLUDED
-	if (rtw_mp_mode_check(padapter)) {
-		RTW_INFO("MP mode block remain_on_channel request\n");
-		err = -EFAULT;
-		goto exit;
-	}
-#endif
 
 	if (_FAIL == rtw_pwr_wakeup(padapter)) {
 		err = -EFAULT;

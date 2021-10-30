@@ -2581,9 +2581,6 @@ u8 phy_get_pg_txpwr_idx(
 				}
 			}
 			if (i >= CENTER_CH_5G_80M_NUM) {
-			#ifdef CONFIG_MP_INCLUDED
-				if (rtw_mp_mode_check(pAdapter) == _FALSE)
-			#endif
 					rtw_warn_on(1);
 				txPower = 0;
 				goto exit;
@@ -3356,11 +3353,6 @@ _PHY_GetTxPowerLimit(_adapter *adapter
 	u8 final_bw = bw, final_cch = cch;
 	_irqL irqL;
 
-#ifdef CONFIG_MP_INCLUDED
-	/* MP mode channel don't use secondary channel */
-	if (rtw_mp_mode_check(adapter) == _TRUE)
-		no_sc = _TRUE;
-#endif
 	if (IS_CCK_RATE(rate)) {
 		tlrs = TXPWR_LMT_RS_CCK;
 		rs = CCK;

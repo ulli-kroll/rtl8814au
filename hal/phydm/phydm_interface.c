@@ -1467,12 +1467,6 @@ u8 phydm_get_tx_rate(struct dm_struct *dm)
 		tx_rate = MptToMgntRate(p_mpt_ctx->MptRateIndex);
 #endif
 #elif (DM_ODM_SUPPORT_TYPE & ODM_CE)
-#ifdef CONFIG_MP_INCLUDED
-		if (rf->mp_rate_index)
-			mpt_rate_index = *rf->mp_rate_index;
-
-		tx_rate = mpt_to_mgnt_rate(mpt_rate_index);
-#endif
 #endif
 #endif
 	} else {

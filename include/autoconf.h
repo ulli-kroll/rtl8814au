@@ -113,10 +113,6 @@
 		/* #endif */
 	#endif
 
-/* #else */	/* #ifndef CONFIG_MP_INCLUDED */
-
-/* #endif */	/* #ifndef CONFIG_MP_INCLUDED */
-
 #define CONFIG_AP_MODE	1
 #ifdef CONFIG_AP_MODE
 	/* #define CONFIG_INTERRUPT_BASED_TXBCN */ /* Tx Beacon when driver BCN_OK ,BCN_ERR interrupt occurs */
@@ -256,14 +252,7 @@
 
 #define DISABLE_BB_RF	0
 
-#ifdef CONFIG_MP_INCLUDED
-	#define MP_DRIVER 1
-	#define CONFIG_MP_IWPRIV_SUPPORT	1
-	/* #undef CONFIG_USB_TX_AGGREGATION */
-	/* #undef CONFIG_USB_RX_AGGREGATION */
-#else
 	#define MP_DRIVER 0
-#endif
 
 
 /*

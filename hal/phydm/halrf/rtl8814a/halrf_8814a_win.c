@@ -152,11 +152,6 @@ u8 get_tssivalue(
 		tx_rate = MptToMgntRate(p_mpt_ctx->MptRateIndex);
 #endif
 #elif (DM_ODM_SUPPORT_TYPE & ODM_CE)
-#ifdef CONFIG_MP_INCLUDED
-		PMPT_CONTEXT p_mpt_ctx = &(adapter->mppriv.mpt_ctx);
-
-		tx_rate = mpt_to_mgnt_rate(p_mpt_ctx->mpt_rate_index);
-#endif
 #endif
 #endif
 	} else {
@@ -521,11 +516,6 @@ void set_tx_agc_bb_swing_offset(
 		tx_rate = MptToMgntRate(p_mpt_ctx->MptRateIndex);
 #endif
 #elif (DM_ODM_SUPPORT_TYPE & ODM_CE)
-#ifdef CONFIG_MP_INCLUDED
-		PMPT_CONTEXT p_mpt_ctx = &(adapter->mppriv.mpt_ctx);
-
-		tx_rate = mpt_to_mgnt_rate(p_mpt_ctx->mpt_rate_index);
-#endif
 #endif
 #endif
 	} else {
@@ -1066,11 +1056,6 @@ void power_tracking_by_mix_mode(
 		tx_rate = MptToMgntRate(p_mpt_ctx->MptRateIndex);
 #endif
 #elif (DM_ODM_SUPPORT_TYPE & ODM_CE)
-#ifdef CONFIG_MP_INCLUDED
-		PMPT_CONTEXT p_mpt_ctx = &(adapter->mppriv.mpt_ctx);
-
-		tx_rate = mpt_to_mgnt_rate(p_mpt_ctx->mpt_rate_index);
-#endif
 #endif
 #endif
 	} else {
@@ -1264,11 +1249,6 @@ void get_delta_swing_table_8814a(
 		tx_rate = MptToMgntRate(p_mpt_ctx->MptRateIndex);
 #endif
 #elif (DM_ODM_SUPPORT_TYPE & ODM_CE)
-#ifdef CONFIG_MP_INCLUDED
-		PMPT_CONTEXT p_mpt_ctx = &(adapter->mppriv.mpt_ctx);
-
-		tx_rate = mpt_to_mgnt_rate(p_mpt_ctx->mpt_rate_index);
-#endif
 #endif
 #endif
 	} else {
@@ -1347,11 +1327,6 @@ void get_delta_swing_table_8814a_path_cd(
 		tx_rate = MptToMgntRate(p_mpt_ctx->MptRateIndex);
 #endif
 #elif (DM_ODM_SUPPORT_TYPE & ODM_CE)
-#ifdef CONFIG_MP_INCLUDED
-		PMPT_CONTEXT p_mpt_ctx = &(adapter->mppriv.mpt_ctx);
-
-		tx_rate = mpt_to_mgnt_rate(p_mpt_ctx->mpt_rate_index);
-#endif
 #endif
 #endif
 	} else {

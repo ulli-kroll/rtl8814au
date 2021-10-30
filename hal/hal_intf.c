@@ -991,10 +991,6 @@ void	rtw_hal_set_chnl_bw(_adapter *padapter, u8 channel, enum channel_width Band
 	if (rtw_phydm_is_iqk_in_progress(padapter))
 		RTW_ERR("%s, %d, IQK may race condition\n", __func__, __LINE__);
 
-#ifdef CONFIG_MP_INCLUDED
-	/* MP mode channel don't use secondary channel */
-	if (rtw_mp_mode_check(padapter) == _FALSE)
-#endif
 	{
 		#if 0
 		if (cch_160 != 0)
@@ -1175,9 +1171,6 @@ exit:
 }
 #endif /* CONFIG_FW_C2H_PKT */
 
-#if defined(CONFIG_MP_INCLUDED) && defined(CONFIG_RTL8723B)
-#include <rtw_bt_mp.h> /* for MPTBT_FwC2hBtMpCtrl */
-#endif
 s32 c2h_handler(_adapter *adapter, u8 id, u8 seq, u8 plen, u8 *payload)
 {
 	u8 sub_id = 0;
@@ -1193,9 +1186,6 @@ s32 c2h_handler(_adapter *adapter, u8 id, u8 seq, u8 plen, u8 *payload)
 		rtw_btcoex_BtInfoNotify(adapter, plen, payload);
 		break;
 	case C2H_BT_MP_INFO:
-		#if defined(CONFIG_MP_INCLUDED) && defined(CONFIG_RTL8723B)
-		MPTBT_FwC2hBtMpCtrl(adapter, payload, plen);
-		#endif
 		rtw_btcoex_BtMpRptNotify(adapter, plen, payload);
 		break;
 	case C2H_MAILBOX_STATUS:
