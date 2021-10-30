@@ -31,7 +31,7 @@ CONFIG_RTL8814A = y
 CONFIG_USB_HCI = y
 CONFIG_PCI_HCI = n
 ########################## Features ###########################
-CONFIG_MP_INCLUDED = y
+CONFIG_MP_INCLUDED = n
 CONFIG_POWER_SAVING = y
 CONFIG_IPS_MODE = default
 CONFIG_LPS_MODE = default
