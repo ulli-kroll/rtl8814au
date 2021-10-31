@@ -318,11 +318,6 @@ struct hal_ops {
 	void	(*disable_interrupt)(_adapter *padapter);
 	u8(*check_ips_status)(_adapter *padapter);
 
-#if defined(CONFIG_USB_HCI) && defined(CONFIG_SUPPORT_USB_INT)
-	void	(*interrupt_handler)(_adapter *padapter, u16 pkt_len, u8 *pbuf);
-#endif
-
-
 	/*** DM section ***/
 #ifdef CONFIG_RTW_SW_LED
 	void	(*InitSwLeds)(_adapter *padapter);
@@ -752,10 +747,6 @@ void rtw_hal_write_syson_reg(_adapter *padapter, u32 RegAddr, u32 BitMask, u32 D
 
 #define phy_set_mac_reg	phy_set_bb_reg
 #define phy_query_mac_reg phy_query_bb_reg
-
-#if  defined(CONFIG_USB_HCI) && defined(CONFIG_SUPPORT_USB_INT)
-	void	rtw_hal_interrupt_handler(_adapter *padapter, u16 pkt_len, u8 *pbuf);
-#endif
 
 void	rtw_hal_set_chnl_bw(_adapter *padapter, u8 channel, enum channel_width Bandwidth, u8 Offset40, u8 Offset80);
 void	rtw_hal_dm_watchdog(_adapter *padapter);

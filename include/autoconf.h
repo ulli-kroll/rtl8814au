@@ -75,11 +75,6 @@
 
 #define CONFIG_DFS	1
 
- /* #define CONFIG_SUPPORT_USB_INT */
- #ifdef CONFIG_SUPPORT_USB_INT
-/* #define CONFIG_USB_INTERRUPT_IN_PIPE	1 */
-#endif
-
 #ifdef CONFIG_POWER_SAVING
 	#define CONFIG_IPS	1
 	#ifdef CONFIG_IPS
@@ -89,9 +84,6 @@
 	/* #define SUPPORT_HW_RFOFF_DETECTED	1 */
 
 	#define CONFIG_LPS	1
-	#if defined(CONFIG_LPS) && defined(CONFIG_SUPPORT_USB_INT)
-	/* #define CONFIG_LPS_LCLK	1 */
-	#endif
 
 	#ifdef CONFIG_LPS_LCLK
 	/* #define CONFIG_XMIT_THREAD_MODE */

@@ -2007,9 +2007,6 @@ void rtl8814au_set_hal_ops(_adapter *padapter)
 #ifdef CONFIG_XMIT_THREAD_MODE
 	pHalFunc->xmit_thread_handler = &rtl8814au_xmit_buf_handler;
 #endif
-#ifdef CONFIG_SUPPORT_USB_INT
-	pHalFunc->interrupt_handler = interrupt_handler_8814au;
-#endif
 #ifdef CONFIG_FW_CORRECT_BCN
 	pHalFunc->fw_correct_bcn = &rtl8814_fw_update_beacon_cmd;
 #endif
