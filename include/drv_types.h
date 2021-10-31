@@ -424,10 +424,6 @@ struct registry_priv {
 	u8 check_hw_status;
 	u8 wowlan_sta_mix_mode;
 
-#ifdef CONFIG_PCI_HCI
-	u32 pci_aspm_config;
-	u32 pci_dynamic_aspm_linkctrl;
-#endif
 
 	u8 iqk_fw_offload;
 	u8 ch_switch_offload;
@@ -509,10 +505,6 @@ typedef struct rtw_if_operations {
 	int __must_check (*write)(struct dvobj_priv *d, unsigned int addr, void *buf,
 				 size_t len, bool fixed);
 } RTW_IF_OPS, *PRTW_IF_OPS;
-
-#if defined(CONFIG_PCI_HCI)
-	#include <drv_types_pci.h>
-#endif
 
 #define get_hw_port(adapter) (adapter->hw_port)
 
@@ -1201,43 +1193,6 @@ struct dvobj_priv {
 
 	/*-------- below is for PCIE INTERFACE --------*/
 
-#ifdef CONFIG_PCI_HCI
-
-#ifdef PLATFORM_LINUX
-	struct pci_dev *ppcidev;
-
-	/* PCI MEM map */
-	unsigned long	pci_mem_end;	/* shared mem end	*/
-	unsigned long	pci_mem_start;	/* shared mem start	*/
-
-	/* PCI IO map */
-	unsigned long	pci_base_addr;	/* device I/O address	*/
-
-#ifdef RTK_129X_PLATFORM
-	unsigned long	ctrl_start;
-	/* PCI MASK addr */
-	unsigned long	mask_addr;
-
-	/* PCI TRANSLATE addr */
-	unsigned long	tran_addr;
-
-	_lock   io_reg_lock;
-#endif
-
-	/* PciBridge */
-	struct pci_priv	pcipriv;
-
-	unsigned int irq; /* get from pci_dev.irq, store to net_device.irq */
-	u16	irqline;
-	u8	irq_enabled;
-	RT_ISR_CONTENT	isr_content;
-	_lock	irq_th_lock;
-
-	u8	bdma64;
-#endif/* PLATFORM_LINUX */
-
-#endif/* CONFIG_PCI_HCI */
-
 #ifdef CONFIG_MCC_MODE
 	struct mcc_obj_priv mcc_objpriv;
 #endif /*CONFIG_MCC_MODE */
@@ -1323,9 +1278,6 @@ static inline struct device *dvobj_to_dev(struct dvobj_priv *dvobj)
 
 #ifdef CONFIG_USB_HCI
 	return &dvobj->pusbintf->dev;
-#endif
-#ifdef CONFIG_PCI_HCI
-	return &dvobj->ppcidev->dev;
 #endif
 }
 #endif
@@ -1735,12 +1687,6 @@ int rtw_suspend_free_assoc_resource(_adapter *padapter);
 	#include <usb_osintf.h>
 	#include <usb_ops.h>
 	#include <usb_hal.h>
-#endif
-
-#ifdef CONFIG_PCI_HCI
-	#include <pci_osintf.h>
-	#include <pci_ops.h>
-	#include <pci_hal.h>
 #endif
 
 #endif /* __DRV_TYPES_H__ */

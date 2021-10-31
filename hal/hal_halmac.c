@@ -492,14 +492,14 @@ exit:
 
 struct halmac_platform_api rtw_halmac_platform_api = {
 	/* R/W register */
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_PCI_HCI)
+#if defined(CONFIG_USB_HCI)
 	.REG_READ_8 = _halmac_reg_read_8,
 	.REG_READ_16 = _halmac_reg_read_16,
 	.REG_READ_32 = _halmac_reg_read_32,
 	.REG_WRITE_8 = _halmac_reg_write_8,
 	.REG_WRITE_16 = _halmac_reg_write_16,
 	.REG_WRITE_32 = _halmac_reg_write_32,
-#endif /* CONFIG_USB_HCI || CONFIG_PCI_HCI */
+#endif /* CONFIG_USB_HCI */
 
 #ifdef DBG_IO
 	.READ_MONITOR = _halmac_reg_read_monitor,
@@ -756,8 +756,6 @@ static int init_write_rsvd_page_size(struct dvobj_priv *d)
 #ifdef CONFIG_USB_HCI
 	/* for USB do not exceed MAX_CMDBUF_SZ */
 	size = 0x1000;
-#elif defined(CONFIG_PCI_HCI)
-	size = MAX_CMDBUF_SZ - TXDESC_OFFSET;
 #else
 	/* Use HALMAC default setting and don't call any function */
 	return 0;
@@ -873,8 +871,6 @@ int rtw_halmac_init_adapter(struct dvobj_priv *d, struct halmac_platform_api *pf
 
 #if defined(CONFIG_USB_HCI)
 	intf = HALMAC_INTERFACE_USB;
-#elif defined(CONFIG_PCI_HCI)
-	intf = HALMAC_INTERFACE_PCIE;
 #else
 #warning "INTERFACE(CONFIG_XXX_HCI) not be defined!!"
 	intf = HALMAC_INTERFACE_UNDEFINE;
@@ -2189,47 +2185,6 @@ void dump_dbg_val(struct _ADAPTER *a, u32 reg)
 	RTW_PRINT("0x3A = %02x, 0xC0 = 0x%08x\n",reg, v32);
 }
 
-#ifdef CONFIG_PCI_HCI
-static void _dump_pcie_cfg_space(struct dvobj_priv *d)
-{
-	struct _ADAPTER *padapter = dvobj_get_primary_adapter(d);
-	struct dvobj_priv       *pdvobjpriv = adapter_to_dvobj(padapter);
-	struct pci_dev  *pdev = pdvobjpriv->ppcidev;
-	struct pci_dev  *bridge_pdev = pdev->bus->self;
-
-        u32 tmp[4] = { 0 };
-        u32 i, j;
-
-	RTW_PRINT("\n*****  PCI Device Configuration Space *****\n\n");
-
-        for(i = 0; i < 0x100; i += 0x10)
-        {
-                for (j = 0 ; j < 4 ; j++)
-                        pci_read_config_dword(pdev, i + j * 4, tmp+j);
-
-        	RTW_PRINT("%03x: %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n",
-                        i, tmp[0] & 0xFF, (tmp[0] >> 8) & 0xFF, (tmp[0] >> 16) & 0xFF, (tmp[0] >> 24) & 0xFF,
-                        tmp[1] & 0xFF, (tmp[1] >> 8) & 0xFF, (tmp[1] >> 16) & 0xFF, (tmp[1] >> 24) & 0xFF,
-                        tmp[2] & 0xFF, (tmp[2] >> 8) & 0xFF, (tmp[2] >> 16) & 0xFF, (tmp[2] >> 24) & 0xFF,
-                        tmp[3] & 0xFF, (tmp[3] >> 8) & 0xFF, (tmp[3] >> 16) & 0xFF, (tmp[3] >> 24) & 0xFF);
-        }
-
-	RTW_PRINT("\n*****  PCI Host Device Configuration Space*****\n\n");
-
-        for(i = 0; i < 0x100; i += 0x10)
-        {
-                for (j = 0 ; j < 4 ; j++)
-                        pci_read_config_dword(bridge_pdev, i + j * 4, tmp+j);
-
-        	RTW_PRINT("%03x: %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n",
-                        i, tmp[0] & 0xFF, (tmp[0] >> 8) & 0xFF, (tmp[0] >> 16) & 0xFF, (tmp[0] >> 24) & 0xFF,
-                        tmp[1] & 0xFF, (tmp[1] >> 8) & 0xFF, (tmp[1] >> 16) & 0xFF, (tmp[1] >> 24) & 0xFF,
-                        tmp[2] & 0xFF, (tmp[2] >> 8) & 0xFF, (tmp[2] >> 16) & 0xFF, (tmp[2] >> 24) & 0xFF,
-                        tmp[3] & 0xFF, (tmp[3] >> 8) & 0xFF, (tmp[3] >> 16) & 0xFF, (tmp[3] >> 24) & 0xFF);
-        }
-}
-#endif
-
 static void _dump_mac_reg_for_power_switch(struct dvobj_priv *d,
 					   const char* caller, char* desc)
 {
@@ -2246,22 +2201,6 @@ static void _dump_mac_reg_for_power_switch(struct dvobj_priv *d,
 	/* dump debug register */
 	a = dvobj_get_primary_adapter(d);
 
-#ifdef CONFIG_PCI_HCI
-	_dump_pcie_cfg_space(d);
-
-	v8 = rtw_read8(a, 0xF6) | 0x01;
-	rtw_write8(a, 0xF6, v8);
-	RTW_PRINT("0xF6 = %02x\n", v8);
-
-	dump_dbg_val(a, 0x63);
-	dump_dbg_val(a, 0x64);
-	dump_dbg_val(a, 0x68);
-	dump_dbg_val(a, 0x69);
-	dump_dbg_val(a, 0x6a);
-	dump_dbg_val(a, 0x6b);
-	dump_dbg_val(a, 0x71);
-	dump_dbg_val(a, 0x72);
-#endif
 }
 
 static enum halmac_ret_status _power_switch(struct halmac_adapter *halmac,
@@ -2308,13 +2247,6 @@ int rtw_halmac_poweron(struct dvobj_priv *d)
 	struct halmac_api *api;
 	enum halmac_ret_status status;
 	int err = -1;
-#if defined(CONFIG_PCI_HCI) && defined(CONFIG_RTL8822B)
-	struct _ADAPTER *a;
-	u8 v8;
-	u32 addr;
-
-	a = dvobj_get_primary_adapter(d);
-#endif
 
 	halmac = dvobj_to_halmac(d);
 	if (!halmac)
@@ -2326,42 +2258,10 @@ int rtw_halmac_poweron(struct dvobj_priv *d)
 	if (status != HALMAC_RET_SUCCESS)
 		goto out;
 
-#if defined(CONFIG_PCI_HCI) && defined(CONFIG_RTL8822B)
-	addr = 0x3F3;
-	v8 = rtw_read8(a, addr);
-	RTW_PRINT("%s: 0x%X = 0x%02x\n", __FUNCTION__, addr, v8);
-	/* are we in pcie debug mode? */
-	if (!(v8 & BIT(2))) {
-		RTW_PRINT("%s: Enable pcie debug mode\n", __FUNCTION__);
-		v8 |= BIT(2);
-		v8 = rtw_write8(a, addr, v8);
-	}
-#endif
 
 	status = _power_switch(halmac, api, HALMAC_MAC_POWER_ON);
 	if (HALMAC_RET_PWR_UNCHANGE == status) {
 
-#if defined(CONFIG_PCI_HCI) && defined(CONFIG_RTL8822B)
-		addr = 0x3F3;
-		v8 = rtw_read8(a, addr);
-		RTW_PRINT("%s: 0x%X = 0x%02x\n", __FUNCTION__, addr, v8);
-		
-		/* are we in pcie debug mode? */
-		if (!(v8 & BIT(2))) {
-			RTW_PRINT("%s: Enable pcie debug mode\n", __FUNCTION__);
-			v8 |= BIT(2);
-			v8 = rtw_write8(a, addr, v8);
-		} else if (v8 & BIT(0)) {
-			/* DMA stuck */
-			addr = 0x1350;
-			v8 = rtw_read8(a, addr);
-			RTW_PRINT("%s: 0x%X = 0x%02x\n", __FUNCTION__, addr, v8);
-			RTW_PRINT("%s: recover DMA stuck\n", __FUNCTION__);
-			v8 |= BIT(6);
-			v8 = rtw_write8(a, addr, v8);
-			RTW_PRINT("%s: 0x%X = 0x%02x\n", __FUNCTION__, addr, v8);
-		}
-#endif
 		/*
 		 * Work around for warm reboot but device not power off,
 		 * but it would also fall into this case when auto power on is enabled.
@@ -2918,9 +2818,6 @@ exit:
 
 static void _init_trx_cfg_drv(struct dvobj_priv *d)
 {
-#ifdef CONFIG_PCI_HCI
-	rtw_hal_irp_reset(dvobj_get_primary_adapter(d));
-#endif
 }
 
 /*

@@ -68,10 +68,6 @@ BOOLEAN efuse_IsBT_Masked(PADAPTER pAdapter, u16 Offset)
 	if (IS_HARDWARE_TYPE_8822C(pAdapter))
 		return (IS_BT_MASKED(8822C, _MUSB, Offset)) ? TRUE : FALSE;
 #endif
-#ifdef CONFIG_PCI_HCI
-	if (IS_HARDWARE_TYPE_8822C(pAdapter))
-		return (IS_BT_MASKED(8822C, _MPCIE, Offset)) ? TRUE : FALSE;
-#endif
 #endif /* CONFIG_BT_EFUSE_MASK */
 	return FALSE;
 }
@@ -85,10 +81,6 @@ void rtw_bt_efuse_mask_array(PADAPTER pAdapter, u8 *pArray)
 if (IS_HARDWARE_TYPE_8822CU(pAdapter))
 		GET_MASK_ARRAY(8822C, _MUSB, pArray);
 #endif
-#ifdef CONFIG_PCI_HCI
-	if (IS_HARDWARE_TYPE_8822CE(pAdapter))
-		GET_MASK_ARRAY(8822C, _MPCIE, pArray);
-#endif
 #endif /* CONFIG_BT_EFUSE_MASK */
 
 }
@@ -101,10 +93,6 @@ u16 rtw_get_bt_efuse_mask_arraylen(PADAPTER pAdapter)
 #ifdef CONFIG_USB_HCI
 	if (IS_HARDWARE_TYPE_8822CU(pAdapter))
 		return GET_BT_MASK_ARRAY_LEN(8822C, _MUSB);
-#endif
-#ifdef CONFIG_PCI_HCI
-	if (IS_HARDWARE_TYPE_8822CE(pAdapter))
-		return GET_BT_MASK_ARRAY_LEN(8822C, _MPCIE);
 #endif
 #endif /* CONFIG_BT_EFUSE_MASK */
 
@@ -189,53 +177,6 @@ BOOLEAN efuse_IsMasked(PADAPTER pAdapter, u16 Offset)
 #endif
 #endif /*CONFIG_USB_HCI*/
 
-#ifdef CONFIG_PCI_HCI
-#if defined(CONFIG_RTL8188E)
-	if (IS_HARDWARE_TYPE_8188E(pAdapter))
-		return (IS_MASKED(8188E, _MPCIE, Offset)) ? TRUE : FALSE;
-#endif
-#if defined(CONFIG_RTL8192E)
-	if (IS_HARDWARE_TYPE_8192E(pAdapter))
-		return (IS_MASKED(8192E, _MPCIE, Offset)) ? TRUE : FALSE;
-#endif
-#if defined(CONFIG_RTL8812A)
-	if (IS_HARDWARE_TYPE_8812(pAdapter))
-		return (IS_MASKED(8812A, _MPCIE, Offset)) ? TRUE : FALSE;
-#endif
-#if defined(CONFIG_RTL8821A)
-	if (IS_HARDWARE_TYPE_8821(pAdapter))
-		return (IS_MASKED(8821A, _MPCIE, Offset)) ? TRUE : FALSE;
-#endif
-#if defined(CONFIG_RTL8723B)
-	if (IS_HARDWARE_TYPE_8723B(pAdapter))
-		return (IS_MASKED(8723B, _MPCIE, Offset)) ? TRUE : FALSE;
-#endif
-#if defined(CONFIG_RTL8814A)
-	if (IS_HARDWARE_TYPE_8814A(pAdapter))
-		return (IS_MASKED(8814A, _MPCIE, Offset)) ? TRUE : FALSE;
-#endif
-#if defined(CONFIG_RTL8822B)
-	if (IS_HARDWARE_TYPE_8822B(pAdapter))
-		return (IS_MASKED(8822B, _MPCIE, Offset)) ? TRUE : FALSE;
-#endif
-#if defined(CONFIG_RTL8821C)
-	if (IS_HARDWARE_TYPE_8821CE(pAdapter))
-		return (IS_MASKED(8821C, _MPCIE, Offset)) ? TRUE : FALSE;
-#endif
-
-#if defined(CONFIG_RTL8192F)
-	if (IS_HARDWARE_TYPE_8192FE(pAdapter))
-		return (IS_MASKED(8192F, _MPCIE, Offset)) ? TRUE : FALSE;
-#endif
-#if defined(CONFIG_RTL8822C)
-	if (IS_HARDWARE_TYPE_8822C(pAdapter))
-		return (IS_MASKED(8822C, _MPCIE, Offset)) ? TRUE : FALSE;
-#endif
-#if defined(CONFIG_RTL8814B)
-	if (IS_HARDWARE_TYPE_8814B(pAdapter))
-		return (IS_MASKED(8814B, _MPCIE, Offset)) ? TRUE : FALSE;
-#endif
-#endif /*CONFIG_PCI_HCI*/
 
 	return FALSE;
 }
@@ -302,52 +243,6 @@ void rtw_efuse_mask_array(PADAPTER pAdapter, u8 *pArray)
 #endif
 #endif /*CONFIG_USB_HCI*/
 
-#ifdef CONFIG_PCI_HCI
-#if defined(CONFIG_RTL8188E)
-	if (IS_HARDWARE_TYPE_8188E(pAdapter))
-		GET_MASK_ARRAY(8188E, _MPCIE, pArray);
-#endif
-#if defined(CONFIG_RTL8192E)
-	if (IS_HARDWARE_TYPE_8192E(pAdapter))
-		GET_MASK_ARRAY(8192E, _MPCIE, pArray);
-#endif
-#if defined(CONFIG_RTL8812A)
-	if (IS_HARDWARE_TYPE_8812(pAdapter))
-		GET_MASK_ARRAY(8812A, _MPCIE, pArray);
-#endif
-#if defined(CONFIG_RTL8821A)
-	if (IS_HARDWARE_TYPE_8821(pAdapter))
-		GET_MASK_ARRAY(8821A, _MPCIE, pArray);
-#endif
-#if defined(CONFIG_RTL8723B)
-	if (IS_HARDWARE_TYPE_8723B(pAdapter))
-		GET_MASK_ARRAY(8723B, _MPCIE, pArray);
-#endif
-#if defined(CONFIG_RTL8814A)
-	if (IS_HARDWARE_TYPE_8814A(pAdapter))
-		GET_MASK_ARRAY(8814A, _MPCIE, pArray);
-#endif
-#if defined(CONFIG_RTL8822B)
-	if (IS_HARDWARE_TYPE_8822B(pAdapter))
-		GET_MASK_ARRAY(8822B, _MPCIE, pArray);
-#endif
-#if defined(CONFIG_RTL8821C)
-	if (IS_HARDWARE_TYPE_8821CE(pAdapter))
-		GET_MASK_ARRAY(8821C, _MPCIE, pArray);
-#endif
-#if defined(CONFIG_RTL8192F)
-	if (IS_HARDWARE_TYPE_8192FE(pAdapter))
-		GET_MASK_ARRAY(8192F, _MPCIE, pArray);
-#endif
-#if defined(CONFIG_RTL8822C)
-	if (IS_HARDWARE_TYPE_8822C(pAdapter))
-		GET_MASK_ARRAY(8822C, _MPCIE, pArray);
-#endif
-#if defined(CONFIG_RTL8814B)
-	if (IS_HARDWARE_TYPE_8814B(pAdapter))
-		GET_MASK_ARRAY(8814B, _MPCIE, pArray);
-#endif
-#endif /*CONFIG_PCI_HCI*/
 
 }
 
@@ -414,52 +309,6 @@ u16 rtw_get_efuse_mask_arraylen(PADAPTER pAdapter)
 #endif
 #endif /*CONFIG_USB_HCI*/
 
-#ifdef CONFIG_PCI_HCI
-#if defined(CONFIG_RTL8188E)
-	if (IS_HARDWARE_TYPE_8188E(pAdapter))
-		return GET_MASK_ARRAY_LEN(8188E, _MPCIE);
-#endif
-#if defined(CONFIG_RTL8192E)
-	if (IS_HARDWARE_TYPE_8192E(pAdapter))
-		return GET_MASK_ARRAY_LEN(8192E, _MPCIE);
-#endif
-#if defined(CONFIG_RTL8812A)
-	if (IS_HARDWARE_TYPE_8812(pAdapter))
-		return GET_MASK_ARRAY_LEN(8812A, _MPCIE);
-#endif
-#if defined(CONFIG_RTL8821A)
-	if (IS_HARDWARE_TYPE_8821(pAdapter))
-		return GET_MASK_ARRAY_LEN(8821A, _MPCIE);
-#endif
-#if defined(CONFIG_RTL8723B)
-	if (IS_HARDWARE_TYPE_8723B(pAdapter))
-		return GET_MASK_ARRAY_LEN(8723B, _MPCIE);
-#endif
-#if defined(CONFIG_RTL8814A)
-	if (IS_HARDWARE_TYPE_8814A(pAdapter))
-		return GET_MASK_ARRAY_LEN(8814A, _MPCIE);
-#endif
-#if defined(CONFIG_RTL8822B)
-	if (IS_HARDWARE_TYPE_8822B(pAdapter))
-		return GET_MASK_ARRAY_LEN(8822B, _MPCIE);
-#endif
-#if defined(CONFIG_RTL8821C)
-	if (IS_HARDWARE_TYPE_8821CE(pAdapter))
-		return GET_MASK_ARRAY_LEN(8821C, _MPCIE);
-#endif
-#if defined(CONFIG_RTL8192F)
-	if (IS_HARDWARE_TYPE_8192FE(pAdapter))
-		return GET_MASK_ARRAY_LEN(8192F, _MPCIE);
-#endif
-#if defined(CONFIG_RTL8822C)
-	if (IS_HARDWARE_TYPE_8822C(pAdapter))
-		return GET_MASK_ARRAY_LEN(8822C, _MPCIE);
-#endif
-#if defined(CONFIG_RTL8814B)
-	if (IS_HARDWARE_TYPE_8814B(pAdapter))
-		return GET_MASK_ARRAY_LEN(8814B, _MPCIE);
-#endif
-#endif /*CONFIG_PCI_HCI*/
 
 	return 0;
 }

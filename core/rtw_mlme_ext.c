@@ -10627,47 +10627,6 @@ unsigned int send_delba(_adapter *padapter, u8 initiator, u8 *addr)
 
 unsigned int send_beacon(_adapter *padapter)
 {
-#if defined(CONFIG_PCI_HCI) && !defined(CONFIG_PCI_BCN_POLLING)
-	#ifdef CONFIG_FW_HANDLE_TXBCN
-	u8 vap_id = padapter->vap_id;
-
-	/* bypass TX BCN because vap_id is invalid*/
-	if (vap_id == CONFIG_LIMITED_AP_NUM)
-		return _SUCCESS;
-	#endif
-
-	/* bypass TX BCN queue because op ch is switching/waiting */
-	if (check_fwstate(&padapter->mlmepriv, WIFI_OP_CH_SWITCHING)
-		|| IS_CH_WAITING(adapter_to_rfctl(padapter))
-	)
-		return _SUCCESS;
-
-	/* RTW_INFO("%s\n", __FUNCTION__); */
-
-	rtw_hal_set_hwreg(padapter, HW_VAR_BCN_VALID, NULL);
-
-	/* 8192EE Port select for Beacon DL */
-	rtw_hal_set_hwreg(padapter, HW_VAR_DL_BCN_SEL, NULL);
-	#ifdef CONFIG_FW_HANDLE_TXBCN
-	rtw_hal_set_hwreg(padapter, HW_VAR_BCN_HEAD_SEL, &vap_id);
-	#endif
-
-	issue_beacon(padapter, 0);
-
-	#ifdef CONFIG_FW_HANDLE_TXBCN
-	vap_id = 0xFF;
-	rtw_hal_set_hwreg(padapter, HW_VAR_BCN_HEAD_SEL, &vap_id);
-	#endif
-
-	#ifdef RTL8814AE_SW_BCN
-	if (GET_HAL_DATA(padapter)->bCorrectBCN != 0)
-		RTW_INFO("%s, line%d, Warnning, pHalData->bCorrectBCN != 0\n", __func__, __LINE__);
-	GET_HAL_DATA(padapter)->bCorrectBCN = 1;
-	#endif
-
-	return _SUCCESS;
-#endif
-
 /* CONFIG_PCI_BCN_POLLING is for pci interface beacon polling mode */
 #if defined(CONFIG_USB_HCI) || defined(CONFIG_PCI_BCN_POLLING) 
 	u8 bxmitok = _FALSE;
@@ -15644,9 +15603,7 @@ u8 chk_bmc_sleepq_hdl(_adapter *padapter, unsigned char *pbuf)
 		return H2C_SUCCESS;
 
 	if ((rtw_tim_map_is_set(padapter, pstapriv->tim_bitmap, 0)) && (psta_bmc->sleepq_len > 0)) {
-#ifndef CONFIG_PCI_HCI
 		rtw_msleep_os(10);/* 10ms, ATIM(HIQ) Windows */
-#endif
 		/* _enter_critical_bh(&psta_bmc->sleep_q.lock, &irqL); */
 		_enter_critical_bh(&pxmitpriv->lock, &irqL);
 

@@ -385,11 +385,7 @@ int rtw_recv_napi_poll(struct napi_struct *napi, int budget)
 
 	work_done = napi_recv(padapter, budget);
 	if (work_done < budget) {
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 19, 0)) && defined(CONFIG_PCI_HCI)
-		napi_complete_done(napi, work_done);
-#else
 		napi_complete(napi);
-#endif
 		if (!skb_queue_empty(&precvpriv->rx_napi_skb_queue))
 			napi_schedule(napi);
 	}

@@ -1707,7 +1707,7 @@ int hal_read_mac_hidden_rpt(_adapter *adapter)
 	u8 id = C2H_DEFEATURE_RSVD;
 	int i;
 
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_PCI_HCI)
+#if defined(CONFIG_USB_HCI)
 	u8 hci_type = rtw_get_intf_type(adapter);
 
 	if ((hci_type == RTW_USB || hci_type == RTW_PCIE)
@@ -1751,7 +1751,7 @@ mac_hidden_rpt_hdl:
 	if (ret_fwdl == _SUCCESS && id == C2H_MAC_HIDDEN_RPT)
 		ret = _SUCCESS;
 
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_PCI_HCI)
+#if defined(CONFIG_USB_HCI)
 	if ((hci_type == RTW_USB || hci_type == RTW_PCIE)
 		&& !rtw_is_hw_init_completed(adapter))
 		rtw_hal_power_off(adapter);
@@ -6188,7 +6188,7 @@ static void rtw_hal_ap_wow_enable(_adapter *padapter)
 #ifdef CONFIG_USB_HCI
 	rtw_mi_intf_stop(padapter);
 #endif
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_PCI_HCI)
+#if defined(CONFIG_USB_HCI)
 	/* Invoid SE0 reset signal during suspending*/
 	rtw_write8(padapter, REG_RSV_CTRL, 0x20);
 	if (IS_8188F(pHalData->version_id) == FALSE
@@ -9911,7 +9911,7 @@ static void rtw_hal_wow_enable(_adapter *adapter)
 	rtw_mi_intf_stop(adapter);
 
 #endif
-#if defined(CONFIG_USB_HCI) || defined(CONFIG_PCI_HCI)
+#if defined(CONFIG_USB_HCI)
 	/* Invoid SE0 reset signal during suspending*/
 	rtw_write8(adapter, REG_RSV_CTRL, 0x20);
 	if (IS_8188F(pHalData->version_id) == FALSE
@@ -11026,11 +11026,7 @@ download_page:
 		pattrib->qsel = QSLT_BEACON;
 		pattrib->pktlen = TotalPacketLen;
 		pattrib->last_txcmdsz = TotalPacketLen;
-#ifdef CONFIG_PCI_HCI
-		dump_mgntframe(adapter, pcmdframe);
-#else
 		dump_mgntframe_and_wait(adapter, pcmdframe, 100);
-#endif
 	}
 
 	RTW_INFO("%s: Set RSVD page location to Fw ,TotalPacketLen(%d), TotalPageNum(%d)\n",
@@ -12274,16 +12270,6 @@ u8 SetHwReg(_adapter *adapter, u8 variable, u8 *val)
 	}
 	break;
 #endif/*CONFIG_RTS_FULL_BW*/
-#if defined(CONFIG_PCI_HCI)
-	case HW_VAR_ENSWBCN: 
-	if (*val == _TRUE) {
-		rtw_write8(adapter, REG_CR + 1,
-			   rtw_read8(adapter, REG_CR + 1) | BIT(0));
-	} else
-		rtw_write8(adapter, REG_CR + 1,
-			   rtw_read8(adapter, REG_CR + 1) & ~BIT(0));
-	break;
-#endif
 	default:
 		if (0)
 			RTW_PRINT(FUNC_ADPT_FMT" variable(%d) not defined!\n",

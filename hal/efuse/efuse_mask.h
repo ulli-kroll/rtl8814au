@@ -78,56 +78,6 @@
 	#endif
 #endif /*CONFIG_USB_HCI*/
 
-#ifdef CONFIG_PCI_HCI
-
-	#if defined(CONFIG_RTL8188E)
-		#include "rtl8188e/HalEfuseMask8188E_PCIE.h"
-	#endif
-
-	#if defined(CONFIG_RTL8812A)
-		#include "rtl8812a/HalEfuseMask8812A_PCIE.h"
-	#endif
-
-	#if defined(CONFIG_RTL8821A)
-		#include "rtl8812a/HalEfuseMask8821A_PCIE.h"
-	#endif
-
-	#if defined(CONFIG_RTL8192E)
-		#include "rtl8192e/HalEfuseMask8192E_PCIE.h"
-	#endif
-
-	#if defined(CONFIG_RTL8723B)
-		#include "rtl8723b/HalEfuseMask8723B_PCIE.h"
-	#endif
-
-	#if defined(CONFIG_RTL8814A)
-		#include "rtl8814a/HalEfuseMask8814A_PCIE.h"
-	#endif
-
-	#if defined(CONFIG_RTL8703B)
-		#include "rtl8703b/HalEfuseMask8703B_PCIE.h"
-	#endif
-
-	#if defined(CONFIG_RTL8822B)
-		#include "rtl8822b/HalEfuseMask8822B_PCIE.h"
-	#endif
-	#if defined(CONFIG_RTL8723D)
-		#include "rtl8723d/HalEfuseMask8723D_PCIE.h"
-	#endif
-	#if defined(CONFIG_RTL8821C)
-		#include "rtl8821c/HalEfuseMask8821C_PCIE.h"
-	#endif
-
-	#if defined(CONFIG_RTL8192F)
-		#include "rtl8192f/HalEfuseMask8192F_PCIE.h"
-	#endif
-	#if defined(CONFIG_RTL8822C)
-		#include "rtl8822c/HalEfuseMask8822C_PCIE.h"
-	#endif
-	#if defined(CONFIG_RTL8814B)
-		#include "rtl8814b/HalEfuseMask8814B_PCIE.h"
-	#endif
-#endif /*CONFIG_PCI_HCI*/
 #ifdef CONFIG_SDIO_HCI
 	#if defined(CONFIG_RTL8723B)
 		#include "rtl8723b/HalEfuseMask8723B_SDIO.h"

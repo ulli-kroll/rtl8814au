@@ -279,27 +279,6 @@ struct recv_stat {
 
 #define EOR BIT(30)
 
-#ifdef CONFIG_PCI_HCI
-#define PCI_MAX_RX_QUEUE		1/* MSDU packet queue, Rx Command Queue */
-#define PCI_MAX_RX_COUNT		128
-#ifdef CONFIG_TRX_BD_ARCH
-#define RX_BD_NUM				PCI_MAX_RX_COUNT	/* alias */
-#endif
-
-struct rtw_rx_ring {
-#ifdef CONFIG_TRX_BD_ARCH
-	struct rx_buf_desc	*buf_desc;
-#else
-	struct recv_stat	*desc;
-#endif
-	dma_addr_t		dma;
-	unsigned int		idx;
-	struct sk_buff	*rx_buf[PCI_MAX_RX_COUNT];
-};
-#endif
-
-
-
 /*
 accesser of recv_priv: rtw_recv_entry(dispatch / passive level); recv_thread(passive) ; returnpkt(dispatch)
 ; halt(passive) ;
@@ -400,13 +379,6 @@ struct recv_priv {
 
 #if defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI) || defined(CONFIG_USB_HCI)
 	_queue	recv_buf_pending_queue;
-#endif
-
-#ifdef CONFIG_PCI_HCI
-	/* Rx */
-	struct rtw_rx_ring	rx_ring[PCI_MAX_RX_QUEUE];
-	int rxringcount;	/* size should be PCI_MAX_RX_QUEUE */
-	u32	rxbuffersize;
 #endif
 
 	/* For display the phy informatiom */

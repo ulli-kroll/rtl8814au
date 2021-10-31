@@ -166,9 +166,6 @@ void dump_drv_cfg(void *sel)
 #endif
 #endif /*CONFIG_USB_HCI*/
 
-#ifdef CONFIG_PCI_HCI
-#endif
-
 	RTW_PRINT_SEL(sel, "CONFIG_IFACE_NUMBER = %d\n", CONFIG_IFACE_NUMBER);
 #ifdef CONFIG_MI_WITH_MBSSID_CAM
 	RTW_PRINT_SEL(sel, "CONFIG_MI_WITH_MBSSID_CAM\n");

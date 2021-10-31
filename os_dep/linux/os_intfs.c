@@ -534,9 +534,6 @@ module_param(rtw_hwpwrp_detect, int, 0644);
 module_param(rtw_hw_wps_pbc, int, 0644);
 module_param(rtw_check_hw_status, int, 0644);
 
-#ifdef CONFIG_PCI_HCI
-module_param(rtw_pci_aspm_enable, int, 0644);
-#endif
 
 #ifdef CONFIG_TX_EARLY_MODE
 module_param(rtw_early_mode, int, 0644);
@@ -1286,10 +1283,6 @@ uint loadparam(_adapter *padapter)
 #endif
 	registry_par->wowlan_sta_mix_mode = rtw_wowlan_sta_mix_mode;
 
-#ifdef CONFIG_PCI_HCI
-	registry_par->pci_aspm_config = rtw_pci_aspm_enable;
-	registry_par->pci_dynamic_aspm_linkctrl = rtw_pci_dynamic_aspm_linkctrl;
-#endif
 
 #ifdef CONFIG_RTW_NAPI
 	registry_par->en_napi = (u8)rtw_en_napi;
@@ -1751,11 +1744,6 @@ int rtw_os_ndev_alloc(_adapter *adapter)
 	SET_NETDEV_DEV(ndev, dvobj_to_dev(adapter_to_dvobj(adapter)));
 #endif
 
-#ifdef CONFIG_PCI_HCI
-	if (adapter_to_dvobj(adapter)->bdma64)
-		ndev->features |= NETIF_F_HIGHDMA;
-	ndev->irq = adapter_to_dvobj(adapter)->irq;
-#endif
 
 #if defined(CONFIG_IOCTL_CFG80211)
 	if (rtw_cfg80211_ndev_res_alloc(adapter) != _SUCCESS) {
@@ -1808,9 +1796,6 @@ int rtw_os_ndev_register(_adapter *adapter, const char *name)
 		ret = _FAIL;
 		goto exit;
 	}
-#endif
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 19, 0)) && defined(CONFIG_PCI_HCI)
-	ndev->gro_flush_timeout = 100000;
 #endif
 	/* alloc netdev name */
 	rtw_init_netdev_name(ndev, name);
@@ -2264,9 +2249,6 @@ struct dvobj_priv *devobj_init(void)
 #endif
 	_rtw_spinlock_init(&pdvobj->cam_ctl.lock);
 	_rtw_mutex_init(&pdvobj->cam_ctl.sec_cam_access_mutex);
-#if defined(RTK_129X_PLATFORM) && defined(CONFIG_PCI_HCI)
-	_rtw_spinlock_init(&pdvobj->io_reg_lock);
-#endif
 #ifdef CONFIG_MBSSID_CAM
 	rtw_mbid_cam_init(pdvobj);
 #endif
@@ -2361,9 +2343,6 @@ void devobj_deinit(struct dvobj_priv *pdvobj)
 	_rtw_spinlock_free(&pdvobj->cam_ctl.lock);
 	_rtw_mutex_free(&pdvobj->cam_ctl.sec_cam_access_mutex);
 
-#if defined(RTK_129X_PLATFORM) && defined(CONFIG_PCI_HCI)
-	_rtw_spinlock_free(&pdvobj->io_reg_lock);
-#endif
 #ifdef CONFIG_MBSSID_CAM
 	rtw_mbid_cam_deinit(pdvobj);
 #endif
@@ -4761,10 +4740,6 @@ int rtw_resume_process_wow(_adapter *padapter)
 
 		pwrpriv->bFwCurrentInPSMode = _FALSE;
 
-#if defined(CONFIG_PCI_HCI)
-		rtw_mi_intf_stop(padapter);
-		rtw_hal_clear_interrupt(padapter);
-#endif
 
 		/* Disable WOW, set H2C command */
 		poidparam.subcode = WOWLAN_DISABLE;

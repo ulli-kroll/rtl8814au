@@ -21,22 +21,7 @@ enum odm_board_type boardType(u8 InterfaceSel)
 {
 	enum odm_board_type        board	= ODM_BOARD_DEFAULT;
 
-#ifdef CONFIG_PCI_HCI
-	INTERFACE_SELECT_PCIE   pcie	= (INTERFACE_SELECT_PCIE)InterfaceSel;
-	switch (pcie) {
-	case INTF_SEL0_SOLO_MINICARD:
-		board |= ODM_BOARD_MINICARD;
-		break;
-	case INTF_SEL1_BT_COMBO_MINICARD:
-		board |= ODM_BOARD_BT;
-		board |= ODM_BOARD_MINICARD;
-		break;
-	default:
-		board = ODM_BOARD_DEFAULT;
-		break;
-	}
-
-#elif defined(CONFIG_USB_HCI)
+#if defined(CONFIG_USB_HCI)
 	INTERFACE_SELECT_USB    usb	= (INTERFACE_SELECT_USB)InterfaceSel;
 	switch (usb) {
 	case INTF_SEL1_USB_High_Power:

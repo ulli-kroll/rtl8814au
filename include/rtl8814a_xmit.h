@@ -215,9 +215,6 @@ typedef struct txdescriptor_8814 {
 
 
 /* Dword 7 */
-#ifdef CONFIG_PCI_HCI
-	#define SET_TX_DESC_TX_BUFFER_SIZE_8814A(__pTxDesc, __Value)		SET_BITS_TO_LE_4BYTE(__pTxDesc+28, 0, 16, __Value)
-#endif
 #if defined(CONFIG_USB_HCI)
 	#define SET_TX_DESC_TX_DESC_CHECKSUM_8814A(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+28, 0, 16, __Value)
 #endif
@@ -231,7 +228,7 @@ typedef struct txdescriptor_8814 {
 #define SET_TX_DESC_DATA_RC_8814A(__pTxDesc, __Value)			SET_BITS_TO_LE_4BYTE(__pTxDesc+32, 8, 6, __Value)
 #define SET_TX_DESC_EN_HWEXSEQ_8814A(__pTxDesc, __Value)			SET_BITS_TO_LE_4BYTE(__pTxDesc+32, 14, 1, __Value)
 #define SET_TX_DESC_HWSEQ_EN_8814A(__pTxDesc, __Value)			SET_BITS_TO_LE_4BYTE(__pTxDesc+32, 15, 1, __Value)
-#if defined(CONFIG_PCI_HCI)|| defined(CONFIG_USB_HCI)
+#if defined(CONFIG_USB_HCI)
 	#define SET_TX_DESC_NEXT_HEAD_PAGE_L_8814A(__pTxDesc, __Value)(__pTxDesc, __Value)	SET_BITS_TO_LE_4BYTE(__pTxDesc+32, 16, 8, __Value)
 #endif
 #define SET_TX_DESC_TAIL_PAGE_L_8814A(__pTxDesc, __Value)(__pTxDesc, __Value)			SET_BITS_TO_LE_4BYTE(__pTxDesc+32, 24, 8, __Value)
@@ -273,20 +270,6 @@ void fill_txdesc_bmc_tx_rate(struct pkt_attrib *pattrib, u8 *ptxdesc);
 	void rtl8814au_xmit_tasklet(void *priv);
 	s32 rtl8814au_xmitframe_complete(_adapter *padapter, struct xmit_priv *pxmitpriv, struct xmit_buf *pxmitbuf);
 #endif /* CONFIG_USB_HCI */
-
-#ifdef CONFIG_PCI_HCI
-	s32 rtl8814ae_init_xmit_priv(PADAPTER padapter);
-	void rtl8814ae_free_xmit_priv(PADAPTER padapter);
-	struct xmit_buf *rtl8814ae_dequeue_xmitbuf(struct rtw_tx_ring *ring);
-	void rtl8814ae_xmitframe_resume(_adapter *padapter);
-	s32 rtl8814ae_hal_xmit(PADAPTER padapter, struct xmit_frame *pxmitframe);
-	s32 rtl8814ae_mgnt_xmit(PADAPTER padapter, struct xmit_frame *pmgntframe);
-	s32	rtl8814ae_hal_xmitframe_enqueue(_adapter *padapter, struct xmit_frame *pxmitframe);
-	void rtl8814ae_xmit_tasklet(void *priv);
-#ifdef CONFIG_XMIT_THREAD_MODE
-	s32 rtl8814ae_xmit_buf_handler(_adapter *padapter);
-#endif
-#endif
 
 void _dbg_dump_tx_info(_adapter	*padapter, int frame_tag, u8 *ptxdesc);
 u8

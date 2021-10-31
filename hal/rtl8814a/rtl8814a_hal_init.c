@@ -237,12 +237,6 @@ _WriteFW_8814A(
 	u32			page, offset;
 	u8			*bufferPtr = (u8 *)buffer;
 
-#ifdef CONFIG_PCI_HCI
-	/* 20100120 Joseph: Add for 88CE normal chip. */
-	/* Fill in zero to make firmware image to dword alignment. */
-	_FillDummy_8814A(bufferPtr, &size);
-#endif /* CONFIG_PCI_HCI */
-
 	pageNums = size / MAX_PAGE_SIZE ;
 
 	/* RT_ASSERT((pageNums <= 8), ("Page numbers should not greater then 8\n"));	 */
@@ -380,18 +374,6 @@ WaitDownLoadRSVDPageOK_3081(
 	u8	count = 0, DLBcnCount = 0;
 	BOOLEAN bRetValue = _FALSE;
 
-#if defined(CONFIG_PCI_HCI)
-	/* Polling Beacon Queue to send Beacon */
-	TxBcReg = rtw_read8(Adapter, REG_MGQ_TXBD_NUM_8814A + 3);
-	count = 0;
-	while ((count < 20) && (TxBcReg & BIT4)) {
-		count++;
-		rtw_udelay_os(10);
-		TxBcReg = rtw_read8(Adapter, REG_MGQ_TXBD_NUM_8814A + 3);
-	}
-
-	rtw_write8(Adapter, REG_MGQ_TXBD_NUM_8814A + 3, TxBcReg | BIT4);
-#endif /* #if defined(CONFIG_PCI_HCI) */
 	/* check rsvd page download OK. */
 	BcnValidReg = rtw_read8(Adapter, REG_FIFOPAGE_CTRL_2_8814A + 1);
 	count = 0;
@@ -3191,9 +3173,6 @@ static void hw_var_set_opmode(PADAPTER Adapter, u8 variable, u8 *val)
 		if ((mode == _HW_STATE_STATION_) || (mode == _HW_STATE_NOLINK_)) {
 			if (!rtw_mi_get_ap_num(Adapter) && !rtw_mi_get_mesh_num(Adapter)) {
 				StopTxBeacon(Adapter);
-#ifdef CONFIG_PCI_HCI
-				UpdateInterruptMask8814AE(Adapter, 0, 0, RT_BCN_INT_MASKS, 0);
-#else /* CONFIG_PCI_HCI */
 #ifdef CONFIG_INTERRUPT_BASED_TXBCN
 
 #ifdef CONFIG_INTERRUPT_BASED_TXBCN_EARLY_INT
@@ -3206,7 +3185,6 @@ static void hw_var_set_opmode(PADAPTER Adapter, u8 variable, u8 *val)
 #endif/* CONFIG_INTERRUPT_BASED_TXBCN_BCN_OK_ERR */
 
 #endif /* CONFIG_INTERRUPT_BASED_TXBCN */
-#endif /* CONFIG_PCI_HCI */
 			}
 
 			rtw_write8(Adapter, REG_BCN_CTRL_1, DIS_TSF_UDT | DIS_ATIM); /* disable atim wnd and disable beacon function */
@@ -3220,9 +3198,6 @@ static void hw_var_set_opmode(PADAPTER Adapter, u8 variable, u8 *val)
 			ResumeTxBeacon(Adapter);
 			rtw_write8(Adapter, REG_BCN_CTRL_1, DIS_TSF_UDT | EN_BCN_FUNCTION | DIS_BCNQ_SUB);
 		} else if (mode == _HW_STATE_AP_) {
-#ifdef CONFIG_PCI_HCI
-			UpdateInterruptMask8814AE(Adapter, RT_BCN_INT_MASKS, 0, 0, 0);
-#else
 #ifdef CONFIG_INTERRUPT_BASED_TXBCN
 #ifdef CONFIG_INTERRUPT_BASED_TXBCN_EARLY_INT
 			UpdateInterruptMask8814AU(Adapter, _TRUE , IMR_BCNDMAINT0_8812, 0);
@@ -3233,7 +3208,6 @@ static void hw_var_set_opmode(PADAPTER Adapter, u8 variable, u8 *val)
 #endif/* CONFIG_INTERRUPT_BASED_TXBCN_BCN_OK_ERR */
 
 #endif /* CONFIG_INTERRUPT_BASED_TXBCN */
-#endif
 
 			rtw_write8(Adapter, REG_BCN_CTRL_1, DIS_TSF_UDT | DIS_BCNQ_SUB);
 
@@ -3301,9 +3275,6 @@ static void hw_var_set_opmode(PADAPTER Adapter, u8 variable, u8 *val)
 #endif /* CONFIG_CONCURRENT_MODE */
 			{
 				StopTxBeacon(Adapter);
-#ifdef CONFIG_PCI_HCI
-				UpdateInterruptMask8814AE(Adapter, 0, 0, RT_BCN_INT_MASKS, 0);
-#else
 #ifdef CONFIG_INTERRUPT_BASED_TXBCN
 #ifdef CONFIG_INTERRUPT_BASED_TXBCN_EARLY_INT
 				rtw_write8(Adapter, REG_DRVERLYINT, 0x05);/* restore early int time to 5ms					 */
@@ -3315,7 +3286,6 @@ static void hw_var_set_opmode(PADAPTER Adapter, u8 variable, u8 *val)
 #endif /* CONFIG_INTERRUPT_BASED_TXBCN_BCN_OK_ERR */
 
 #endif /* CONFIG_INTERRUPT_BASED_TXBCN */
-#endif
 			}
 
 			rtw_write8(Adapter, REG_BCN_CTRL, DIS_TSF_UDT | EN_BCN_FUNCTION | DIS_ATIM); /* disable atim wnd */
@@ -3328,9 +3298,6 @@ static void hw_var_set_opmode(PADAPTER Adapter, u8 variable, u8 *val)
 			ResumeTxBeacon(Adapter);
 			rtw_write8(Adapter, REG_BCN_CTRL, DIS_TSF_UDT | EN_BCN_FUNCTION | DIS_BCNQ_SUB);
 		} else if (mode == _HW_STATE_AP_) {
-#ifdef CONFIG_PCI_HCI
-			UpdateInterruptMask8814AE(Adapter, RT_BCN_INT_MASKS, 0, 0, 0);
-#else
 #ifdef CONFIG_INTERRUPT_BASED_TXBCN
 #ifdef CONFIG_INTERRUPT_BASED_TXBCN_EARLY_INT
 			UpdateInterruptMask8814AU(Adapter, _TRUE , IMR_BCNDMAINT0_8812, 0);
@@ -3341,7 +3308,6 @@ static void hw_var_set_opmode(PADAPTER Adapter, u8 variable, u8 *val)
 #endif/* CONFIG_INTERRUPT_BASED_TXBCN_BCN_OK_ERR */
 
 #endif /* CONFIG_INTERRUPT_BASED_TXBCN */
-#endif
 
 			rtw_write8(Adapter, REG_BCN_CTRL, DIS_TSF_UDT | DIS_BCNQ_SUB);
 			/*Beacon is polled to TXBUF*/

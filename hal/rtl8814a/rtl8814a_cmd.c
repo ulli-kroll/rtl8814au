@@ -493,7 +493,6 @@ void rtl8814_download_rsvd_page(PADAPTER padapter, u8 mstatus)
 
 		/* Do not enable HW DMA BCN or it will cause Pcie interface hang by timing issue. 2011.11.24. by tynli. */
 		/* if(!padapter->bEnterPnpSleep) */
-#ifndef CONFIG_PCI_HCI
 		{
 #ifndef RTL8814AE_SW_BCN
 			/* Clear CR[8] or beacon packet will not be send to TxBuf anymore. */
@@ -503,7 +502,6 @@ void rtl8814_download_rsvd_page(PADAPTER padapter, u8 mstatus)
 			/*RTW_INFO("%s-%d: disable SW BCN, REG_CR=0x%x\n", __func__, __LINE__, rtw_read32(padapter, REG_CR));*/
 #endif
 		}
-#endif /* !CONFIG_PCI_HCI */
 	}
 }
 

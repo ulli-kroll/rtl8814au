@@ -2829,14 +2829,6 @@ static struct xmit_buf *__rtw_alloc_cmd_xmitbuf(struct xmit_priv *pxmitpriv,
 	if (pxmitbuf !=  NULL) {
 		pxmitbuf->priv_data = NULL;
 
-#ifdef CONFIG_PCI_HCI
-		pxmitbuf->len = 0;
-#ifdef CONFIG_TRX_BD_ARCH
-		/*pxmitbuf->buf_desc = NULL;*/
-#else
-		pxmitbuf->desc = NULL;
-#endif
-#endif
 
 		if (pxmitbuf->sctx) {
 			RTW_INFO("%s pxmitbuf->sctx is not NULL\n", __func__);
@@ -2914,14 +2906,6 @@ struct xmit_buf *rtw_alloc_xmitbuf_ext(struct xmit_priv *pxmitpriv)
 
 		pxmitbuf->priv_data = NULL;
 
-#ifdef CONFIG_PCI_HCI
-		pxmitbuf->len = 0;
-#ifdef CONFIG_TRX_BD_ARCH
-		/*pxmitbuf->buf_desc = NULL;*/
-#else
-		pxmitbuf->desc = NULL;
-#endif
-#endif
 
 		if (pxmitbuf->sctx) {
 			RTW_INFO("%s pxmitbuf->sctx is not NULL\n", __func__);
@@ -2995,14 +2979,6 @@ struct xmit_buf *rtw_alloc_xmitbuf(struct xmit_priv *pxmitpriv)
 
 		pxmitbuf->priv_data = NULL;
 
-#ifdef CONFIG_PCI_HCI
-		pxmitbuf->len = 0;
-#ifdef CONFIG_TRX_BD_ARCH
-		/*pxmitbuf->buf_desc = NULL;*/
-#else
-		pxmitbuf->desc = NULL;
-#endif
-#endif
 
 		if (pxmitbuf->sctx) {
 			RTW_INFO("%s pxmitbuf->sctx is not NULL\n", __func__);
