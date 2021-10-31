@@ -220,12 +220,6 @@ Chip specific
  *   */
 #define	EFUSE_OOB_PROTECT_BYTES		15	/* PG data exclude header, dummy 6 bytes frome CP test and reserved 1byte. */
 
-#ifdef CONFIG_FILE_FWIMG
-extern char *rtw_fw_file_path;
-#ifdef CONFIG_WOWLAN
-extern char *rtw_fw_wow_file_path;
-#endif
-#endif /* CONFIG_FILE_FWIMG */
 
 /* rtl8814_hal_init.c */
 s32 FirmwareDownload8814A(PADAPTER	Adapter, BOOLEAN bUsedWoWLANFw);

@@ -661,10 +661,6 @@ _FWFreeToGo8814A(
 }
 
 
-#ifdef CONFIG_FILE_FWIMG
-	u8	FwBuffer8814[FW_SIZE];
-#endif /* CONFIG_FILE_FWIMG */
-
 s32
 FirmwareDownload8814A(
 		PADAPTER			Adapter,
@@ -682,9 +678,6 @@ FirmwareDownload8814A(
 	u8				*pFwHdr = NULL;
 	u8				*pFirmwareBuf;
 	u32				FirmwareLen;
-#ifdef CONFIG_FILE_FWIMG
-	u8 *fwfilepath;
-#endif
 	u32 u32tmp;
 
 
@@ -694,21 +687,6 @@ FirmwareDownload8814A(
 		goto exit;
 	}
 
-#ifdef CONFIG_FILE_FWIMG
-#ifdef CONFIG_WOWLAN
-	if (bUsedWoWLANFw)
-		fwfilepath = rtw_fw_wow_file_path;
-	else
-#endif /* CONFIG_WOWLAN */
-	{
-		fwfilepath = rtw_fw_file_path;
-	}
-
-	if (rtw_is_file_readable(fwfilepath) == _TRUE) {
-		RTW_INFO("%s acquire FW from file:%s\n", __FUNCTION__, fwfilepath);
-		pFirmware->eFWSource = FW_SOURCE_IMG_FILE;
-	} else
-#endif /* CONFIG_FILE_FWIMG */
 	{
 		RTW_INFO("%s fw source from Header\n", __FUNCTION__);
 		pFirmware->eFWSource = FW_SOURCE_HEADER_FILE;
@@ -716,12 +694,6 @@ FirmwareDownload8814A(
 
 	switch (pFirmware->eFWSource) {
 	case FW_SOURCE_IMG_FILE:
-#ifdef CONFIG_FILE_FWIMG
-		rtStatus = rtw_retrieve_from_file(fwfilepath, FwBuffer8814, FW_SIZE);
-		pFirmware->ulFwLength = rtStatus >= 0 ? rtStatus : 0;
-		pFirmware->szFwBuffer = FwBuffer8814;
-		RTW_INFO("%s fw size: %d\n", __FUNCTION__, pFirmware->ulFwLength);
-#endif /* CONFIG_FILE_FWIMG */
 		break;
 	case FW_SOURCE_HEADER_FILE:
 		if (bUsedWoWLANFw) {
@@ -947,15 +919,6 @@ s32 FirmwareDownloadBT(PADAPTER padapter, PRT_MP_FIRMWARE pFirmware)
 		return _FAIL;
 	}
 
-#ifdef CONFIG_FILE_FWIMG
-	if (rtw_is_file_readable(rtw_fw_mp_bt_file_path) == _TRUE) {
-		RTW_INFO("%s: accquire MP BT FW from file:%s\n", __FUNCTION__, rtw_fw_mp_bt_file_path);
-
-		rtStatus = rtw_retrieve_from_file(rtw_fw_mp_bt_file_path, FwBuffer, 0x8000);
-		BTFirmwareLen = rtStatus >= 0 ? rtStatus : 0;
-		pBTFirmwareBuf = FwBuffer;
-	} else
-#endif /*  CONFIG_FILE_FWIMG */
 	{
 #ifdef CONFIG_EMBEDDED_FWIMG
 		RTW_INFO("%s: Download MP BT FW from header\n", __FUNCTION__);
