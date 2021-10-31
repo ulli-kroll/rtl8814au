@@ -36,7 +36,6 @@ CONFIG_IPS_MODE = default
 CONFIG_LPS_MODE = default
 CONFIG_USB_AUTOSUSPEND = n
 CONFIG_HW_PWRP_DETECTION = n
-CONFIG_BT_COEXIST = n
 CONFIG_WAPI_SUPPORT = n
 CONFIG_EFUSE_CONFIG_FILE = y
 CONFIG_EXT_CLK = n
@@ -167,9 +166,6 @@ _HAL_INTFS_FILES +=	\
 _HAL_INTFS_FILES += hal/rtl8814a/usb/usb_ops_linux.o
 _HAL_INTFS_FILES +=hal/efuse/rtl8814a/HalEfuseMask8814A_USB.o
 
-ifeq ($(CONFIG_BT_COEXIST), y)
-_BTC_FILES += hal/btc/halbtc8814a2ant.o
-endif
 endif
 
 ########### AUTO_CFG  #################################

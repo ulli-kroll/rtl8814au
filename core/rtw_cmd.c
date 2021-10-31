@@ -3003,12 +3003,6 @@ u8 traffic_status_watchdog(_adapter *padapter, u8 from_timer)
 	RT_LINK_DETECT_T *link_detect = &pmlmepriv->LinkDetectInfo;
 #endif
 
-#ifdef CONFIG_BT_COEXIST
-	if (padapter->registrypriv.wifi_spec != 1) {
-		BusyThresholdHigh = 25;
-		BusyThresholdLow = 10;
-	} else
-#endif /* CONFIG_BT_COEXIST */
 	{
 		BusyThresholdHigh = 100;
 		BusyThresholdLow = 75;
@@ -3211,10 +3205,6 @@ void rtw_dynamic_chk_wk_hdl(_adapter *padapter)
 
 	/* check_hw_pbc(padapter, pdrvextra_cmd->pbuf, pdrvextra_cmd->type); */
 
-#ifdef CONFIG_BT_COEXIST
-	/* BT-Coexist */
-	rtw_btcoex_Handler(padapter);
-#endif
 
 #ifdef CONFIG_IPS_CHECK_IN_WD
 	/* always call rtw_ps_processor() at last one. */
@@ -3250,9 +3240,6 @@ void lps_ctrl_wk_hdl(_adapter *padapter, u8 lps_ctrl_type, u8 *buf)
 	switch (lps_ctrl_type) {
 	case LPS_CTRL_SCAN:
 		/* RTW_INFO("LPS_CTRL_SCAN\n"); */
-#ifdef CONFIG_BT_COEXIST
-		rtw_btcoex_ScanNotify(padapter, _TRUE);
-#endif /* CONFIG_BT_COEXIST */
 		if (check_fwstate(pmlmepriv, _FW_LINKED) == _TRUE) {
 			/* connect */
 			LPS_Leave(padapter, "LPS_CTRL_SCAN");
@@ -3268,25 +3255,16 @@ void lps_ctrl_wk_hdl(_adapter *padapter, u8 lps_ctrl_type, u8 *buf)
 		/* Reset LPS Setting */
 		pwrpriv->LpsIdleCount = 0;
 		rtw_hal_set_hwreg(padapter, HW_VAR_H2C_FW_JOINBSSRPT, (u8 *)(&mstatus));
-#ifdef CONFIG_BT_COEXIST
-		rtw_btcoex_MediaStatusNotify(padapter, mstatus);
-#endif /* CONFIG_BT_COEXIST */
 		break;
 	case LPS_CTRL_DISCONNECT:
 		/* RTW_INFO("LPS_CTRL_DISCONNECT\n"); */
 		mstatus = 0;/* disconnect */
-#ifdef CONFIG_BT_COEXIST
-		rtw_btcoex_MediaStatusNotify(padapter, mstatus);
-#endif /* CONFIG_BT_COEXIST */
 		LPS_Leave(padapter, "LPS_CTRL_DISCONNECT");
 		rtw_hal_set_hwreg(padapter, HW_VAR_H2C_FW_JOINBSSRPT, (u8 *)(&mstatus));
 		break;
 	case LPS_CTRL_SPECIAL_PACKET:
 		/* RTW_INFO("LPS_CTRL_SPECIAL_PACKET\n"); */
 		rtw_set_lps_deny(padapter, LPS_DELAY_MS);
-#ifdef CONFIG_BT_COEXIST
-		rtw_btcoex_SpecialPacketNotify(padapter, PACKET_DHCP);
-#endif /* CONFIG_BT_COEXIST */
 		LPS_Leave(padapter, "LPS_CTRL_SPECIAL_PACKET");
 		break;
 	case LPS_CTRL_LEAVE:
@@ -3463,10 +3441,6 @@ void rtw_lps_change_dtim_hdl(_adapter *padapter, u8 dtim)
 	if (dtim <= 0 || dtim > 16)
 		return;
 
-#ifdef CONFIG_BT_COEXIST
-	if (rtw_btcoex_IsBtControlLps(padapter) == _TRUE)
-		return;
-#endif
 
 #ifdef CONFIG_LPS_LCLK
 	_enter_pwrlock(&pwrpriv->lock);
@@ -4465,201 +4439,6 @@ exit:
 
 #endif /* CONFIG_AP_MODE */
 
-#ifdef CONFIG_BT_COEXIST
-struct btinfo {
-	u8 cid;
-	u8 len;
-
-	u8 bConnection:1;
-	u8 bSCOeSCO:1;
-	u8 bInQPage:1;
-	u8 bACLBusy:1;
-	u8 bSCOBusy:1;
-	u8 bHID:1;
-	u8 bA2DP:1;
-	u8 bFTP:1;
-
-	u8 retry_cnt:4;
-	u8 rsvd_34:1;
-	u8 rsvd_35:1;
-	u8 rsvd_36:1;
-	u8 rsvd_37:1;
-
-	u8 rssi;
-
-	u8 rsvd_50:1;
-	u8 rsvd_51:1;
-	u8 rsvd_52:1;
-	u8 rsvd_53:1;
-	u8 rsvd_54:1;
-	u8 rsvd_55:1;
-	u8 eSCO_SCO:1;
-	u8 Master_Slave:1;
-
-	u8 rsvd_6;
-	u8 rsvd_7;
-};
-
-void btinfo_evt_dump(void *sel, void *buf)
-{
-	struct btinfo *info = (struct btinfo *)buf;
-
-	RTW_PRINT_SEL(sel, "cid:0x%02x, len:%u\n", info->cid, info->len);
-
-	if (info->len > 2)
-		RTW_PRINT_SEL(sel, "byte2:%s%s%s%s%s%s%s%s\n"
-			      , info->bConnection ? "bConnection " : ""
-			      , info->bSCOeSCO ? "bSCOeSCO " : ""
-			      , info->bInQPage ? "bInQPage " : ""
-			      , info->bACLBusy ? "bACLBusy " : ""
-			      , info->bSCOBusy ? "bSCOBusy " : ""
-			      , info->bHID ? "bHID " : ""
-			      , info->bA2DP ? "bA2DP " : ""
-			      , info->bFTP ? "bFTP" : ""
-			     );
-
-	if (info->len > 3)
-		RTW_PRINT_SEL(sel, "retry_cnt:%u\n", info->retry_cnt);
-
-	if (info->len > 4)
-		RTW_PRINT_SEL(sel, "rssi:%u\n", info->rssi);
-
-	if (info->len > 5)
-		RTW_PRINT_SEL(sel, "byte5:%s%s\n"
-			      , info->eSCO_SCO ? "eSCO_SCO " : ""
-			      , info->Master_Slave ? "Master_Slave " : ""
-			     );
-}
-
-static void rtw_btinfo_hdl(_adapter *adapter, u8 *buf, u16 buf_len)
-{
-#define BTINFO_WIFI_FETCH 0x23
-#define BTINFO_BT_AUTO_RPT 0x27
-#ifdef CONFIG_BT_COEXIST_SOCKET_TRX
-	struct btinfo_8761ATV *info = (struct btinfo_8761ATV *)buf;
-#else /* !CONFIG_BT_COEXIST_SOCKET_TRX */
-	struct btinfo *info = (struct btinfo *)buf;
-#endif /* CONFIG_BT_COEXIST_SOCKET_TRX */
-	u8 cmd_idx;
-	u8 len;
-
-	cmd_idx = info->cid;
-
-	if (info->len > buf_len - 2) {
-		rtw_warn_on(1);
-		len = buf_len - 2;
-	} else
-		len = info->len;
-
-	/* #define DBG_PROC_SET_BTINFO_EVT */
-#ifdef DBG_PROC_SET_BTINFO_EVT
-#ifdef CONFIG_BT_COEXIST_SOCKET_TRX
-	RTW_INFO("%s: btinfo[0]=%x,btinfo[1]=%x,btinfo[2]=%x,btinfo[3]=%x btinfo[4]=%x,btinfo[5]=%x,btinfo[6]=%x,btinfo[7]=%x\n"
-		, __func__, buf[0], buf[1], buf[2], buf[3], buf[4], buf[5], buf[6], buf[7]);
-#else/* !CONFIG_BT_COEXIST_SOCKET_TRX */
-	btinfo_evt_dump(RTW_DBGDUMP, info);
-#endif /* CONFIG_BT_COEXIST_SOCKET_TRX */
-#endif /* DBG_PROC_SET_BTINFO_EVT */
-
-	/* transform BT-FW btinfo to WiFI-FW C2H format and notify */
-	if (cmd_idx == BTINFO_WIFI_FETCH)
-		buf[1] = 0;
-	else if (cmd_idx == BTINFO_BT_AUTO_RPT)
-		buf[1] = 2;
-#ifdef CONFIG_BT_COEXIST_SOCKET_TRX
-	else if (0x01 == cmd_idx || 0x02 == cmd_idx)
-		buf[1] = buf[0];
-#endif /* CONFIG_BT_COEXIST_SOCKET_TRX */
-	rtw_btcoex_BtInfoNotify(adapter , len + 1, &buf[1]);
-}
-
-u8 rtw_btinfo_cmd(_adapter *adapter, u8 *buf, u16 len)
-{
-	struct cmd_obj *ph2c;
-	struct drvextra_cmd_parm *pdrvextra_cmd_parm;
-	u8 *btinfo;
-	struct cmd_priv *pcmdpriv = &adapter->cmdpriv;
-	u8	res = _SUCCESS;
-
-	ph2c = (struct cmd_obj *)rtw_zmalloc(sizeof(struct cmd_obj));
-	if (ph2c == NULL) {
-		res = _FAIL;
-		goto exit;
-	}
-
-	pdrvextra_cmd_parm = (struct drvextra_cmd_parm *)rtw_zmalloc(sizeof(struct drvextra_cmd_parm));
-	if (pdrvextra_cmd_parm == NULL) {
-		rtw_mfree((u8 *)ph2c, sizeof(struct cmd_obj));
-		res = _FAIL;
-		goto exit;
-	}
-
-	btinfo = rtw_zmalloc(len);
-	if (btinfo == NULL) {
-		rtw_mfree((u8 *)ph2c, sizeof(struct cmd_obj));
-		rtw_mfree((u8 *)pdrvextra_cmd_parm, sizeof(struct drvextra_cmd_parm));
-		res = _FAIL;
-		goto exit;
-	}
-
-	pdrvextra_cmd_parm->ec_id = BTINFO_WK_CID;
-	pdrvextra_cmd_parm->type = 0;
-	pdrvextra_cmd_parm->size = len;
-	pdrvextra_cmd_parm->pbuf = btinfo;
-
-	_rtw_memcpy(btinfo, buf, len);
-
-	init_h2fwcmd_w_parm_no_rsp(ph2c, pdrvextra_cmd_parm, GEN_CMD_CODE(_Set_Drv_Extra));
-
-	res = rtw_enqueue_cmd(pcmdpriv, ph2c);
-
-exit:
-	return res;
-}
-
-static void rtw_btc_reduce_wl_txpwr_hdl(_adapter *adapter, u32 pwr_lvl)
-{
-	rtw_btcoex_set_reduced_wl_pwr_lvl(adapter, pwr_lvl);
-	rtw_btcoex_do_reduce_wl_pwr_lvl(adapter);
-
-	RTW_INFO(FUNC_ADPT_FMT ": BTC reduce WL TxPwr %d dB!\n",
-		 FUNC_ADPT_ARG(adapter), pwr_lvl);
-}
-
-u8 rtw_btc_reduce_wl_txpwr_cmd(_adapter *adapter, u32 val)
-{
-	struct cmd_obj *pcmdobj;
-	struct drvextra_cmd_parm *pdrvextra_cmd_parm;
-	struct cmd_priv *pcmdpriv = &adapter->cmdpriv;
-	u8	res = _SUCCESS;
-
-	pcmdobj = (struct cmd_obj *)rtw_zmalloc(sizeof(struct cmd_obj));
-	if (pcmdobj == NULL) {
-		res = _FAIL;
-		goto exit;
-	}
-
-	pdrvextra_cmd_parm = (struct drvextra_cmd_parm *)rtw_zmalloc(sizeof(struct drvextra_cmd_parm));
-	if (pdrvextra_cmd_parm == NULL) {
-		rtw_mfree((u8 *)pcmdobj, sizeof(struct cmd_obj));
-		res = _FAIL;
-		goto exit;
-	}
-
-	pdrvextra_cmd_parm->ec_id = BTC_REDUCE_WL_TXPWR_CID;
-	pdrvextra_cmd_parm->type = val;
-	pdrvextra_cmd_parm->size = 0;
-	pdrvextra_cmd_parm->pbuf = NULL;
-
-	init_h2fwcmd_w_parm_no_rsp(pcmdobj, pdrvextra_cmd_parm, GEN_CMD_CODE(_Set_Drv_Extra));
-
-	res = rtw_enqueue_cmd(pcmdpriv, pcmdobj);
-
-exit:
-	return res;
-}
-#endif /* CONFIG_BT_COEXIST */
-
 u8 rtw_test_h2c_cmd(_adapter *adapter, u8 *buf, u8 len)
 {
 	struct cmd_obj *pcmdobj;
@@ -5379,14 +5158,6 @@ u8 rtw_drvextra_cmd_hdl(_adapter *padapter, unsigned char *pbuf)
 	case DM_RA_MSK_WK_CID:
 		rtw_dm_ra_mask_hdl(padapter, (struct sta_info *)pdrvextra_cmd->pbuf);
 		break;
-#ifdef CONFIG_BT_COEXIST
-	case BTINFO_WK_CID:
-		rtw_btinfo_hdl(padapter, pdrvextra_cmd->pbuf, pdrvextra_cmd->size);
-		break;
-	case BTC_REDUCE_WL_TXPWR_CID:
-		rtw_btc_reduce_wl_txpwr_hdl(padapter, pdrvextra_cmd->type);
-		break;
-#endif
 #ifdef CONFIG_DFS_MASTER
 	case DFS_RADAR_DETECT_WK_CID:
 		rtw_dfs_rd_hdl(padapter);

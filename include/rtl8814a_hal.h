@@ -315,8 +315,5 @@ void rtl8814_stop_thread(PADAPTER padapter);
 	u16	get_txbd_rw_reg(u16 ff_hwaddr);
 #endif
 
-#ifdef CONFIG_BT_COEXIST
-	void rtl8814a_combo_card_WifiOnlyHwInit(PADAPTER Adapter);
-#endif
 
 #endif /* __RTL8188E_HAL_H__ */

@@ -1092,21 +1092,7 @@ PHY_SwitchWirelessBand8814A(
 
 	pHalData->current_band_type = (BAND_TYPE)Band;
 
-#ifdef CONFIG_BT_COEXIST
-		if (pHalData->EEPROMBluetoothCoexist) {
-			struct mlme_ext_priv *mlmeext;
-
-			/* switch band under site survey or not, must notify to BT COEX */
-			mlmeext = &Adapter->mlmeextpriv;
-			if (mlmeext_scan_state(mlmeext) != SCAN_DISABLE)
-				rtw_btcoex_switchband_notify(_TRUE, pHalData->current_band_type);
-			else
-				rtw_btcoex_switchband_notify(_FALSE, pHalData->current_band_type);
-		} else
-			rtw_btcoex_wifionly_switchband_notify(Adapter);
-#else /* !CONFIG_BT_COEXIST */
 		rtw_btcoex_wifionly_switchband_notify(Adapter);
-#endif /* CONFIG_BT_COEXIST */
 
 	/*clear 0x1000[16],	When this bit is set to 0, CCK and OFDM are disabled, and clock are gated. Otherwise, CCK and OFDM are enabled. */
 	tepReg = rtw_read8(Adapter, REG_SYS_CFG3_8814A + 2);

@@ -997,9 +997,6 @@ u32 rtl8814au_hal_init(PADAPTER Adapter)
 		HAL_INIT_STAGES_LCK,
 		HAL_INIT_STAGES_MISC21,
 		/* HAL_INIT_STAGES_INIT_PABIAS, */
-#ifdef CONFIG_BT_COEXIST
-		HAL_INIT_STAGES_BT_COEXIST,
-#endif
 		/* HAL_INIT_STAGES_ANTENNA_SEL, */
 		HAL_INIT_STAGES_MISC31,
 		HAL_INIT_STAGES_END,
@@ -1025,9 +1022,6 @@ u32 rtl8814au_hal_init(PADAPTER Adapter)
 		"HAL_INIT_STAGES_PW_TRACK",
 		"HAL_INIT_STAGES_LCK",
 		"HAL_INIT_STAGES_MISC21",
-#ifdef CONFIG_BT_COEXIST
-		"HAL_INIT_STAGES_BT_COEXIST",
-#endif
 		/* "HAL_INIT_STAGES_ANTENNA_SEL", */
 		"HAL_INIT_STAGES_MISC31",
 		"HAL_INIT_STAGES_END",
@@ -1336,19 +1330,6 @@ u32 rtl8814au_hal_init(PADAPTER Adapter)
 	}
 #endif	/* #if (MP_DRIVER == 1) */
 
-#ifdef CONFIG_BT_COEXIST
-	HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_BT_COEXIST);
-	/* _InitBTCoexist(Adapter); */
-
-	if (_TRUE == pHalData->EEPROMBluetoothCoexist) {
-		/* Init BT hw config. */
-		rtw_btcoex_HAL_Initialize(Adapter, _FALSE);
-	} else {
-		/* In combo card run wifi only , must setting some hardware reg. */
-		rtl8812a_combo_card_WifiOnlyHwInit(Adapter);
-	}
-#endif /* CONFIG_BT_COEXIST */
-
 	HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_MISC31);
 
 	/* rtw_write8(Adapter, REG_USB_HRPWM, 0); */
@@ -1417,16 +1398,6 @@ u32 rtl8814au_hal_deinit(PADAPTER Adapter)
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
 	RTW_INFO("==> %s\n", __FUNCTION__);
 
-#ifdef CONFIG_BT_COEXIST
-	if (hal_btcoex_IsBtExist(Adapter)) {
-		RTW_INFO("BT module enable SIC\n");
-		/* Only under WIN7 we can support selective suspend and enter D3 state when system call halt adapter. */
-
-		/* rtw_write16(Adapter, REG_GPIO_MUXCFG, rtw_read16(Adapter, REG_GPIO_MUXCFG)|BIT12); */
-		/* 2010/10/13 MH If we enable SIC in the position and then call _ResetDigitalProcedure1. in XP, */
-		/* the system will hang due to 8051 reset fail. */
-	} else
-#endif /* CONFIG_BT_COEXIST */
 	{
 		rtw_write16(Adapter, REG_GPIO_MUXCFG, rtw_read16(Adapter, REG_GPIO_MUXCFG) & (~BIT12));
 	}

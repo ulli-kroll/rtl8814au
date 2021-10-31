@@ -3222,13 +3222,6 @@ u8 rtw_rx_ampdu_size(_adapter *adapter)
 	u8 size;
 	HT_CAP_AMPDU_FACTOR max_rx_ampdu_factor;
 
-#ifdef CONFIG_BT_COEXIST
-	if (rtw_btcoex_IsBTCoexCtrlAMPDUSize(adapter) == _TRUE) {
-		size = rtw_btcoex_GetAMPDUSize(adapter);
-		goto exit;
-	}
-#endif
-
 	/* for scan */
 	if (!mlmeext_chk_scan_state(&adapter->mlmeextpriv, SCAN_DISABLE)
 	    && !mlmeext_chk_scan_state(&adapter->mlmeextpriv, SCAN_COMPLETE)
@@ -3284,13 +3277,6 @@ bool rtw_rx_ampdu_is_accept(_adapter *adapter)
 		accept = adapter->fix_rx_ampdu_accept;
 		goto exit;
 	}
-
-#ifdef CONFIG_BT_COEXIST
-	if (rtw_btcoex_IsBTCoexRejectAMPDU(adapter) == _TRUE) {
-		accept = _FALSE;
-		goto exit;
-	}
-#endif
 
 	/* for scan */
 	if (!mlmeext_chk_scan_state(&adapter->mlmeextpriv, SCAN_DISABLE)
@@ -13614,17 +13600,6 @@ u8 setopmode_hdl(_adapter *padapter, u8 *pbuf)
 #endif
 		}
 	}
-
-#ifdef CONFIG_BT_COEXIST
-	if (psetop->mode == Ndis802_11APMode
-		|| psetop->mode == Ndis802_11_mesh
-		|| psetop->mode == Ndis802_11Monitor
-	) {
-		/* Do this after port switch to */
-		/* prevent from downloading rsvd page to wrong port */
-		rtw_btcoex_MediaStatusNotify(padapter, 1); /* connect */
-	}
-#endif /* CONFIG_BT_COEXIST */
 
 	return H2C_SUCCESS;
 

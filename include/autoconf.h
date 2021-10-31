@@ -270,13 +270,6 @@
 	#endif
 #endif
 
-#ifdef CONFIG_BT_COEXIST
-	/* for ODM and outsrc BT-Coex */
-	#define CONFIG_BT_COEXIST_SOCKET_TRX
-	#ifndef CONFIG_LPS
-		#define CONFIG_LPS	/* download reserved page to FW */
-	#endif
-#endif /* !CONFIG_BT_COEXIST */
 
 
 

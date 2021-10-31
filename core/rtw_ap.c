@@ -4251,9 +4251,6 @@ void stop_ap_mode(_adapter *padapter)
 	correct_TSF(padapter, self_action);
 #endif
 
-#ifdef CONFIG_BT_COEXIST
-	rtw_btcoex_MediaStatusNotify(padapter, 0); /* disconnect */
-#endif
 
 }
 

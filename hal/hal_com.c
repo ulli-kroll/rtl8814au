@@ -4241,15 +4241,6 @@ void hw_var_port_switch(_adapter *adapter)
 		rtw_write8(adapter, REG_BSSID1 + i, bssid[i]);
 
 	/* write bcn ctl */
-#ifdef CONFIG_BT_COEXIST
-	/* always enable port0 beacon function for PSTDMA */
-	if (IS_HARDWARE_TYPE_8723B(adapter) || IS_HARDWARE_TYPE_8703B(adapter)
-	    || IS_HARDWARE_TYPE_8723D(adapter))
-		bcn_ctrl_1 |= EN_BCN_FUNCTION;
-	/* always disable port1 beacon function for PSTDMA */
-	if (IS_HARDWARE_TYPE_8723B(adapter) || IS_HARDWARE_TYPE_8703B(adapter))
-		bcn_ctrl &= ~EN_BCN_FUNCTION;
-#endif
 	rtw_write8(adapter, REG_BCN_CTRL, bcn_ctrl_1);
 	rtw_write8(adapter, REG_BCN_CTRL_1, bcn_ctrl);
 
@@ -10694,24 +10685,6 @@ static _adapter *_rtw_search_sta_iface(_adapter *adapter)
 	}
 	return sta_iface;
 }
-#if defined(CONFIG_AP_MODE) && defined(CONFIG_BT_COEXIST)
-static _adapter *_rtw_search_ap_iface(_adapter *adapter)
-{
-	struct dvobj_priv *dvobj = adapter_to_dvobj(adapter);
-	_adapter *iface = NULL;
-	_adapter *ap_iface = NULL;
-	int i;
-
-	for (i = 0; i < dvobj->iface_nums; i++) {
-		iface = dvobj->padapters[i];
-		if (check_fwstate(&iface->mlmepriv, WIFI_AP_STATE) == _TRUE ) {
-			ap_iface = iface;
-			break;
-		}
-	}
-	return ap_iface;
-}
-#endif/*CONFIG_AP_MODE*/
 #endif/*CONFIG_CONCURRENT_MODE*/
 
 #ifdef CONFIG_CUSTOMER01_SMART_ANTENNA
@@ -10972,44 +10945,6 @@ static void _rtw_hal_set_fw_rsvd_page(_adapter *adapter, bool finished, u8 *page
 		}
 	}
 
-#ifdef CONFIG_BT_COEXIST
-	/*======== BT Qos null data * 1 page ======== */
-	if (pwrctl->wowlan_mode == _FALSE ||
-		pwrctl->wowlan_in_resume == _TRUE) {/*Normal mode*/
-
-		ap_iface = adapter;
-		#ifdef CONFIG_CONCURRENT_MODE
-		if (!MLME_IS_AP(ap_iface) && DEV_AP_NUM(adapter_to_dvobj(ap_iface))) {	/*DEV_AP_STARTING_NUM*/
-			ap_iface = _rtw_search_ap_iface(adapter);
-			RTW_INFO("get ("ADPT_FMT") to create BTQoSNull\n", ADPT_ARG(ap_iface));
-		}
-		#endif
-
-		if (MLME_IS_AP(ap_iface) || (nr_assoc_if == 0)) {
-			RsvdPageLoc.LocBTQosNull = TotalPageNum;
-
-			RTW_INFO("LocBTQosNull: %d\n", RsvdPageLoc.LocBTQosNull);
-
-			rtw_hal_construct_NullFunctionData(ap_iface,
-						&ReservedPagePacket[BufIndex],
-						&BTQosNullLength,
-						_TRUE, 0, 0, _FALSE);
-
-			rtw_hal_fill_fake_txdesc(ap_iface,
-					&ReservedPagePacket[BufIndex - TxDescLen],
-					BTQosNullLength, _FALSE, _TRUE, _FALSE);
-
-			CurtPktPageNum = (u8)PageNum(TxDescLen + BTQosNullLength,
-							 PageSize);
-
-			TotalPageNum += CurtPktPageNum;
-			BufIndex += (CurtPktPageNum * PageSize);
-
-			RSVD_PAGE_CFG("BTQosNull", CurtPktPageNum, TotalPageNum, TotalPacketLen);
-		}
-	}
-#endif /* CONFIG_BT_COEXIT */
-
 	TotalPacketLen = BufIndex;
 
 #ifdef DBG_FW_DEBUG_MSG_PKT
@@ -11192,14 +11127,6 @@ static void hw_var_set_bcn_func(_adapter *adapter, u8 enable)
 		val8 = rtw_read8(adapter, bcn_ctrl_reg);
 		val8 &= ~(EN_BCN_FUNCTION | EN_TXBCN_RPT);
 
-#ifdef CONFIG_BT_COEXIST
-		if (GET_HAL_DATA(adapter)->EEPROMBluetoothCoexist == 1) {
-			/* Always enable port0 beacon function for PSTDMA */
-			if (REG_BCN_CTRL == bcn_ctrl_reg)
-				val8 |= EN_BCN_FUNCTION;
-		}
-#endif
-
 		rtw_write8(adapter, bcn_ctrl_reg, val8);
 	}
 
@@ -11223,10 +11150,6 @@ static void hw_var_set_bcn_func(_adapter *adapter, u8 enable)
 			else
 				val16 &= ~EN_PORT_0_FUNCTION;
 
-			#ifdef CONFIG_BT_COEXIST
-			if (GET_HAL_DATA(adapter)->EEPROMBluetoothCoexist == 1)
-				val16 |= EN_PORT_0_FUNCTION;
-			#endif
 		}
 
 		if (val16 != val16_ori)
@@ -11947,18 +11870,6 @@ void rtw_hal_update_uapsd_tid(_adapter *adapter)
 }
 #endif /* CONFIG_WMMPS_STA */
 
-#if defined(CONFIG_BT_COEXIST) && defined(CONFIG_FW_MULTI_PORT_SUPPORT)
-/* For multi-port support, driver needs to inform the port ID to FW for btc operations */
-s32 rtw_hal_set_wifi_btc_port_id_cmd(_adapter *adapter)
-{
-	u8 h2c_buf[H2C_BTC_WL_PORT_ID_LEN] = {0};
-	u8 hw_port = rtw_hal_get_port(adapter);
-
-	SET_H2CCMD_BTC_WL_PORT_ID(h2c_buf, hw_port);
-	RTW_INFO("%s ("ADPT_FMT") - hw_port :%d\n", __func__, ADPT_ARG(adapter), hw_port);
-	return rtw_hal_fill_h2c_cmd(adapter, H2C_BTC_WL_PORT_ID, H2C_BTC_WL_PORT_ID_LEN, h2c_buf);
-}
-#endif
 
 #define LPS_ACTIVE_TIMEOUT	50 /*number of times*/
 void rtw_lps_state_chk(_adapter *adapter, u8 ps_mode)
@@ -12248,30 +12159,11 @@ u8 SetHwReg(_adapter *adapter, u8 variable, u8 *val)
 
 	case HW_VAR_MLME_SITESURVEY:
 		hw_var_set_mlme_sitesurvey(adapter, *val);
-		#ifdef CONFIG_BT_COEXIST
-		if (hal_data->EEPROMBluetoothCoexist == 1)
-			rtw_btcoex_ScanNotify(adapter, *val ? _TRUE : _FALSE);
-		#endif
 		break;
 
 #ifndef CONFIG_HAS_HW_VAR_MLME_JOIN
 	case HW_VAR_MLME_JOIN:
 		hw_var_set_mlme_join(adapter, *val);
-		#ifdef CONFIG_BT_COEXIST
-		if (hal_data->EEPROMBluetoothCoexist == 1) {
-			switch (*val) {
-			case 0:
-				/* Notify coex. mechanism before join */
-				rtw_btcoex_ConnectNotify(adapter, _TRUE);
-				break;
-			case 1:
-			case 2:
-				/* Notify coex. mechanism after join, whether successful or failed */
-				rtw_btcoex_ConnectNotify(adapter, _FALSE);
-				break;
-			}
-		}
-		#endif /* CONFIG_BT_COEXIST */
 		break;
 #endif
 

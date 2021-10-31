@@ -1087,11 +1087,6 @@ u8 rtw_dfs_rd_en_decision_cmd(_adapter *adapter);
 #endif /* CONFIG_DFS_MASTER */
 #endif /* CONFIG_AP_MODE */
 
-#ifdef CONFIG_BT_COEXIST
-u8 rtw_btinfo_cmd(PADAPTER padapter, u8 *pbuf, u16 length);
-u8 rtw_btc_reduce_wl_txpwr_cmd(_adapter *adapter, u32 val);
-#endif
-
 u8 rtw_test_h2c_cmd(_adapter *adapter, u8 *buf, u8 len);
 
 u8 rtw_enable_hw_update_tsf_cmd(_adapter *padapter);

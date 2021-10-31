@@ -292,11 +292,6 @@ void rtl8814_set_FwPwrMode_cmd(PADAPTER padapter, u8 PSMode)
 	}
 
 	if (Mode > PS_MODE_ACTIVE) {
-#ifdef CONFIG_BT_COEXIST
-		if ((rtw_btcoex_IsBtControlLps(padapter) == _TRUE)  && (_TRUE == pHalData->EEPROMBluetoothCoexist))
-			PowerState = rtw_btcoex_RpwmVal(padapter);
-		else
-#endif /* CONFIG_BT_COEXIST */
 			PowerState = 0x00;/* AllON(0x0C), RFON(0x04), RFOFF(0x00) */
 
 #ifdef CONFIG_EXT_CLK
@@ -324,10 +319,6 @@ void rtl8814_set_FwPwrMode_cmd(PADAPTER padapter, u8 PSMode)
 	/* AllON(0x0C), RFON(0x04), RFOFF(0x00) */
 	SET_8814A_H2CCMD_PWRMODE_PARM_PWR_STATE(u1H2CSetPwrMode, PowerState);
 
-#ifdef CONFIG_BT_COEXIST
-	if (_TRUE == pHalData->EEPROMBluetoothCoexist)
-		rtw_btcoex_RecordPwrMode(padapter, u1H2CSetPwrMode, sizeof(u1H2CSetPwrMode));
-#endif /* CONFIG_BT_COEXIST */
 	/* RTW_INFO("u1H2CSetPwrMode="MAC_FMT"\n", MAC_ARG(u1H2CSetPwrMode)); */
 	FillH2CCmd_8814(padapter, H2C_SET_PWR_MODE, sizeof(u1H2CSetPwrMode), u1H2CSetPwrMode);
 
@@ -359,9 +350,6 @@ void rtl8814a_set_FwPwrModeInIPS_cmd(PADAPTER padapter, u8 cmd_param)
 	/* u8 cmd_param; */ /* BIT0:enable, BIT1:NoConnect32k */
 	if (cmd_param) {
 
-#ifdef CONFIG_BT_COEXIST
-		rtw_btcoex_IpsNotify(padapter, pwrpriv->ips_mode_req);
-#endif
 		/* Enter IPS */
 		RTW_INFO("%s: issue H2C to FW when entering IPS\n", __func__);
 
@@ -379,9 +367,6 @@ void rtl8814a_set_FwPwrModeInIPS_cmd(PADAPTER padapter, u8 cmd_param)
 		parm[2] = 0x0;
 		rtw_hal_fill_h2c_cmd(padapter, H2C_INACTIVE_PS_,
 				     H2C_INACTIVE_PS_LEN, parm);
-#ifdef CONFIG_BT_COEXIST
-		rtw_btcoex_IpsNotify(padapter, IPS_NONE);
-#endif
 	}
 }
 
@@ -748,195 +733,3 @@ s32 c2h_handler_8814a(_adapter *adapter, u8 id, u8 seq, u8 plen, u8 *payload)
 	return ret;
 }
 
-#ifdef CONFIG_BT_COEXIST
-#if 0
-static void rtl8814_set_FwRsvdPage_cmd(PADAPTER padapter, PRSVDPAGE_LOC rsvdpageloc)
-{
-	u8 u1H2CRsvdPageParm[H2C_RSVDPAGE_LOC_LEN] = {0};
-
-	RTW_INFO("8812au/8821/8811 RsvdPageLoc: ProbeRsp=%d PsPoll=%d Null=%d QoSNull=%d BTNull=%d\n",
-		 rsvdpageloc->LocProbeRsp, rsvdpageloc->LocPsPoll,
-		 rsvdpageloc->LocNullData, rsvdpageloc->LocQosNull,
-		 rsvdpageloc->LocBTQosNull);
-
-	SET_H2CCMD_RSVDPAGE_LOC_PROBE_RSP(u1H2CRsvdPageParm, rsvdpageloc->LocProbeRsp);
-	SET_H2CCMD_RSVDPAGE_LOC_PSPOLL(u1H2CRsvdPageParm, rsvdpageloc->LocPsPoll);
-	SET_H2CCMD_RSVDPAGE_LOC_NULL_DATA(u1H2CRsvdPageParm, rsvdpageloc->LocNullData);
-	SET_H2CCMD_RSVDPAGE_LOC_QOS_NULL_DATA(u1H2CRsvdPageParm, rsvdpageloc->LocQosNull);
-	SET_H2CCMD_RSVDPAGE_LOC_BT_QOS_NULL_DATA(u1H2CRsvdPageParm, rsvdpageloc->LocBTQosNull);
-
-	RTW_DBG_DUMP("u1H2CRsvdPageParm:", u1H2CRsvdPageParm, H2C_RSVDPAGE_LOC_LEN);
-	FillH2CCmd_8814(padapter, H2C_RSVD_PAGE, H2C_RSVDPAGE_LOC_LEN, u1H2CRsvdPageParm);
-}
-
-#ifdef CONFIG_WOWLAN
-static void rtl8814_set_FwAoacRsvdPage_cmd(PADAPTER padapter, PRSVDPAGE_LOC rsvdpageloc)
-{
-	struct pwrctrl_priv *pwrpriv = adapter_to_pwrctl(padapter);
-	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
-	u8	res = 0, count = 0;
-#ifdef CONFIG_WOWLAN
-	u8 u1H2CAoacRsvdPageParm[H2C_AOAC_RSVDPAGE_LOC_LEN] = {0};
-
-	RTW_INFO("rtl8814_set_FwAoacRsvdPage_cmd: RWC=%d ArpRsp=%d NbrAdv=%d GtkRsp=%d GtkInfo=%d ProbeReq=%d NetworkList=%d\n",
-		 rsvdpageloc->LocRemoteCtrlInfo, rsvdpageloc->LocArpRsp,
-		 rsvdpageloc->LocNbrAdv, rsvdpageloc->LocGTKRsp,
-		 rsvdpageloc->LocGTKInfo, rsvdpageloc->LocProbeReq,
-		 rsvdpageloc->LocNetList);
-
-#ifdef CONFIG_PNO_SUPPORT
-	RTW_INFO("NLO_INFO=%d\n", rsvdpageloc->LocPNOInfo);
-#endif
-	if (check_fwstate(pmlmepriv, _FW_LINKED)) {
-		SET_H2CCMD_AOAC_RSVDPAGE_LOC_REMOTE_WAKE_CTRL_INFO(u1H2CAoacRsvdPageParm, rsvdpageloc->LocRemoteCtrlInfo);
-		SET_H2CCMD_AOAC_RSVDPAGE_LOC_ARP_RSP(u1H2CAoacRsvdPageParm, rsvdpageloc->LocArpRsp);
-		/* SET_H2CCMD_AOAC_RSVDPAGE_LOC_NEIGHBOR_ADV(u1H2CAoacRsvdPageParm, rsvdpageloc->LocNbrAdv); */
-		SET_H2CCMD_AOAC_RSVDPAGE_LOC_GTK_RSP(u1H2CAoacRsvdPageParm, rsvdpageloc->LocGTKRsp);
-		SET_H2CCMD_AOAC_RSVDPAGE_LOC_GTK_INFO(u1H2CAoacRsvdPageParm, rsvdpageloc->LocGTKInfo);
-#ifdef CONFIG_GTK_OL
-		SET_H2CCMD_AOAC_RSVDPAGE_LOC_GTK_EXT_MEM(u1H2CAoacRsvdPageParm, rsvdpageloc->LocGTKEXTMEM);
-#endif /* CONFIG_GTK_OL */
-	} else {
-#ifdef CONFIG_PNO_SUPPORT
-		if (!pwrpriv->wowlan_in_resume)
-			SET_H2CCMD_AOAC_RSVDPAGE_LOC_NLO_INFO(u1H2CAoacRsvdPageParm, rsvdpageloc->LocPNOInfo);
-#endif
-	}
-
-	RTW_DBG_DUMP("u1H2CAoacRsvdPageParm:", u1H2CAoacRsvdPageParm, H2C_AOAC_RSVDPAGE_LOC_LEN);
-	FillH2CCmd_8814(padapter, H2C_AOAC_RSVD_PAGE, H2C_AOAC_RSVDPAGE_LOC_LEN, u1H2CAoacRsvdPageParm);
-
-#ifdef CONFIG_PNO_SUPPORT
-	if (!MLME_IS_AP(padapter) && !MLME_IS_MESH(padapter) &&
-	    !check_fwstate(pmlmepriv, _FW_LINKED) &&
-	    pwrpriv->wowlan_in_resume == _FALSE) {
-
-		res = rtw_read8(padapter, 0x1b8);
-		while (res == 0 && count < 25) {
-			RTW_INFO("[%d] FW loc_NLOInfo: %d\n", count, res);
-			res = rtw_read8(padapter, 0x1b8);
-			count++;
-			rtw_msleep_os(2);
-		}
-	}
-#endif /* CONFIG_PNO_SUPPORT */
-#endif /* CONFIG_WOWLAN */
-}
-#endif
-
-static void SetFwRsvdPagePkt_BTCoex(PADAPTER padapter)
-{
-	PHAL_DATA_TYPE pHalData;
-	struct xmit_frame	*pcmdframe;
-	struct pkt_attrib	*pattrib;
-	struct xmit_priv	*pxmitpriv;
-	struct pwrctrl_priv *pwrctl;
-	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
-	u32	BeaconLength = 0;
-	u32	NullDataLength = 0, QosNullLength = 0, BTQosNullLength = 0;
-	u32	ProbeReqLength = 0;
-	u8	*ReservedPagePacket;
-	u8	TxDescLen = TXDESC_SIZE, TxDescOffset = TXDESC_OFFSET;
-	u8	TotalPageNum = 0, CurtPktPageNum = 0, RsvdPageNum = 0;
-	u16	BufIndex, PageSize = PAGE_SIZE_TX_8814;
-	u32	TotalPacketLen, MaxRsvdPageBufSize = 0;
-	RSVDPAGE_LOC	RsvdPageLoc;
-
-	pHalData = GET_HAL_DATA(padapter);
-
-	pxmitpriv = &padapter->xmitpriv;
-	pwrctl = adapter_to_pwrctl(padapter);
-
-	/* RsvdPageNum = BCNQ_PAGE_NUM_8723B + WOWLAN_PAGE_NUM_8723B; */
-
-	RsvdPageNum = BCNQ_PAGE_NUM_8814;
-	MaxRsvdPageBufSize = RsvdPageNum * PageSize;
-
-	pcmdframe = rtw_alloc_cmdxmitframe(pxmitpriv);
-	if (pcmdframe == NULL) {
-		RTW_INFO("%s: alloc ReservedPagePacket fail!\n", __FUNCTION__);
-		return;
-	}
-
-	ReservedPagePacket = pcmdframe->buf_addr;
-	_rtw_memset(&RsvdPageLoc, 0, sizeof(RSVDPAGE_LOC));
-
-	/* 3 (1) beacon */
-	BufIndex = TxDescOffset;
-	rtw_hal_construct_beacon(padapter,
-		&ReservedPagePacket[BufIndex], &BeaconLength);
-
-	/* When we count the first page size, we need to reserve description size for the RSVD */
-	/* packet, it will be filled in front of the packet in TXPKTBUF. */
-	CurtPktPageNum = (u8)PageNum(TxDescLen + BeaconLength, PageSize);
-
-	/* If we don't add 1 more page, the WOWLAN function has a problem. Baron thinks it's a bug of firmware */
-	if (CurtPktPageNum == 1)
-		CurtPktPageNum += 1;
-	TotalPageNum += CurtPktPageNum;
-
-	BufIndex += (CurtPktPageNum * PageSize);
-
-	/* Jump to lastest page */
-	if (BufIndex < (MaxRsvdPageBufSize - PageSize)) {
-		BufIndex = TxDescOffset + (MaxRsvdPageBufSize - PageSize);
-		TotalPageNum = BCNQ_PAGE_NUM_8814 - 1;
-
-	}
-
-	/* 3 (6) BT Qos null data */
-	RsvdPageLoc.LocBTQosNull = TotalPageNum;
-	rtw_hal_construct_NullFunctionData(
-		padapter,
-		&ReservedPagePacket[BufIndex],
-		&BTQosNullLength,
-		_TRUE, 0, 0, _FALSE);
-	rtl8814a_fill_fake_txdesc(padapter, &ReservedPagePacket[BufIndex - TxDescLen], BTQosNullLength, _FALSE, _TRUE,  _FALSE);
-
-	/* RTW_INFO("%s(): HW_VAR_SET_TX_CMD: BT QOS NULL DATA %p %d\n",  */
-	/*	__FUNCTION__, &ReservedPagePacket[BufIndex-TxDescLen], (BTQosNullLength+TxDescLen)); */
-
-	CurtPktPageNum = (u8)PageNum(TxDescLen + BTQosNullLength, PageSize);
-
-	TotalPageNum += CurtPktPageNum;
-
-	TotalPacketLen = BufIndex + BTQosNullLength;
-	if (TotalPacketLen > MaxRsvdPageBufSize) {
-		RTW_INFO("%s(): ERROR: The rsvd page size is not enough!!TotalPacketLen %d, MaxRsvdPageBufSize %d\n", __FUNCTION__,
-			 TotalPacketLen, MaxRsvdPageBufSize);
-		goto error;
-	} else {
-		/* update attribute */
-		pattrib = &pcmdframe->attrib;
-		update_mgntframe_attrib(padapter, pattrib);
-		pattrib->qsel = QSLT_BEACON;
-		pattrib->pktlen = pattrib->last_txcmdsz = TotalPacketLen - TxDescOffset;
-#ifdef CONFIG_PCI_HCI
-		dump_mgntframe(padapter, pcmdframe);
-#else
-		dump_mgntframe_and_wait(padapter, pcmdframe, 100);
-#endif
-	}
-
-	RTW_INFO("%s: Set RSVD page location to Fw ,TotalPacketLen(%d), TotalPageNum(%d)\n", __FUNCTION__, TotalPacketLen, TotalPageNum);
-	if (check_fwstate(pmlmepriv, _FW_LINKED)) {
-		rtl8814_set_FwRsvdPage_cmd(padapter, &RsvdPageLoc);
-#ifdef CONFIG_WOWLAN
-		rtl8814_set_FwAoacRsvdPage_cmd(padapter, &RsvdPageLoc);
-#endif
-	}
-
-	return;
-
-error:
-
-	rtw_free_xmitframe(pxmitpriv, pcmdframe);
-}
-#endif
-
-void rtl8814a_download_BTCoex_AP_mode_rsvd_page(PADAPTER padapter)
-{
-	rtl8814_download_rsvd_page(padapter, RT_MEDIA_CONNECT);
-}
-
-#endif /* CONFIG_BT_COEXIST */

@@ -990,9 +990,6 @@ exit:
 int rtw_resume_process(_adapter *padapter)
 {
 	int ret;
-#if defined(CONFIG_BT_COEXIST) && defined(CONFIG_AUTOSUSPEND)
-	int pm_cnt = 0;
-#endif
 	struct pwrctrl_priv *pwrpriv = adapter_to_pwrctl(padapter);
 	struct dvobj_priv *pdvobj = padapter->dvobj;
 	struct debug_priv *pdbgpriv = &pdvobj->drv_dbg;
@@ -1004,23 +1001,6 @@ int rtw_resume_process(_adapter *padapter)
 		return -1;
 	}
 
-#if defined(CONFIG_BT_COEXIST) && defined(CONFIG_AUTOSUSPEND) /* add by amy for 8723as-vau */
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 32))
-	RTW_INFO("%s...pm_usage_cnt(%d)  pwrpriv->bAutoResume=%x.  ....\n", __func__, atomic_read(&(adapter_to_dvobj(padapter)->pusbintf->pm_usage_cnt)), pwrpriv->bAutoResume);
-	pm_cnt = atomic_read(&(adapter_to_dvobj(padapter)->pusbintf->pm_usage_cnt));
-#else /* kernel < 2.6.32 */
-	RTW_INFO("...pm_usage_cnt(%d).....\n", adapter_to_dvobj(padapter)->pusbintf->pm_usage_cnt);
-	pm_cnt = adapter_to_dvobj(padapter)->pusbintf->pm_usage_cnt;
-#endif /* kernel < 2.6.32 */
-
-	RTW_INFO("pwrpriv->bAutoResume (%x)\n", pwrpriv->bAutoResume);
-	if (_TRUE == pwrpriv->bAutoResume) {
-		pwrpriv->bInternalAutoSuspend = _FALSE;
-		pwrpriv->bAutoResume = _FALSE;
-		RTW_INFO("pwrpriv->bAutoResume (%x)  pwrpriv->bInternalAutoSuspend(%x)\n", pwrpriv->bAutoResume, pwrpriv->bInternalAutoSuspend);
-
-	}
-#endif /* #ifdef CONFIG_BT_COEXIST &CONFIG_AUTOSUSPEND& */
 
 	/*
 	 * Due to usb wow suspend flow will cancel read/write port via intf_stop and
@@ -1042,17 +1022,7 @@ int rtw_resume_process(_adapter *padapter)
 			rtw_interface_ps_func(padapter, HAL_USB_SELECT_SUSPEND, &bOpen);
 		}
 #endif
-#ifdef CONFIG_BT_COEXIST /* for 8723as-vau */
-		RTW_INFO("pwrpriv->bAutoResume (%x)\n", pwrpriv->bAutoResume);
-		if (_TRUE == pwrpriv->bAutoResume) {
-			pwrpriv->bInternalAutoSuspend = _FALSE;
-			pwrpriv->bAutoResume = _FALSE;
-			RTW_INFO("pwrpriv->bAutoResume (%x)  pwrpriv->bInternalAutoSuspend(%x)\n", pwrpriv->bAutoResume, pwrpriv->bInternalAutoSuspend);
-		}
-
-#else	/* #ifdef CONFIG_BT_COEXIST */
 		pwrpriv->bInternalAutoSuspend = _FALSE;
-#endif	/* #ifdef CONFIG_BT_COEXIST */
 		pwrpriv->brfoffbyhw = _FALSE;
 	}
 #endif/* CONFIG_AUTOSUSPEND */
@@ -1126,7 +1096,6 @@ void autosuspend_enter(_adapter *padapter)
 	pwrpriv->bips_processing = _TRUE;
 
 	if (rf_off == pwrpriv->change_rfpwrstate) {
-#ifndef	CONFIG_BT_COEXIST
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 35))
 		usb_enable_autosuspend(dvobj->pusbdev);
 #else
@@ -1140,26 +1109,6 @@ void autosuspend_enter(_adapter *padapter)
 #else
 		usb_autosuspend_device(dvobj->pusbdev, 1);
 #endif
-#else	/* #ifndef	CONFIG_BT_COEXIST */
-		if (1 == pwrpriv->autopm_cnt) {
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 35))
-			usb_enable_autosuspend(dvobj->pusbdev);
-#else
-			dvobj->pusbdev->autosuspend_disabled = 0;/* autosuspend disabled by the user */
-#endif
-
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 33))
-			usb_autopm_put_interface(dvobj->pusbintf);
-#elif (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 20))
-			usb_autopm_enable(dvobj->pusbintf);
-#else
-			usb_autosuspend_device(dvobj->pusbdev, 1);
-#endif
-			pwrpriv->autopm_cnt--;
-		} else
-			RTW_INFO("0!=pwrpriv->autopm_cnt[%d]   didn't usb_autopm_put_interface\n", pwrpriv->autopm_cnt);
-
-#endif	/* #ifndef	CONFIG_BT_COEXIST */
 	}
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 32))
 	RTW_INFO("...pm_usage_cnt(%d).....\n", atomic_read(&(dvobj->pusbintf->pm_usage_cnt)));
@@ -1182,7 +1131,6 @@ int autoresume_enter(_adapter *padapter)
 
 	if (rf_off == pwrpriv->rf_pwrstate) {
 		pwrpriv->ps_flag = _FALSE;
-#ifndef	CONFIG_BT_COEXIST
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 33))
 		if (usb_autopm_get_interface(dvobj->pusbintf) < 0) {
 			RTW_INFO("can't get autopm: %d\n", result);
@@ -1200,29 +1148,6 @@ int autoresume_enter(_adapter *padapter)
 #else
 		RTW_INFO("...pm_usage_cnt(%d).....\n", dvobj->pusbintf->pm_usage_cnt);
 #endif
-#else	/* #ifndef	CONFIG_BT_COEXIST */
-		pwrpriv->bAutoResume = _TRUE;
-		if (0 == pwrpriv->autopm_cnt) {
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 33))
-			if (usb_autopm_get_interface(dvobj->pusbintf) < 0) {
-				RTW_INFO("can't get autopm: %d\n", result);
-				result = _FAIL;
-				goto error_exit;
-			}
-#elif (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 20))
-			usb_autopm_disable(dvobj->pusbintf);
-#else
-			usb_autoresume_device(dvobj->pusbdev, 1);
-#endif
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 32))
-			RTW_INFO("...pm_usage_cnt(%d).....\n", atomic_read(&(dvobj->pusbintf->pm_usage_cnt)));
-#else
-			RTW_INFO("...pm_usage_cnt(%d).....\n", dvobj->pusbintf->pm_usage_cnt);
-#endif
-			pwrpriv->autopm_cnt++;
-		} else
-			RTW_INFO("0!=pwrpriv->autopm_cnt[%d]   didn't usb_autopm_get_interface\n", pwrpriv->autopm_cnt);
-#endif /* #ifndef	CONFIG_BT_COEXIST */
 	}
 	RTW_INFO("<==== autoresume_enter\n");
 error_exit:
@@ -1289,9 +1214,6 @@ _adapter *rtw_usb_primary_adapter_init(struct dvobj_priv *dvobj,
 	/* step usb endpoint mapping */
 	rtw_hal_chip_configure(padapter);
 
-#ifdef CONFIG_BT_COEXIST
-	rtw_btcoex_Initialize(padapter);
-#endif
 	rtw_btcoex_wifionly_initialize(padapter);
 
 	/* step read efuse/eeprom data and get mac_addr */
@@ -1346,9 +1268,6 @@ _adapter *rtw_usb_primary_adapter_init(struct dvobj_priv *dvobj,
 	if (usb_autopm_get_interface(pusb_intf) < 0)
 		RTW_INFO("can't get autopm:\n");
 #endif
-#ifdef CONFIG_BT_COEXIST
-	dvobj_to_pwrctl(dvobj)->autopm_cnt = 1;
-#endif
 
 	/* set mac addr */
 	rtw_macaddr_cfg(adapter_mac_addr(padapter), get_hal_mac_addr(padapter));
@@ -1385,7 +1304,7 @@ exit:
 
 static void rtw_usb_primary_adapter_deinit(_adapter *padapter)
 {
-#if defined(CONFIG_WOWLAN) || defined(CONFIG_BT_COEXIST)
+#if defined(CONFIG_WOWLAN)
 	struct pwrctrl_priv *pwrctl = adapter_to_pwrctl(padapter);
 #endif
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
@@ -1413,19 +1332,6 @@ static void rtw_usb_primary_adapter_deinit(_adapter *padapter)
 	rtw_dev_unload(padapter);
 
 	RTW_INFO("+r871xu_dev_remove, hw_init_completed=%d\n", rtw_get_hw_init_completed(padapter));
-
-#ifdef CONFIG_BT_COEXIST
-	if (1 == pwrctl->autopm_cnt) {
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 33))
-		usb_autopm_put_interface(adapter_to_dvobj(padapter)->pusbintf);
-#elif (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 20))
-		usb_autopm_enable(adapter_to_dvobj(padapter)->pusbintf);
-#else
-		usb_autosuspend_device(adapter_to_dvobj(padapter)->pusbdev, 1);
-#endif
-		pwrctl->autopm_cnt--;
-	}
-#endif
 
 	rtw_free_drv_sw(padapter);
 
@@ -1578,14 +1484,6 @@ static void rtw_dev_remove(struct usb_interface *pusb_intf)
 #ifdef CONFIG_CONCURRENT_MODE
 	rtw_drv_stop_vir_ifaces(dvobj);
 #endif /* CONFIG_CONCURRENT_MODE */
-
-#ifdef CONFIG_BT_COEXIST
-#ifdef CONFIG_BT_COEXIST_SOCKET_TRX
-	if (GET_HAL_DATA(padapter)->EEPROMBluetoothCoexist)
-		rtw_btcoex_close_socket(padapter);
-#endif
-	rtw_btcoex_HaltNotify(padapter);
-#endif
 
 	rtw_usb_primary_adapter_deinit(padapter);
 

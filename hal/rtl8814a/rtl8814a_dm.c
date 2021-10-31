@@ -38,10 +38,6 @@ static void dm_CheckPbcGPIO(_adapter *padapter)
 
 	if (!padapter->registrypriv.hw_wps_pbc)
 		return;
-#ifdef CONFIG_BT_COEXIST
-	if (hal_btcoex_IsBtExist(padapter))
-		return;
-#endif /* CONFIG_BT_COEXIST */
 
 #if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI)
 

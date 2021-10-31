@@ -18,9 +18,6 @@
 #if 1/* def  CONFIG_SINGLE_IMG */
 
 #include "../hal/phydm/phydm_precomp.h"
-#ifdef CONFIG_BT_COEXIST
-	#include <hal_btcoex.h>
-#endif
 	#include <hal_btcoex_wifionly.h>
 
 #if defined(CONFIG_RTW_ACS) || defined(CONFIG_BACKGROUND_NOISE_MONITOR)
@@ -671,10 +668,6 @@ typedef struct hal_com_data {
 	struct sreset_priv srestpriv;
 #endif /* #ifdef DBG_CONFIG_ERROR_DETECT */
 
-#ifdef CONFIG_BT_COEXIST
-	/* For bluetooth co-existance */
-	BT_COEXIST		bt_coexist;
-#endif /* CONFIG_BT_COEXIST */
 
 #if defined(CONFIG_RTL8723B) || defined(CONFIG_RTL8703B) \
 	|| defined(CONFIG_RTL8188F) || defined(CONFIG_RTL8188GTV) || defined(CONFIG_RTL8723D)|| defined(CONFIG_RTL8192F)

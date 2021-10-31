@@ -1748,13 +1748,7 @@ void rtw_phydm_watchdog(_adapter *adapter, bool in_lps)
 	odm_cmn_info_update(&pHalData->odmpriv, ODM_CMNINFO_LINK, bLinked);
 	odm_cmn_info_update(&pHalData->odmpriv, ODM_CMNINFO_STATION_STATE, bsta_state);
 
-	#ifdef CONFIG_BT_COEXIST
-	bBtDisabled = rtw_btcoex_IsBtDisabled(adapter);
-	odm_cmn_info_update(&pHalData->odmpriv, ODM_CMNINFO_BT_ENABLED,
-				(bBtDisabled == _TRUE) ? _FALSE : _TRUE);
-	#else
 	odm_cmn_info_update(&pHalData->odmpriv, ODM_CMNINFO_BT_ENABLED, _FALSE);
-	#endif /* CONFIG_BT_COEXIST */
 
 	rfk_forbidden = (_rtw_phydm_rfk_condition_check(adapter, pHalData->bScanInProcess, bLinked) == _TRUE) ? _FALSE : _TRUE;
 	halrf_cmn_info_set(&pHalData->odmpriv, HALRF_CMNINFO_RFK_FORBIDDEN, rfk_forbidden);

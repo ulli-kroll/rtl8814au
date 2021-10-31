@@ -3018,12 +3018,6 @@ _InitBeaconParameters_8814A(
 
 	val8 = DIS_TSF_UDT;
 	val16 = val8 | (val8 << 8); /* port0 and port1 */
-#ifdef CONFIG_BT_COEXIST
-	if (pHalData->EEPROMBluetoothCoexist == 1) {
-		/* Enable prot0 beacon function for PSTDMA */
-		val16 |= EN_BCN_FUNCTION;
-	}
-#endif
 	rtw_write16(Adapter, REG_BCN_CTRL, val16);
 
 	/* TBTT setup time */
@@ -3616,12 +3610,6 @@ u8 SetHwReg8814A(PADAPTER padapter, u8 variable, u8 *pval)
 		rtl8814_set_FwJoinBssReport_cmd(padapter, *pval);
 		break;
 	case HW_VAR_DL_RSVD_PAGE:
-#ifdef CONFIG_BT_COEXIST
-		if (pHalData->EEPROMBluetoothCoexist == 1) {
-			if (check_fwstate(&padapter->mlmepriv, WIFI_AP_STATE) == _TRUE)
-				rtl8814a_download_BTCoex_AP_mode_rsvd_page(padapter);
-		}
-#endif /* CONFIG_BT_COEXIST */
 		break;
 
 #ifdef CONFIG_P2P_PS
@@ -4345,59 +4333,6 @@ u8 GetHalDefVar8814A(PADAPTER padapter, HAL_DEF_VARIABLE variable, void *pval)
 
 	return bResult;
 }
-
-#ifdef CONFIG_BT_COEXIST
-void rtl8814a_combo_card_WifiOnlyHwInit(PADAPTER pdapter)
-{
-	u8  u1Tmp;
-	RTW_INFO("%s !\n", __FUNCTION__);
-	if (IS_HARDWARE_TYPE_8812(pdapter)) {
-		/* 0x790[5:0]=0x5 */
-		u1Tmp = rtw_read8(pdapter, 0x790);
-		u1Tmp = (u1Tmp & 0xb0) | 0x05 ;
-		rtw_write8(pdapter, 0x790, u1Tmp);
-		/* PTA parameter */
-		/* pBtCoexist->fBtcWrite1Byte(pBtCoexist, 0x6cc, 0x0); */
-		/* pBtCoexist->fBtcWrite4Byte(pBtCoexist, 0x6c8, 0xffffff); */
-		/* pBtCoexist->fBtcWrite4Byte(pBtCoexist, 0x6c4, 0x55555555); */
-		/* pBtCoexist->fBtcWrite4Byte(pBtCoexist, 0x6c0, 0x55555555); */
-		rtw_write8(pdapter, 0x6cc, 0x0);
-		rtw_write32(pdapter, 0x6c8, 0xffffff);
-		rtw_write32(pdapter, 0x6c4, 0x55555555);
-		rtw_write32(pdapter, 0x6c0, 0x55555555);
-
-		/* coex parameters */
-		/* pBtCoexist->fBtcWrite1Byte(pBtCoexist, 0x778, 0x3); */
-		rtw_write8(pdapter, 0x778, 0x3);
-
-		/* enable counter statistics */
-		/* pBtCoexist->fBtcWrite1Byte(pBtCoexist, 0x76e, 0xc); */
-		rtw_write8(pdapter, 0x76e, 0xc);
-
-		/* enable PTA */
-		/* pBtCoexist->fBtcWrite1Byte(pBtCoexist, 0x40, 0x20); */
-		rtw_write8(pdapter, 0x40, 0x20);
-
-		/* bt clock related */
-		/* u1Tmp = pBtCoexist->fBtcRead1Byte(pBtCoexist, 0x4); */
-		/* u1Tmp |= BIT7; */
-		/* pBtCoexist->fBtcWrite1Byte(pBtCoexist, 0x4, u1Tmp); */
-		u1Tmp = rtw_read8(pdapter, 0x4);
-		u1Tmp |= BIT7;
-		rtw_write8(pdapter, 0x4, u1Tmp);
-
-		/* bt clock related */
-		/* u1Tmp = pBtCoexist->fBtcRead1Byte(pBtCoexist, 0x7); */
-		/* u1Tmp |= BIT1; */
-		/* pBtCoexist->fBtcWrite1Byte(pBtCoexist, 0x7, u1Tmp); */
-		u1Tmp = rtw_read8(pdapter, 0x7);
-		u1Tmp |= BIT1;
-		rtw_write8(pdapter, 0x7, u1Tmp);
-	}
-
-
-}
-#endif /* CONFIG_BT_COEXIST */
 
 void rtl8814_set_hal_ops(struct hal_ops *pHalFunc)
 {

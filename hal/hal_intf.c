@@ -439,10 +439,6 @@ u32 rtw_hal_power_on(_adapter *padapter)
 
 	ret = padapter->hal_func.hal_power_on(padapter);
 
-#ifdef CONFIG_BT_COEXIST
-	if ((ret == _SUCCESS) && (pHalData->EEPROMBluetoothCoexist == _TRUE))
-		rtw_btcoex_PowerOnSetting(padapter);
-#endif
 
 	return ret;
 }
@@ -457,9 +453,6 @@ void rtw_hal_power_off(_adapter *padapter)
 	GET_HAL_DATA(padapter)->lps_1t1r = 0;
 #endif
 
-#ifdef CONFIG_BT_COEXIST
-	rtw_btcoex_PowerOffSetting(padapter);
-#endif
 
 	padapter->hal_func.hal_power_off(padapter);
 }
@@ -1180,21 +1173,6 @@ s32 c2h_handler(_adapter *adapter, u8 id, u8 seq, u8 plen, u8 *payload)
 	case C2H_FW_SCAN_COMPLETE:
 		RTW_INFO("[C2H], FW Scan Complete\n");
 		break;
-
-#ifdef CONFIG_BT_COEXIST
-	case C2H_BT_INFO:
-		rtw_btcoex_BtInfoNotify(adapter, plen, payload);
-		break;
-	case C2H_BT_MP_INFO:
-		rtw_btcoex_BtMpRptNotify(adapter, plen, payload);
-		break;
-	case C2H_MAILBOX_STATUS:
-		RTW_DBG_DUMP("C2H_MAILBOX_STATUS: ", payload, plen);
-		break;
-	case C2H_WLAN_INFO:
-		rtw_btcoex_WlFwDbgInfoNotify(adapter, payload, plen);
-		break;
-#endif /* CONFIG_BT_COEXIST */
 
 	case C2H_IQK_FINISH:
 		c2h_iqk_offload(adapter, payload, plen);
