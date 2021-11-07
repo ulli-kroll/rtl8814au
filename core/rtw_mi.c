@@ -1148,10 +1148,8 @@ static u8 _rtw_mi_tx_beacon_hdl(_adapter *adapter, void *data)
 		&& check_fwstate(&adapter->mlmepriv, WIFI_ASOC_STATE) == _TRUE
 	) {
 		adapter->mlmepriv.update_bcn = _TRUE;
-#ifndef CONFIG_INTERRUPT_BASED_TXBCN
 #if defined(CONFIG_USB_HCI) || defined(CONFIG_PCI_BCN_POLLING)
 		tx_beacon_hdl(adapter, NULL);
-#endif
 #endif
 	}
 	return _TRUE;

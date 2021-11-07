@@ -3872,17 +3872,6 @@ static void hw_var_set_bcn_interval(_adapter *adapter, u16 interval)
 	rtw_write16(adapter, REG_MBSSID_BCN_SPACE, interval);
 #endif
 
-#ifdef CONFIG_INTERRUPT_BASED_TXBCN_EARLY_INT
-	{
-		struct mlme_ext_priv	*pmlmeext = &adapter->mlmeextpriv;
-		struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
-
-		if ((pmlmeinfo->state & 0x03) == WIFI_FW_AP_STATE) {
-			RTW_INFO("%s==> bcn_interval:%d, eraly_int:%d\n", __func__, interval, interval >> 1);
-			rtw_write8(adapter, REG_DRVERLYINT, interval >> 1);
-		}
-	}
-#endif
 }
 
 #if CONFIG_TX_AC_LIFETIME

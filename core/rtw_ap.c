@@ -1870,7 +1870,6 @@ update_beacon:
 	/* send beacon */
 	ResumeTxBeacon(padapter);
 	{
-#if !defined(CONFIG_INTERRUPT_BASED_TXBCN)
 #if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI) || defined(CONFIG_PCI_BCN_POLLING)
 #ifdef CONFIG_SWTIMER_BASED_TXBCN
 		if (pdvobj->nr_ap_if == 1
@@ -1889,7 +1888,6 @@ update_beacon:
 		}
 #endif
 #endif
-#endif /* !defined(CONFIG_INTERRUPT_BASED_TXBCN) */
 
 #ifdef CONFIG_FW_HANDLE_TXBCN
 		if (mlme_act != MLME_OPCH_SWITCH)
@@ -3165,20 +3163,6 @@ static void update_bcn_wps_ie(_adapter *padapter)
 		rtw_mfree(pbackup_remainder_ie, remainder_ielen);
 
 	/* deal with the case without set_tx_beacon_cmd() in update_beacon() */
-#if defined(CONFIG_INTERRUPT_BASED_TXBCN)
-	if ((pmlmeinfo->state & 0x03) == WIFI_FW_AP_STATE) {
-		u8 sr = 0;
-		rtw_get_wps_attr_content(pwps_ie_src,  wps_ielen, WPS_ATTR_SELECTED_REGISTRAR, (u8 *)(&sr), NULL);
-
-		if (sr) {
-			set_fwstate(pmlmepriv, WIFI_UNDER_WPS);
-			RTW_INFO("%s, set WIFI_UNDER_WPS\n", __func__);
-		} else {
-			clr_fwstate(pmlmepriv, WIFI_UNDER_WPS);
-			RTW_INFO("%s, clr WIFI_UNDER_WPS\n", __func__);
-		}
-	}
-#endif
 }
 
 static void update_bcn_p2p_ie(_adapter *padapter)
@@ -3269,7 +3253,6 @@ void _update_beacon(_adapter *padapter, u8 ie_id, u8 *oui, u8 tx, u8 flags, cons
 
 	_exit_critical_bh(&pmlmepriv->bcn_update_lock, &irqL);
 
-#ifndef CONFIG_INTERRUPT_BASED_TXBCN
 #if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI) || defined(CONFIG_PCI_BCN_POLLING)
 	if (tx && updated) {
 		/* send_beacon(padapter); */ /* send_beacon must execute on TSR level */
@@ -3285,7 +3268,6 @@ void _update_beacon(_adapter *padapter, u8 ie_id, u8 *oui, u8 tx, u8 flags, cons
 		/* PCI will issue beacon when BCN interrupt occurs.		 */
 	}
 #endif
-#endif /* !CONFIG_INTERRUPT_BASED_TXBCN */
 }
 
 #ifdef CONFIG_80211N_HT

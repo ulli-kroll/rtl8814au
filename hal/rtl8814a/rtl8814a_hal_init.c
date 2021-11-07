@@ -3173,18 +3173,6 @@ static void hw_var_set_opmode(PADAPTER Adapter, u8 variable, u8 *val)
 		if ((mode == _HW_STATE_STATION_) || (mode == _HW_STATE_NOLINK_)) {
 			if (!rtw_mi_get_ap_num(Adapter) && !rtw_mi_get_mesh_num(Adapter)) {
 				StopTxBeacon(Adapter);
-#ifdef CONFIG_INTERRUPT_BASED_TXBCN
-
-#ifdef CONFIG_INTERRUPT_BASED_TXBCN_EARLY_INT
-				rtw_write8(Adapter, REG_DRVERLYINT, 0x05);/* restore early int time to 5ms */
-				UpdateInterruptMask8814AU(Adapter, _TRUE, 0, IMR_BCNDMAINT0_8812);
-#endif /* CONFIG_INTERRUPT_BASED_TXBCN_EARLY_INT */
-
-#ifdef CONFIG_INTERRUPT_BASED_TXBCN_BCN_OK_ERR
-				UpdateInterruptMask8814AU(Adapter, _TRUE , 0, (IMR_TXBCN0ERR_8812 | IMR_TXBCN0OK_8812));
-#endif/* CONFIG_INTERRUPT_BASED_TXBCN_BCN_OK_ERR */
-
-#endif /* CONFIG_INTERRUPT_BASED_TXBCN */
 			}
 
 			rtw_write8(Adapter, REG_BCN_CTRL_1, DIS_TSF_UDT | DIS_ATIM); /* disable atim wnd and disable beacon function */
@@ -3198,16 +3186,6 @@ static void hw_var_set_opmode(PADAPTER Adapter, u8 variable, u8 *val)
 			ResumeTxBeacon(Adapter);
 			rtw_write8(Adapter, REG_BCN_CTRL_1, DIS_TSF_UDT | EN_BCN_FUNCTION | DIS_BCNQ_SUB);
 		} else if (mode == _HW_STATE_AP_) {
-#ifdef CONFIG_INTERRUPT_BASED_TXBCN
-#ifdef CONFIG_INTERRUPT_BASED_TXBCN_EARLY_INT
-			UpdateInterruptMask8814AU(Adapter, _TRUE , IMR_BCNDMAINT0_8812, 0);
-#endif/* CONFIG_INTERRUPT_BASED_TXBCN_EARLY_INT */
-
-#ifdef CONFIG_INTERRUPT_BASED_TXBCN_BCN_OK_ERR
-			UpdateInterruptMask8814AU(Adapter, _TRUE , (IMR_TXBCN0ERR_8812 | IMR_TXBCN0OK_8812), 0);
-#endif/* CONFIG_INTERRUPT_BASED_TXBCN_BCN_OK_ERR */
-
-#endif /* CONFIG_INTERRUPT_BASED_TXBCN */
 
 			rtw_write8(Adapter, REG_BCN_CTRL_1, DIS_TSF_UDT | DIS_BCNQ_SUB);
 
@@ -3275,17 +3253,6 @@ static void hw_var_set_opmode(PADAPTER Adapter, u8 variable, u8 *val)
 #endif /* CONFIG_CONCURRENT_MODE */
 			{
 				StopTxBeacon(Adapter);
-#ifdef CONFIG_INTERRUPT_BASED_TXBCN
-#ifdef CONFIG_INTERRUPT_BASED_TXBCN_EARLY_INT
-				rtw_write8(Adapter, REG_DRVERLYINT, 0x05);/* restore early int time to 5ms					 */
-				UpdateInterruptMask8814AU(Adapter, _TRUE, 0, IMR_BCNDMAINT0_8812);
-#endif/* CONFIG_INTERRUPT_BASED_TXBCN_EARLY_INT */
-
-#ifdef CONFIG_INTERRUPT_BASED_TXBCN_BCN_OK_ERR
-				UpdateInterruptMask8814AU(Adapter, _TRUE , 0, (IMR_TXBCN0ERR_8812 | IMR_TXBCN0OK_8812));
-#endif /* CONFIG_INTERRUPT_BASED_TXBCN_BCN_OK_ERR */
-
-#endif /* CONFIG_INTERRUPT_BASED_TXBCN */
 			}
 
 			rtw_write8(Adapter, REG_BCN_CTRL, DIS_TSF_UDT | EN_BCN_FUNCTION | DIS_ATIM); /* disable atim wnd */
@@ -3298,16 +3265,6 @@ static void hw_var_set_opmode(PADAPTER Adapter, u8 variable, u8 *val)
 			ResumeTxBeacon(Adapter);
 			rtw_write8(Adapter, REG_BCN_CTRL, DIS_TSF_UDT | EN_BCN_FUNCTION | DIS_BCNQ_SUB);
 		} else if (mode == _HW_STATE_AP_) {
-#ifdef CONFIG_INTERRUPT_BASED_TXBCN
-#ifdef CONFIG_INTERRUPT_BASED_TXBCN_EARLY_INT
-			UpdateInterruptMask8814AU(Adapter, _TRUE , IMR_BCNDMAINT0_8812, 0);
-#endif/* CONFIG_INTERRUPT_BASED_TXBCN_EARLY_INT */
-
-#ifdef CONFIG_INTERRUPT_BASED_TXBCN_BCN_OK_ERR
-			UpdateInterruptMask8814AU(Adapter, _TRUE , (IMR_TXBCN0ERR_8812 | IMR_TXBCN0OK_8812), 0);
-#endif/* CONFIG_INTERRUPT_BASED_TXBCN_BCN_OK_ERR */
-
-#endif /* CONFIG_INTERRUPT_BASED_TXBCN */
 
 			rtw_write8(Adapter, REG_BCN_CTRL, DIS_TSF_UDT | DIS_BCNQ_SUB);
 			/*Beacon is polled to TXBUF*/
