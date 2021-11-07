@@ -268,11 +268,6 @@ struct recv_stat {
 
 	unsigned int rxdw5;
 
-#ifdef CONFIG_PCI_HCI
-	unsigned int rxdw6;
-
-	unsigned int rxdw7;
-#endif
 #endif /* if BUF_DESC_ARCH is defined, rx_buf_desc occupy 4 double words */
 };
 #endif

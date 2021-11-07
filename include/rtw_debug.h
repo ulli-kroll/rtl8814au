@@ -450,23 +450,6 @@ int proc_get_tx_logs(struct seq_file *m, void *v);
 int proc_get_int_logs(struct seq_file *m, void *v);
 #endif
 
-#ifdef CONFIG_PCI_HCI
-int proc_get_rx_ring(struct seq_file *m, void *v);
-int proc_get_tx_ring(struct seq_file *m, void *v);
-int proc_get_pci_aspm(struct seq_file *m, void *v);
-int proc_get_pci_conf_space(struct seq_file *m, void *v);
-ssize_t proc_set_pci_conf_space(struct file *file, const char __user *buffer, size_t count, loff_t *pos, void *data);
-
-int proc_get_pci_bridge_conf_space(struct seq_file *m, void *v);
-ssize_t proc_set_pci_bridge_conf_space(struct file *file, const char __user *buffer, size_t count, loff_t *pos, void *data);
-
-
-#ifdef DBG_TXBD_DESC_DUMP
-int proc_get_tx_ring_ext(struct seq_file *m, void *v);
-ssize_t proc_set_tx_ring_ext(struct file *file, const char __user *buffer, size_t count, loff_t *pos, void *data);
-#endif
-#endif
-
 #ifdef CONFIG_WOWLAN
 int proc_get_pattern_info(struct seq_file *m, void *v);
 ssize_t proc_set_pattern_info(struct file *file, const char __user *buffer,
