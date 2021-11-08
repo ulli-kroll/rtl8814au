@@ -1176,10 +1176,6 @@ struct dm_struct {
 	struct	phydm_func_poiner	phydm_func_handler;
 	struct	phydm_iot_center	iot_table;
 
-#ifdef ODM_CONFIG_BT_COEXIST
-	struct	phydm_bt_info		bt_info_table;
-#endif
-
 	struct	pkt_process_info	pkt_proc_struct;
 	struct phydm_adaptivity_struct	adaptivity;
 	struct _DFS_STATISTICS		dfs;

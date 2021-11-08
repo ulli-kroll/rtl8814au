@@ -2651,29 +2651,6 @@ void odm_cmn_info_update(struct dm_struct *dm, u32 cmn_info, u64 value)
 		dm->debug_components = (u64)value;
 		break;
 
-#ifdef ODM_CONFIG_BT_COEXIST
-	/* The following is for BT HS mode and BT coexist mechanism. */
-	case ODM_CMNINFO_BT_ENABLED:
-		dm->bt_info_table.is_bt_enabled = (boolean)value;
-		break;
-
-	case ODM_CMNINFO_BT_HS_CONNECT_PROCESS:
-		dm->bt_info_table.is_bt_connect_process = (boolean)value;
-		break;
-
-	case ODM_CMNINFO_BT_HS_RSSI:
-		dm->bt_info_table.bt_hs_rssi = (u8)value;
-		break;
-
-	case ODM_CMNINFO_BT_OPERATION:
-		dm->bt_info_table.is_bt_hs_operation = (boolean)value;
-		break;
-
-	case ODM_CMNINFO_BT_LIMITED_DIG:
-		dm->bt_info_table.is_bt_limited_dig = (boolean)value;
-		break;
-#endif
-
 	case ODM_CMNINFO_AP_TOTAL_NUM:
 		dm->ap_total_num = (u8)value;
 		break;

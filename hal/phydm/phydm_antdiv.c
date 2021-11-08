@@ -4535,11 +4535,7 @@ void odm_ant_div_init(void *dm_void)
 		} else
 #endif
 		{
-#ifdef ODM_CONFIG_BT_COEXIST
-			dm->ant_div_type = S0S1_SW_ANTDIV;
-#else
 			dm->ant_div_type = CG_TRX_HW_ANTDIV;
-#endif
 
 			if (dm->ant_div_type != CG_TRX_HW_ANTDIV &&
 			    dm->ant_div_type != S0S1_SW_ANTDIV) {

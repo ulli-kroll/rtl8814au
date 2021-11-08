@@ -456,15 +456,6 @@ void phydm_cfo_tracking(void *dm_void)
 				cfo_track->is_adjust = false;
 		}
 
-		#ifdef ODM_CONFIG_BT_COEXIST
-		/*@BT case: Disable CFO tracking */
-		if (dm->bt_info_table.is_bt_enabled) {
-			cfo_track->is_adjust = false;
-			phydm_set_crystal_cap(dm, cfo_track->def_x_cap);
-			PHYDM_DBG(dm, DBG_CFO_TRK, "[BT]Disable CFO_track\n");
-		}
-		#endif
-
 		/*@Adjust Crystal Cap. */
 		if (cfo_track->is_adjust) {
 			if (cfo_avg > CFO_TRK_STOP_TH)
