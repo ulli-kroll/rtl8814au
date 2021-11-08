@@ -1092,8 +1092,6 @@ PHY_SwitchWirelessBand8814A(
 
 	pHalData->current_band_type = (BAND_TYPE)Band;
 
-		rtw_btcoex_wifionly_switchband_notify(Adapter);
-
 	/*clear 0x1000[16],	When this bit is set to 0, CCK and OFDM are disabled, and clock are gated. Otherwise, CCK and OFDM are enabled. */
 	tepReg = rtw_read8(Adapter, REG_SYS_CFG3_8814A + 2);
 	rtw_write8(Adapter, REG_SYS_CFG3_8814A + 2, tepReg & (~BIT0));

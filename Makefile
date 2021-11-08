@@ -120,8 +120,6 @@ _HAL_INTFS_FILES :=	hal/hal_intf.o \
 			hal/hal_phy.o \
 			hal/hal_dm.o \
 			hal/hal_dm_acs.o \
-			hal/hal_btcoex_wifionly.o \
-			hal/hal_btcoex.o \
 			hal/hal_mp.o \
 			hal/hal_mcc.o \
 			hal/hal_hci/hal_usb.o \
@@ -477,8 +475,6 @@ rtk_core :=	core/rtw_cmd.o \
 		core/rtw_rson.o \
 		core/rtw_iol.o \
 		core/rtw_sreset.o \
-		core/rtw_btcoex_wifionly.o \
-		core/rtw_btcoex.o \
 		core/rtw_beamforming.o \
 		core/rtw_odm.o \
 		core/rtw_rm.o \

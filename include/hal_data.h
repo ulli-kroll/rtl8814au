@@ -18,7 +18,6 @@
 #if 1/* def  CONFIG_SINGLE_IMG */
 
 #include "../hal/phydm/phydm_precomp.h"
-	#include <hal_btcoex_wifionly.h>
 
 #if defined(CONFIG_RTW_ACS) || defined(CONFIG_BACKGROUND_NOISE_MONITOR)
 #include "../hal/hal_dm_acs.h"

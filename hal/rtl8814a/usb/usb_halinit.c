@@ -1675,9 +1675,6 @@ InitAdapterVariablesByPROM_8814AU(
 	hal_GetRxGainOffset_8814A(Adapter, pHalData->efuse_eeprom_data, pHalData->bautoload_fail_flag);
 
 	Hal_EfuseParseKFreeData_8814A(Adapter, pHalData->efuse_eeprom_data, pHalData->bautoload_fail_flag);
-
-	/* set coex. ant info once efuse parsing is done */
-	rtw_btcoex_set_ant_info(Adapter);
 }
 
 static void hal_ReadPROMContent_8814A(
