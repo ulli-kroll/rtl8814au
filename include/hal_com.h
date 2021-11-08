@@ -549,11 +549,6 @@ void linked_info_dump(_adapter *padapter, u8 benable);
 void rtw_store_phy_info(_adapter *padapter, union recv_frame *prframe);
 #define		HWSET_MAX_SIZE			1024
 
-#ifdef CONFIG_EFUSE_CONFIG_FILE
-u32 Hal_readPGDataFromConfigFile(PADAPTER padapter);
-u32 Hal_ReadMACAddrFromFile(PADAPTER padapter, u8 *mac_addr);
-#endif /* CONFIG_EFUSE_CONFIG_FILE */
-
 int hal_efuse_macaddr_offset(_adapter *adapter);
 int Hal_GetPhyEfuseMACAddr(PADAPTER padapter, u8 *mac_addr);
 void rtw_dump_cur_efuse(PADAPTER padapter);
