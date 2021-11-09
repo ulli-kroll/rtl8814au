@@ -120,7 +120,6 @@ _HAL_INTFS_FILES :=	hal/hal_intf.o \
 			hal/hal_phy.o \
 			hal/hal_dm.o \
 			hal/hal_dm_acs.o \
-			hal/hal_mp.o \
 			hal/hal_mcc.o \
 			hal/hal_hci/hal_usb.o \
 			hal/led/hal_led.o \
