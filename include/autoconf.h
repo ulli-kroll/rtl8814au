@@ -89,7 +89,6 @@
 	/* #define CONFIG_XMIT_THREAD_MODE */
 	#endif
 #endif /*CONFIG_POWER_SAVING*/
-	/*#define CONFIG_ANTENNA_DIVERSITY*/
 
 
 

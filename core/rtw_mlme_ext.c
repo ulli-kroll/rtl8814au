@@ -1078,7 +1078,7 @@ static void init_mlme_ext_priv_value(_adapter *padapter)
 	pmlmeext->sitesurvey_res.scan_cnt_max = RTW_SCAN_NUM_OF_CH;
 	pmlmeext->sitesurvey_res.backop_ms = RTW_BACK_OP_CH_MS;
 #endif
-#if defined(CONFIG_ANTENNA_DIVERSITY) || defined(DBG_SCAN_SW_ANTDIV_BL)
+#if defined(DBG_SCAN_SW_ANTDIV_BL)
 	pmlmeext->sitesurvey_res.is_sw_antdiv_bl_scan = 0;
 #endif
 	pmlmeext->scan_abort = _FALSE;
@@ -7522,7 +7522,7 @@ void update_mgntframe_attrib_addr(_adapter *padapter, struct xmit_frame *pmgntfr
 {
 	u8	*pframe;
 	struct pkt_attrib	*pattrib = &pmgntframe->attrib;
-#if defined(CONFIG_BEAMFORMING) || defined(CONFIG_ANTENNA_DIVERSITY)
+#if defined(CONFIG_BEAMFORMING)
 	struct sta_info		*sta = NULL;
 #endif
 
@@ -7531,7 +7531,7 @@ void update_mgntframe_attrib_addr(_adapter *padapter, struct xmit_frame *pmgntfr
 	_rtw_memcpy(pattrib->ra, GetAddr1Ptr(pframe), ETH_ALEN);
 	_rtw_memcpy(pattrib->ta, get_addr2_ptr(pframe), ETH_ALEN);
 
-#if defined(CONFIG_BEAMFORMING) || defined(CONFIG_ANTENNA_DIVERSITY)
+#if defined(CONFIG_BEAMFORMING)
 	sta = pattrib->psta;
 	if (!sta) {
 		sta = rtw_get_stainfo(&padapter->stapriv, pattrib->ra);
@@ -7541,7 +7541,7 @@ void update_mgntframe_attrib_addr(_adapter *padapter, struct xmit_frame *pmgntfr
 	if (sta)
 		update_attrib_txbf_info(padapter, pattrib, sta);
 	#endif
-#endif /* defined(CONFIG_BEAMFORMING) || defined(CONFIG_ANTENNA_DIVERSITY) */
+#endif /* defined(CONFIG_BEAMFORMING) */
 }
 
 void dump_mgntframe(_adapter *padapter, struct xmit_frame *pmgntframe)
@@ -10803,10 +10803,6 @@ u8 collect_bss_info(_adapter *padapter, union recv_frame *precv_frame, WLAN_BSSI
 	} else
 		bssid->PhyInfo.is_cck_rate = 1;
 
-#ifdef CONFIG_ANTENNA_DIVERSITY
-	rtw_hal_get_odm_var(padapter, HAL_ODM_ANTDIV_SELECT, &(bssid->PhyInfo.Optimum_antenna), NULL);
-#endif
-
 	/* checking SSID */
 	p = rtw_get_ie(bssid->IEs + ie_offset, _SSID_IE_, &len, bssid->IELength - ie_offset);
 	if (p == NULL) {
@@ -13634,9 +13630,6 @@ u8 join_cmd_hdl(_adapter *padapter, u8 *pbuf)
 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
 	WLAN_BSSID_EX		*pnetwork = (WLAN_BSSID_EX *)(&(pmlmeinfo->network));
-#ifdef CONFIG_ANTENNA_DIVERSITY
-	struct joinbss_parm	*pparm = (struct joinbss_parm *)pbuf;
-#endif /* CONFIG_ANTENNA_DIVERSITY */
 	u32 i;
 	/* u8	initialgain; */
 	/* u32	acparm; */
@@ -13663,10 +13656,6 @@ u8 join_cmd_hdl(_adapter *padapter, u8 *pbuf)
 		if (pmlmeinfo->state & WIFI_FW_STATION_STATE)
 			rtw_hal_rcr_set_chk_bssid(padapter, MLME_STA_DISCONNECTED);
 	}
-
-#ifdef CONFIG_ANTENNA_DIVERSITY
-	rtw_antenna_select_cmd(padapter, pparm->network.PhyInfo.Optimum_antenna, _FALSE);
-#endif
 
 #ifdef CONFIG_WAPI_SUPPORT
 	rtw_wapi_clear_all_cam_entry(padapter);
@@ -14171,7 +14160,7 @@ static void sitesurvey_res_reset(_adapter *adapter, struct sitesurvey_parm *parm
 #ifdef CONFIG_SCAN_BACKOP
 	ss->scan_cnt = 0;
 #endif
-#if defined(CONFIG_ANTENNA_DIVERSITY) || defined(DBG_SCAN_SW_ANTDIV_BL)
+#if defined(DBG_SCAN_SW_ANTDIV_BL)
 	ss->is_sw_antdiv_bl_scan = 0;
 #endif
 	ss->ssid_num = 0;
@@ -14308,11 +14297,6 @@ static u8 sitesurvey_pick_ch_behavior(_adapter *padapter, u8 *ch, RT_SCAN_TYPE *
 		/* go p2p listen */
 		next_state = SCAN_TO_P2P_LISTEN;
 
-#ifdef CONFIG_ANTENNA_DIVERSITY
-	} else if (rtw_hal_antdiv_before_linked(padapter)) {
-		/* go sw antdiv before link */
-		next_state = SCAN_SW_ANTDIV_BL;
-#endif
 	} else {
 		next_state = SCAN_COMPLETE;
 
@@ -14877,7 +14861,7 @@ operation_by_state:
 			scan_ms = ss->scan_ch_ms;
 #endif
 
-#if defined(CONFIG_ANTENNA_DIVERSITY) || defined(DBG_SCAN_SW_ANTDIV_BL)
+#if defined(DBG_SCAN_SW_ANTDIV_BL)
 		if (ss->is_sw_antdiv_bl_scan)
 			scan_ms = scan_ms / 2;
 #endif
@@ -14995,7 +14979,7 @@ operation_by_state:
 
 #endif /* CONFIG_SCAN_BACKOP */
 
-#if defined(CONFIG_ANTENNA_DIVERSITY) || defined(DBG_SCAN_SW_ANTDIV_BL)
+#if defined(DBG_SCAN_SW_ANTDIV_BL)
 	case SCAN_SW_ANTDIV_BL:
 		/*
 		* 20100721

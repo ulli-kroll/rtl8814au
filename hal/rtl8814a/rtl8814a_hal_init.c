@@ -4120,12 +4120,6 @@ u8 GetHalDefVar8814A(PADAPTER padapter, HAL_DEF_VARIABLE variable, void *pval)
 	switch (variable) {
 
 
-#ifdef CONFIG_ANTENNA_DIVERSITY
-	case HAL_DEF_IS_SUPPORT_ANT_DIV:
-		*((u8 *)pval) = (pHalData->AntDivCfg == 0) ? _FALSE : _TRUE;
-		break;
-#endif /* CONFIG_ANTENNA_DIVERSITY */
-
 	case HAL_DEF_DRVINFO_SZ:
 		*((u32 *)pval) = DRVINFO_SZ;
 		break;

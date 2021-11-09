@@ -607,11 +607,6 @@ void rtw_set_rts_bw(_adapter *padapter);
 void ResumeTxBeacon(_adapter *padapter);
 void StopTxBeacon(_adapter *padapter);
 
-#ifdef CONFIG_ANTENNA_DIVERSITY
-	u8	rtw_hal_antdiv_before_linked(_adapter *padapter);
-	void	rtw_hal_antdiv_rssi_compared(_adapter *padapter, WLAN_BSSID_EX *dst, WLAN_BSSID_EX *src);
-#endif
-
 #ifdef DBG_SEC_CAM_MOVE
 	void rtw_hal_move_sta_gk_to_dk(_adapter *adapter);
 	void rtw_hal_read_sta_dk_key(_adapter *adapter, u8 key_id);

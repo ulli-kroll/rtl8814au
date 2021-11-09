@@ -136,10 +136,6 @@
 
 /* [ Configure Antenna Diversity ] */
 #if (RTL8188F_SUPPORT)
-	#ifdef CONFIG_ANTENNA_DIVERSITY
-		#define CONFIG_PHYDM_ANTENNA_DIVERSITY
-		#define CONFIG_S0S1_SW_ANTENNA_DIVERSITY
-	#endif
 #endif
 
 #if defined(CONFIG_RTL_8881A_ANT_SWITCH) || defined(CONFIG_SLOT_0_ANT_SWITCH) || defined(CONFIG_SLOT_1_ANT_SWITCH) || defined(CONFIG_RTL_8197F_ANT_SWITCH)

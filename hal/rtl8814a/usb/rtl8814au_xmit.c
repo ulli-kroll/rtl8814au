@@ -285,11 +285,6 @@ static s32 update_txdesc(struct xmit_frame *pxmitframe, u8 *pmem, s32 sz , u8 ba
 		SWDefineContent |= 0x01;
 	SET_TX_DESC_SW_DEFINE_8814A(ptxdesc,  SWDefineContent);
 
-#ifdef CONFIG_ANTENNA_DIVERSITY
-	if (!bmcst && pattrib->psta)
-		odm_set_tx_ant_by_tx_info(adapter_to_phydm(padapter), ptxdesc, pattrib->psta->cmn.mac_id);
-#endif
-
 #ifdef CONFIG_BEAMFORMING
 	SET_TX_DESC_GID_8814A(ptxdesc, pattrib->txbf_g_id);
 	SET_TX_DESC_PAID_8814A(ptxdesc, pattrib->txbf_p_aid);
