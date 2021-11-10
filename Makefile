@@ -69,9 +69,6 @@ CONFIG_RTW_DEBUG = y
 # please refer to "How_to_set_driver_debug_log_level.doc" to set the available level.
 CONFIG_RTW_LOG_LEVEL = 4
 
-# enable /proc/net/rtlxxxx/ debug interfaces
-CONFIG_PROC_DEBUG = y
-
 ######################## Wake On Lan ##########################
 #bit2: deauth, bit1: unicast, bit0: magic pkt.
 CONFIG_WAKEUP_TYPE = 0x7
@@ -381,10 +378,6 @@ endif
 ifeq ($(CONFIG_RTW_DEBUG), y)
 EXTRA_CFLAGS += -DCONFIG_RTW_DEBUG
 EXTRA_CFLAGS += -DRTW_LOG_LEVEL=$(CONFIG_RTW_LOG_LEVEL)
-endif
-
-ifeq ($(CONFIG_PROC_DEBUG), y)
-EXTRA_CFLAGS += -DCONFIG_PROC_DEBUG
 endif
 
 ifeq ($(CONFIG_RTW_UP_MAPPING_RULE), dscp)
