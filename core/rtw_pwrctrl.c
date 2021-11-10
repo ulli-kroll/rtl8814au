@@ -622,11 +622,6 @@ u8 rtw_set_rpwm(PADAPTER padapter, u8 pslv)
 
 #if defined(CONFIG_LPS_RPWM_TIMER) && !defined(CONFIG_DETECT_CPWM_BY_POLLING)
 	if (rpwm & PS_ACK) {
-		#if defined(CONFIG_P2P_WOWLAN)
-		if (pwrpriv->wowlan_mode != _TRUE &&
-			pwrpriv->wowlan_ap_mode != _TRUE &&
-			pwrpriv->wowlan_p2p_mode != _TRUE)
-		#endif
 		_set_timer(&pwrpriv->pwr_rpwm_timer, LPS_CPWM_TIMEOUT_MS);
 	}
 #endif /* CONFIG_LPS_RPWM_TIMER & !CONFIG_DETECT_CPWM_BY_POLLING */
@@ -641,12 +636,6 @@ u8 rtw_set_rpwm(PADAPTER padapter, u8 pslv)
 		#ifdef CONFIG_DETECT_CPWM_BY_POLLING
 		rtw_cpwm_polling(padapter, rpwm, cpwm_orig);
 		#else
-		#if defined(CONFIG_P2P_WOWLAN)
-		if (pwrpriv->wowlan_mode == _TRUE ||
-			pwrpriv->wowlan_ap_mode == _TRUE ||
-			pwrpriv->wowlan_p2p_mode == _TRUE)
-				rtw_cpwm_polling(padapter, rpwm, cpwm_orig);
-		#endif /*#if defined(CONFIG_P2P_WOWLAN)*/
 		#endif /*#ifdef CONFIG_DETECT_CPWM_BY_POLLING*/
 	} else
 #endif /* CONFIG_LPS_LCLK */
@@ -829,10 +818,6 @@ void rtw_set_ps_mode(PADAPTER padapter, u8 ps_mode, u8 smart_ps, u8 bcn_ant_mode
 {
 	struct pwrctrl_priv *pwrpriv = adapter_to_pwrctl(padapter);
 	struct mlme_priv	*pmlmepriv = &(padapter->mlmepriv);
-#if defined(CONFIG_P2P_WOWLAN)
-	struct dvobj_priv *psdpriv = padapter->dvobj;
-	struct debug_priv *pdbgpriv = &psdpriv->drv_dbg;
-#endif
 #ifdef CONFIG_WMMPS_STA	
 	struct registry_priv *pregistrypriv = &padapter->registrypriv;
 #endif
@@ -900,31 +885,6 @@ void rtw_set_ps_mode(PADAPTER padapter, u8 ps_mode, u8 smart_ps, u8 bcn_ant_mode
 			pwrpriv->pwr_mode = ps_mode;
 			rtw_set_rpwm(padapter, PS_STATE_S4);
 
-#if defined(CONFIG_P2P_WOWLAN)
-			if (pwrpriv->wowlan_mode == _TRUE ||
-			    pwrpriv->wowlan_ap_mode == _TRUE ||
-			    pwrpriv->wowlan_p2p_mode == _TRUE) {
-				systime start_time;
-				u32 delay_ms;
-				u8 val8;
-				delay_ms = 20;
-				start_time = rtw_get_current_time();
-				do {
-					rtw_hal_get_hwreg(padapter, HW_VAR_SYS_CLKR, &val8);
-					if (!(val8 & BIT(4))) { /* 0x08 bit4 =1 --> in 32k, bit4 = 0 --> leave 32k */
-						pwrpriv->cpwm = PS_STATE_S4;
-						break;
-					}
-					if (rtw_get_passing_time_ms(start_time) > delay_ms) {
-						RTW_INFO("%s: Wait for FW 32K leave more than %u ms!!!\n",
-							__FUNCTION__, delay_ms);
-						pdbgpriv->dbg_wow_leave_ps_fail_cnt++;
-						break;
-					}
-					rtw_usleep_os(100);
-				} while (1);
-			}
-#endif
 #ifdef CONFIG_LPS_PG
 			if (pwrpriv->lps_level == LPS_PG) {
 				lps_pg_hdl_id = LPS_PG_REDLEMEM;
@@ -950,9 +910,6 @@ void rtw_set_ps_mode(PADAPTER padapter, u8 ps_mode, u8 smart_ps, u8 bcn_ant_mode
 		}
 	} else {
 		if ((PS_RDY_CHECK(padapter) && check_fwstate(&padapter->mlmepriv, WIFI_ASOC_STATE))
-#ifdef CONFIG_P2P_WOWLAN
-		    || (_TRUE == pwrpriv->wowlan_p2p_mode)
-#endif /* CONFIG_P2P_WOWLAN */
 		   ) {
 			u8 pslv;
 
