@@ -17,15 +17,6 @@
 #include <drv_types.h>
 #include <hal_data.h>
 
-#if defined(CONFIG_AP_WOWLAN)
-	#include <linux/inetdevice.h>
-	#define ETH_TYPE_OFFSET	12
-	#define PROTOCOL_OFFSET	23
-	#define IP_OFFSET	30
-	#define IPv6_OFFSET	38
-	#define IPv6_PROTOCOL_OFFSET	20
-#endif
-
 unsigned char ARTHEROS_OUI1[] = {0x00, 0x03, 0x7f};
 unsigned char ARTHEROS_OUI2[] = {0x00, 0x13, 0x74};
 

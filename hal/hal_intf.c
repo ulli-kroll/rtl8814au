@@ -691,12 +691,6 @@ s32 rtw_hal_fw_mem_dl(_adapter *padapter, enum fw_mem mem)
 }
 #endif
 
-#if defined(CONFIG_AP_WOWLAN)
-void rtw_hal_clear_interrupt(_adapter *padapter)
-{
-}
-#endif
-
 #if defined(CONFIG_USB_HCI)
 u32	rtw_hal_inirp_init(_adapter *padapter)
 {
@@ -1780,7 +1774,7 @@ u8 rtw_hal_ops_check(_adapter *padapter)
 	}
 #endif
 
-#if defined(CONFIG_LPS) || defined(CONFIG_AP_WOWLAN)
+#if defined(CONFIG_LPS)
 	if (NULL == padapter->hal_func.fill_fake_txdesc) {
 		rtw_hal_error_msg("fill_fake_txdesc");
 		ret = _FAIL;
@@ -1793,9 +1787,6 @@ u8 rtw_hal_ops_check(_adapter *padapter)
 		ret = _FAIL;
 	}
 #endif /* !RTW_HALMAC */
-
-#if defined(CONFIG_AP_WOWLAN)
-#endif
 
 	if (NULL == padapter->hal_func.fw_dl) {
 		rtw_hal_error_msg("fw_dl");

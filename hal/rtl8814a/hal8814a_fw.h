@@ -24,7 +24,7 @@
 #define _FW_HEADER_8814A_H
 
 #ifdef LOAD_FW_HEADER_FROM_DRIVER
-#if (defined(CONFIG_AP_WOWLAN) || (DM_ODM_SUPPORT_TYPE & (ODM_AP)))
+#if ((DM_ODM_SUPPORT_TYPE & (ODM_AP)))
 extern u8 array_mp_8814a_fw_ap[42248];
 extern u32 array_length_mp_8814a_fw_ap;
 #endif

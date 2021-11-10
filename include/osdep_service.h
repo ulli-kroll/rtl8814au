@@ -613,10 +613,6 @@ extern void rtw_lock_suspend_timeout(u32 timeout_ms);
 extern void rtw_lock_traffic_suspend_timeout(u32 timeout_ms);
 extern void rtw_resume_lock_suspend(void);
 extern void rtw_resume_unlock_suspend(void);
-#ifdef CONFIG_AP_WOWLAN
-extern void rtw_softap_lock_suspend(void);
-extern void rtw_softap_unlock_suspend(void);
-#endif
 
 extern void rtw_set_bit(int nr, unsigned long *addr);
 extern void rtw_clear_bit(int nr, unsigned long *addr);

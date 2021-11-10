@@ -622,7 +622,7 @@ u8 rtw_set_rpwm(PADAPTER padapter, u8 pslv)
 
 #if defined(CONFIG_LPS_RPWM_TIMER) && !defined(CONFIG_DETECT_CPWM_BY_POLLING)
 	if (rpwm & PS_ACK) {
-		#if defined(CONFIG_AP_WOWLAN) || defined(CONFIG_P2P_WOWLAN)
+		#if defined(CONFIG_P2P_WOWLAN)
 		if (pwrpriv->wowlan_mode != _TRUE &&
 			pwrpriv->wowlan_ap_mode != _TRUE &&
 			pwrpriv->wowlan_p2p_mode != _TRUE)
@@ -641,12 +641,12 @@ u8 rtw_set_rpwm(PADAPTER padapter, u8 pslv)
 		#ifdef CONFIG_DETECT_CPWM_BY_POLLING
 		rtw_cpwm_polling(padapter, rpwm, cpwm_orig);
 		#else
-		#if defined(CONFIG_AP_WOWLAN) || defined(CONFIG_P2P_WOWLAN)
+		#if defined(CONFIG_P2P_WOWLAN)
 		if (pwrpriv->wowlan_mode == _TRUE ||
 			pwrpriv->wowlan_ap_mode == _TRUE ||
 			pwrpriv->wowlan_p2p_mode == _TRUE)
 				rtw_cpwm_polling(padapter, rpwm, cpwm_orig);
-		#endif /*#if defined(CONFIG_AP_WOWLAN) || defined(CONFIG_P2P_WOWLAN)*/
+		#endif /*#if defined(CONFIG_P2P_WOWLAN)*/
 		#endif /*#ifdef CONFIG_DETECT_CPWM_BY_POLLING*/
 	} else
 #endif /* CONFIG_LPS_LCLK */
@@ -662,17 +662,8 @@ u8 PS_RDY_CHECK(_adapter *padapter)
 	struct pwrctrl_priv	*pwrpriv = adapter_to_pwrctl(padapter);
 	struct mlme_priv	*pmlmepriv = &(padapter->mlmepriv);
 
-#if defined(CONFIG_AP_WOWLAN)
-	if (_TRUE == pwrpriv->bInSuspend && pwrpriv->wowlan_mode)
-		return _TRUE;
-	else if (_TRUE == pwrpriv->bInSuspend && pwrpriv->wowlan_ap_mode)
-		return _TRUE;
-	else if (_TRUE == pwrpriv->bInSuspend)
-		return _FALSE;
-#else
 	if (_TRUE == pwrpriv->bInSuspend)
 		return _FALSE;
-#endif
 
 	if (rtw_time_after(pwrpriv->lps_deny_time, rtw_get_current_time()))
 		return _FALSE;
@@ -838,7 +829,7 @@ void rtw_set_ps_mode(PADAPTER padapter, u8 ps_mode, u8 smart_ps, u8 bcn_ant_mode
 {
 	struct pwrctrl_priv *pwrpriv = adapter_to_pwrctl(padapter);
 	struct mlme_priv	*pmlmepriv = &(padapter->mlmepriv);
-#if defined(CONFIG_AP_WOWLAN) || defined(CONFIG_P2P_WOWLAN)
+#if defined(CONFIG_P2P_WOWLAN)
 	struct dvobj_priv *psdpriv = padapter->dvobj;
 	struct debug_priv *pdbgpriv = &psdpriv->drv_dbg;
 #endif
@@ -909,7 +900,7 @@ void rtw_set_ps_mode(PADAPTER padapter, u8 ps_mode, u8 smart_ps, u8 bcn_ant_mode
 			pwrpriv->pwr_mode = ps_mode;
 			rtw_set_rpwm(padapter, PS_STATE_S4);
 
-#if defined(CONFIG_AP_WOWLAN) || defined(CONFIG_P2P_WOWLAN)
+#if defined(CONFIG_P2P_WOWLAN)
 			if (pwrpriv->wowlan_mode == _TRUE ||
 			    pwrpriv->wowlan_ap_mode == _TRUE ||
 			    pwrpriv->wowlan_p2p_mode == _TRUE) {

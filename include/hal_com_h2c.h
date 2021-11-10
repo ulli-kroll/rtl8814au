@@ -190,35 +190,6 @@ enum h2c_cmd {
 #define cpIpAddr(des, src)					((des)[0] = (src)[0], (des)[1] = (src)[1], (des)[2] = (src)[2], (des)[3] = (src)[3])
 
 
-#if defined(CONFIG_AP_WOWLAN)
-#define FW_WOWLAN_FUN_EN				BIT(0)
-#define FW_WOWLAN_PATTERN_MATCH			BIT(1)
-#define FW_WOWLAN_MAGIC_PKT				BIT(2)
-#define FW_WOWLAN_UNICAST				BIT(3)
-#define FW_WOWLAN_ALL_PKT_DROP			BIT(4)
-#define FW_WOWLAN_GPIO_ACTIVE			BIT(5)
-#define FW_WOWLAN_REKEY_WAKEUP			BIT(6)
-#define FW_WOWLAN_DEAUTH_WAKEUP			BIT(7)
-
-#define FW_WOWLAN_GPIO_WAKEUP_EN		BIT(0)
-#define FW_FW_PARSE_MAGIC_PKT			BIT(1)
-
-#define FW_REMOTE_WAKE_CTRL_EN			BIT(0)
-#define FW_REALWOWLAN_EN				BIT(5)
-
-#define FW_WOWLAN_KEEP_ALIVE_EN			BIT(0)
-#define FW_ADOPT_USER					BIT(1)
-#define FW_WOWLAN_KEEP_ALIVE_PKT_TYPE	BIT(2)
-
-#define FW_REMOTE_WAKE_CTRL_EN			BIT(0)
-#define FW_ARP_EN						BIT(1)
-#define FW_REALWOWLAN_EN				BIT(5)
-#define FW_WOW_FW_UNICAST_EN			BIT(7)
-
-#define FW_IPS_DISABLE_BBRF		BIT(0)
-#define FW_IPS_WRC				BIT(1)
-
-#endif
 
 /* _RSVDPAGE_LOC_CMD_0x00 */
 #define SET_H2CCMD_RSVDPAGE_LOC_PROBE_RSP(__pH2CCmd, __Value)		SET_BITS_TO_LE_1BYTE(__pH2CCmd, 0, 8, __Value)
@@ -610,16 +581,6 @@ void rsvd_page_cache_free(struct rsvd_page_cache_t *cache);
 #endif
 void dump_TX_FIFO(PADAPTER padapter, u8 page_num, u16 page_size);
 u8 rtw_hal_set_fw_media_status_cmd(_adapter *adapter, u8 mstatus, u8 macid);
-#if defined(CONFIG_AP_WOWLAN)
-	/* WOW command function */
-	void rtw_hal_set_fw_wow_related_cmd(_adapter *padapter, u8 enable);
-	#ifdef CONFIG_P2P_WOWLAN
-		/* H2C 0x8A */
-		u8 rtw_hal_set_FwP2PRsvdPage_cmd(_adapter *adapter, PRSVDPAGE_LOC rsvdpageloc);
-		/* H2C 0x8B */
-		u8 rtw_hal_set_p2p_wowlan_offload_cmd(_adapter *adapter);
-	#endif /* CONFIG_P2P_WOWLAN */
-#endif
 
 #ifdef RTW_PER_CMD_SUPPORT_FW
 u8 rtw_hal_set_req_per_rpt_cmd(_adapter *adapter, u8 group_macid,
