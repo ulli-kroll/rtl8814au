@@ -180,13 +180,6 @@ struct registry_priv {
 	u8	lps_1t1r;
 #endif
 	u8	lps_chk_by_tp;
-#ifdef CONFIG_WOWLAN
-	u8	wow_power_mgnt;
-	u8	wow_lps_level;
-	#ifdef CONFIG_LPS_1T1R
-	u8	wow_lps_1t1r;
-	#endif
-#endif /* CONFIG_WOWLAN */
 	u8	smart_ps;
 #ifdef CONFIG_WMMPS_STA
 	u8	wmm_smart_ps;
@@ -410,10 +403,6 @@ struct registry_priv {
 #endif /* CONFIG_RTW_GRO */
 #endif /* CONFIG_RTW_NAPI */
 
-#ifdef CONFIG_WOWLAN
-	u8 wakeup_event;
-	u8 suspend_type;
-#endif
 
 #ifdef CONFIG_SUPPORT_TRX_SHARED
 	u8 trx_share_mode;
@@ -1674,10 +1663,6 @@ int rtw_dev_pno_set(struct net_device *net, pno_ssid_t *ssid, int num,
 #endif /* CONFIG_PNO_SUPPORT */
 
 int rtw_suspend_free_assoc_resource(_adapter *padapter);
-#ifdef CONFIG_WOWLAN
-	int rtw_suspend_wow(_adapter *padapter);
-	int rtw_resume_process_wow(_adapter *padapter);
-#endif
 
 /* HCI Related header file */
 #ifdef CONFIG_USB_HCI

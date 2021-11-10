@@ -115,14 +115,6 @@ void dump_drv_cfg(void *sel)
 	RTW_PRINT_SEL(sel, "ADAPTIVITY_MODE = %s\n", (CONFIG_RTW_ADAPTIVITY_MODE) ? "carrier_sense" : "normal");
 #endif
 
-#ifdef CONFIG_WOWLAN
-	RTW_PRINT_SEL(sel, "CONFIG_WOWLAN - ");
-
-#ifdef CONFIG_GPIO_WAKEUP
-	RTW_PRINT_SEL(sel, "CONFIG_GPIO_WAKEUP - WAKEUP_GPIO_IDX:%d\n", WAKEUP_GPIO_IDX);
-#endif
-#endif
-
 #ifdef CONFIG_RTW_80211R
 	RTW_PRINT_SEL(sel, "CONFIG_RTW_80211R\n");
 #endif
@@ -3933,185 +3925,6 @@ ssize_t proc_set_sreset(struct file *file, const char __user *buffer, size_t cou
 }
 #endif /* DBG_CONFIG_ERROR_DETECT */
 
-#ifdef CONFIG_WOWLAN
-int proc_get_pattern_info(struct seq_file *m, void *v)
-{
-	struct net_device *dev = m->private;
-	_adapter *padapter = (_adapter *)rtw_netdev_priv(dev);
-	struct pwrctrl_priv *pwrpriv = adapter_to_pwrctl(padapter);
-	u8 val8;
-	char str_1[128];
-	char *p_str;
-	int i = 0 , j = 0, k = 0;
-	int len = 0, max_len = 0, total = 0;
-
-	p_str = str_1;
-	max_len = sizeof(str_1);
-
-	total = pwrpriv->wowlan_pattern_idx;
-
-	rtw_set_default_pattern(padapter);
-
-	/*show pattern*/
-	RTW_PRINT_SEL(m, "\n======[Pattern Info.]======\n");
-	RTW_PRINT_SEL(m, "pattern number: %d\n", total);
-	RTW_PRINT_SEL(m, "support default patterns: %c\n",
-		      (pwrpriv->default_patterns_en) ? 'Y' : 'N');
-
-	for (k = 0; k < total ; k++) {
-		RTW_PRINT_SEL(m, "\npattern idx: %d\n", k);
-		RTW_PRINT_SEL(m, "pattern content:\n");
-
-		p_str = str_1;
-		max_len = sizeof(str_1);
-		for (i = 0 ; i < MAX_WKFM_PATTERN_SIZE / 8 ; i++) {
-			_rtw_memset(p_str, 0, max_len);
-			len = 0;
-			for (j = 0 ; j < 8 ; j++) {
-				val8 = pwrpriv->patterns[k].content[i * 8 + j];
-				len += snprintf(p_str + len, max_len - len,
-						"%02x ", val8);
-			}
-			RTW_PRINT_SEL(m, "%s\n", p_str);
-		}
-		RTW_PRINT_SEL(m, "\npattern mask:\n");
-		for (i = 0 ; i < MAX_WKFM_SIZE / 8 ; i++) {
-			_rtw_memset(p_str, 0, max_len);
-			len = 0;
-			for (j = 0 ; j < 8 ; j++) {
-				val8 = pwrpriv->patterns[k].mask[i * 8 + j];
-				len += snprintf(p_str + len, max_len - len,
-						"%02x ", val8);
-			}
-			RTW_PRINT_SEL(m, "%s\n", p_str);
-		}
-
-		RTW_PRINT_SEL(m, "\npriv_pattern_len:\n");
-		RTW_PRINT_SEL(m, "pattern_len: %d\n", pwrpriv->patterns[k].len);
-		RTW_PRINT_SEL(m, "*****************\n");
-	}
-
-	return 0;
-}
-
-ssize_t proc_set_pattern_info(struct file *file, const char __user *buffer,
-			      size_t count, loff_t *pos, void *data)
-{
-	struct net_device *dev = data;
-	_adapter *padapter = (_adapter *)rtw_netdev_priv(dev);
-	struct pwrctrl_priv *pwrpriv = adapter_to_pwrctl(padapter);
-	struct wowlan_ioctl_param poidparam;
-	u8 tmp[MAX_WKFM_PATTERN_STR_LEN + 1] = {0};
-	int ret = 0;
-	u8 index = 0;
-
-	poidparam.subcode = 0;
-
-	if (count < 1)
-		return -EFAULT;
-
-	if (count >= sizeof(tmp)) {
-		RTW_ERR("%s: pattern string is too long, count=%zu\n",
-			__func__, count);
-		return -EFAULT;
-	}
-
-	if (pwrpriv->wowlan_pattern_idx >= MAX_WKFM_CAM_NUM) {
-		RTW_ERR("priv-pattern is full(idx: %d)\n",
-			 pwrpriv->wowlan_pattern_idx);
-		RTW_ERR("please clean priv-pattern first\n");
-		return -ENOMEM;
-	}
-
-	if (buffer && !copy_from_user(tmp, buffer, count)) {
-		if (strncmp(tmp, "clean", 5) == 0) {
-			poidparam.subcode = WOWLAN_PATTERN_CLEAN;
-			rtw_hal_set_hwreg(padapter,
-					  HW_VAR_WOWLAN, (u8 *)&poidparam);
-		} else {
-			index = pwrpriv->wowlan_pattern_idx;
-			ret = rtw_wowlan_parser_pattern_cmd(tmp,
-					    pwrpriv->patterns[index].content,
-					    &pwrpriv->patterns[index].len,
-					    pwrpriv->patterns[index].mask);
-			if (ret == _TRUE)
-				pwrpriv->wowlan_pattern_idx++;
-		}
-	} else {
-		rtw_warn_on(1);
-		return -EFAULT;
-	}
-
-	return count;
-}
-
-int proc_get_wakeup_event(struct seq_file *m, void *v)
-{
-	struct net_device *dev = m->private;
-	_adapter *padapter = (_adapter *)rtw_netdev_priv(dev);
-	struct registry_priv  *registry_par = &padapter->registrypriv;
-
-	RTW_PRINT_SEL(m, "wakeup event: %#02x\n", registry_par->wakeup_event);
-	return 0;
-}
-
-ssize_t proc_set_wakeup_event(struct file *file, const char __user *buffer,
-			      size_t count, loff_t *pos, void *data)
-{
-	struct net_device *dev = data;
-	_adapter *padapter = (_adapter *)rtw_netdev_priv(dev);
-	struct pwrctrl_priv *pwrctrlpriv = adapter_to_pwrctl(padapter);
-	struct registry_priv  *registry_par = &padapter->registrypriv;
-	u32 wakeup_event = 0;
-
-	u8 tmp[8] = {0};
-	int num = 0;
-
-	if (count < 1)
-		return -EFAULT;
-
-	if (count > sizeof(tmp)) {
-		rtw_warn_on(1);
-		return -EFAULT;
-	}
-
-	if (buffer && !copy_from_user(tmp, buffer, count))
-		num = sscanf(tmp, "%u", &wakeup_event);
-	else
-		return -EFAULT;
-
-	if (num == 1 && wakeup_event <= 0x07) {
-		registry_par->wakeup_event = wakeup_event;
-
-		if (wakeup_event & BIT(1))
-			pwrctrlpriv->default_patterns_en = _TRUE;
-		else
-			pwrctrlpriv->default_patterns_en = _FALSE;
-
-		rtw_wow_pattern_sw_reset(padapter);
-
-		RTW_INFO("%s: wakeup_event: %#2x, default pattern: %d\n",
-			 __func__, registry_par->wakeup_event,
-			 pwrctrlpriv->default_patterns_en);
-	} else {
-		return -EINVAL;
-	}
-
-	return count;
-}
-
-int proc_get_wakeup_reason(struct seq_file *m, void *v)
-{
-	struct net_device *dev = m->private;
-	_adapter *padapter = (_adapter *)rtw_netdev_priv(dev);
-	struct pwrctrl_priv *pwrpriv = adapter_to_pwrctl(padapter);
-	u8 val = pwrpriv->wowlan_last_wake_reason;
-
-	RTW_PRINT_SEL(m, "last wake reason: %#02x\n", val);
-	return 0;
-}
-#endif /*CONFIG_WOWLAN*/
-
 #ifdef CONFIG_GPIO_WAKEUP
 int proc_get_wowlan_gpio_info(struct seq_file *m, void *v)
 {
@@ -4254,13 +4067,6 @@ int proc_get_ps_info(struct seq_file *m, void *v)
 #ifdef CONFIG_LPS_1T1R
 	u8 lps_1t1r = pwrpriv->lps_1t1r;
 #endif
-#ifdef CONFIG_WOWLAN
-	u8 wow_lps_mode = pwrpriv->wowlan_power_mgmt;
-	u8 wow_lps_level = pwrpriv->wowlan_lps_level;
-	#ifdef CONFIG_LPS_1T1R
-	u8 wow_lps_1t1r = pwrpriv->wowlan_lps_1t1r;
-	#endif
-#endif /* CONFIG_WOWLAN */
 	char *str = "";
 
 	RTW_PRINT_SEL(m, "======Power Saving Info:======\n");
@@ -4315,36 +4121,6 @@ int proc_get_ps_info(struct seq_file *m, void *v)
 	RTW_PRINT_SEL(m, " LPS 1T1R: %d\n", lps_1t1r);
 #endif
 
-#ifdef CONFIG_WOWLAN
-	RTW_PRINT_SEL(m, "------------------------------\n");
-	RTW_PRINT_SEL(m, "*WOW LPS:\n");
-
-	if (wow_lps_mode == PS_MODE_ACTIVE)
-		str = "NO LPS";
-	else if (wow_lps_mode == PS_MODE_MIN)
-		str = "MIN";
-	else if (wow_lps_mode == PS_MODE_MAX)
-		str = "MAX";
-	else if (wow_lps_mode == PS_MODE_DTIM)
-		str = "DTIM";
-	else
-		sprintf(str, "%d", wow_lps_mode);
-
-	RTW_PRINT_SEL(m, " WOW LPS mode: %s\n", str);
-
-	if (wow_lps_level == LPS_LCLK)
-		str = "LPS_LCLK";
-	else if  (wow_lps_level == LPS_PG)
-		str = "LPS_PG";
-	else
-		str = "LPS_NORMAL";
-	RTW_PRINT_SEL(m, " WOW LPS level: %s\n", str);
-
-	#ifdef CONFIG_LPS_1T1R
-	RTW_PRINT_SEL(m, " WOW LPS 1T1R: %d\n", wow_lps_1t1r);
-	#endif
-#endif /* CONFIG_WOWLAN */
-
 	RTW_PRINT_SEL(m, "=============================\n");
 	return 0;
 }
@@ -4380,12 +4156,6 @@ ssize_t proc_set_ps_info(struct file *file, const char __user *buffer, size_t co
 		
 		rtw_pm_set_ips(adapter, adapter->registrypriv.ips_mode);
 
-#ifdef CONFIG_WOWLAN
-		RTW_INFO("%s: back to original WOW LPS Mode\n", __FUNCTION__);
-
-		rtw_pm_set_wow_lps(adapter, adapter->registrypriv.wow_power_mgnt);
-#endif /* CONFIG_WOWLAN */
-
 		goto exit;
 	}
 	
@@ -4401,14 +4171,6 @@ ssize_t proc_set_ps_info(struct file *file, const char __user *buffer, size_t co
 		if (rtw_pm_set_ips(adapter, en) != 0 )
 			RTW_ERR("%s: invalid parameter, mode=%d, level=%d\n", __FUNCTION__, mode, en);
 	}
-#ifdef CONFIG_WOWLAN
-	else if (mode == 3) {
-		/* WOW LPS */
-		RTW_INFO("%s: WOW LPS: %s, en=%d\n", __FUNCTION__, (en == 0) ? "disable":"enable", en);
-		if (rtw_pm_set_wow_lps(adapter, en) != 0 )
-			RTW_ERR("%s: invalid parameter, mode=%d, level=%d\n", __FUNCTION__, mode, en);
-	}
-#endif /* CONFIG_WOWLAN */
 	else
 		RTW_ERR("%s: invalid parameter, mode = %d!\n", __FUNCTION__, mode);
 

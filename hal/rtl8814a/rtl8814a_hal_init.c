@@ -91,13 +91,6 @@ s32 InitLLTTable8814A(
 	return Status;
 }
 
-#ifdef CONFIG_WOWLAN
-void hal_DetectWoWMode(PADAPTER pAdapter)
-{
-	adapter_to_pwrctl(pAdapter)->bSupportRemoteWakeup = _TRUE;
-}
-#endif
-
 void
 _FWDownloadEnable_8814A(
 		PADAPTER		Adapter,
@@ -679,11 +672,6 @@ FirmwareDownload8814A(
 		break;
 	case FW_SOURCE_HEADER_FILE:
 		if (bUsedWoWLANFw) {
-			#ifdef CONFIG_WOWLAN
-			pFirmware->szFwBuffer = array_mp_8814a_fw_wowlan;
-			pFirmware->ulFwLength = array_length_mp_8814a_fw_wowlan;
-			RTW_INFO("%s fw:%s, size: %d\n", __FUNCTION__, "WoWLAN", pFirmware->ulFwLength);
-			#endif /* CONFIG_WOWLAN */
 		} else {
 			pFirmware->szFwBuffer = array_mp_8814a_fw_nic;
 			pFirmware->ulFwLength = array_length_mp_8814a_fw_nic;

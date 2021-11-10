@@ -54,19 +54,6 @@ static void rtw_dev_shutdown(struct device *dev)
 			adapter = dvobj_get_primary_adapter(dvobj);
 			if (adapter) {
 				if (!rtw_is_surprise_removed(adapter)) {
-					#ifdef CONFIG_WOWLAN
-					struct pwrctrl_priv *pwrctl = adapter_to_pwrctl(adapter);
-
-					#ifdef CONFIG_GPIO_WAKEUP
-					/*default wake up pin change to BT*/
-					RTW_INFO("%s:default wake up pin change to BT\n", __FUNCTION__);
-					rtw_hal_switch_gpio_wl_ctrl(adapter, WAKEUP_GPIO_IDX, _FALSE);
-					#endif /* CONFIG_GPIO_WAKEUP */
-
-					if (pwrctl->wowlan_mode == _TRUE)
-						RTW_PRINT("%s wowlan_mode ==_TRUE do not run rtw_hal_deinit()\n", __FUNCTION__);
-					else
-					#endif
 					{
 						rtw_hal_deinit(adapter);
 						rtw_set_surprise_removed(adapter);
@@ -1302,9 +1289,6 @@ exit:
 
 static void rtw_usb_primary_adapter_deinit(_adapter *padapter)
 {
-#if defined(CONFIG_WOWLAN)
-	struct pwrctrl_priv *pwrctl = adapter_to_pwrctl(padapter);
-#endif
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
 
 	RTW_INFO(FUNC_ADPT_FMT"\n", FUNC_ADPT_ARG(padapter));
@@ -1322,10 +1306,6 @@ static void rtw_usb_primary_adapter_deinit(_adapter *padapter)
 #endif
 
 	/*rtw_cancel_all_timer(if1);*/
-
-#ifdef CONFIG_WOWLAN
-	pwrctl->wowlan_mode = _FALSE;
-#endif /* CONFIG_WOWLAN */
 
 	rtw_dev_unload(padapter);
 

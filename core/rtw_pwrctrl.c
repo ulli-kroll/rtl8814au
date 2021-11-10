@@ -622,7 +622,7 @@ u8 rtw_set_rpwm(PADAPTER padapter, u8 pslv)
 
 #if defined(CONFIG_LPS_RPWM_TIMER) && !defined(CONFIG_DETECT_CPWM_BY_POLLING)
 	if (rpwm & PS_ACK) {
-		#if defined(CONFIG_WOWLAN) || defined(CONFIG_AP_WOWLAN) || defined(CONFIG_P2P_WOWLAN)
+		#if defined(CONFIG_AP_WOWLAN) || defined(CONFIG_P2P_WOWLAN)
 		if (pwrpriv->wowlan_mode != _TRUE &&
 			pwrpriv->wowlan_ap_mode != _TRUE &&
 			pwrpriv->wowlan_p2p_mode != _TRUE)
@@ -641,12 +641,12 @@ u8 rtw_set_rpwm(PADAPTER padapter, u8 pslv)
 		#ifdef CONFIG_DETECT_CPWM_BY_POLLING
 		rtw_cpwm_polling(padapter, rpwm, cpwm_orig);
 		#else
-		#if defined(CONFIG_WOWLAN) || defined(CONFIG_AP_WOWLAN) || defined(CONFIG_P2P_WOWLAN)
+		#if defined(CONFIG_AP_WOWLAN) || defined(CONFIG_P2P_WOWLAN)
 		if (pwrpriv->wowlan_mode == _TRUE ||
 			pwrpriv->wowlan_ap_mode == _TRUE ||
 			pwrpriv->wowlan_p2p_mode == _TRUE)
 				rtw_cpwm_polling(padapter, rpwm, cpwm_orig);
-		#endif /*#if defined(CONFIG_WOWLAN) || defined(CONFIG_AP_WOWLAN) || defined(CONFIG_P2P_WOWLAN)*/
+		#endif /*#if defined(CONFIG_AP_WOWLAN) || defined(CONFIG_P2P_WOWLAN)*/
 		#endif /*#ifdef CONFIG_DETECT_CPWM_BY_POLLING*/
 	} else
 #endif /* CONFIG_LPS_LCLK */
@@ -662,7 +662,7 @@ u8 PS_RDY_CHECK(_adapter *padapter)
 	struct pwrctrl_priv	*pwrpriv = adapter_to_pwrctl(padapter);
 	struct mlme_priv	*pmlmepriv = &(padapter->mlmepriv);
 
-#if defined(CONFIG_WOWLAN) || defined(CONFIG_AP_WOWLAN)
+#if defined(CONFIG_AP_WOWLAN)
 	if (_TRUE == pwrpriv->bInSuspend && pwrpriv->wowlan_mode)
 		return _TRUE;
 	else if (_TRUE == pwrpriv->bInSuspend && pwrpriv->wowlan_ap_mode)
@@ -838,7 +838,7 @@ void rtw_set_ps_mode(PADAPTER padapter, u8 ps_mode, u8 smart_ps, u8 bcn_ant_mode
 {
 	struct pwrctrl_priv *pwrpriv = adapter_to_pwrctl(padapter);
 	struct mlme_priv	*pmlmepriv = &(padapter->mlmepriv);
-#if defined(CONFIG_WOWLAN) || defined(CONFIG_AP_WOWLAN) || defined(CONFIG_P2P_WOWLAN)
+#if defined(CONFIG_AP_WOWLAN) || defined(CONFIG_P2P_WOWLAN)
 	struct dvobj_priv *psdpriv = padapter->dvobj;
 	struct debug_priv *pdbgpriv = &psdpriv->drv_dbg;
 #endif
@@ -909,7 +909,7 @@ void rtw_set_ps_mode(PADAPTER padapter, u8 ps_mode, u8 smart_ps, u8 bcn_ant_mode
 			pwrpriv->pwr_mode = ps_mode;
 			rtw_set_rpwm(padapter, PS_STATE_S4);
 
-#if defined(CONFIG_WOWLAN) || defined(CONFIG_AP_WOWLAN) || defined(CONFIG_P2P_WOWLAN)
+#if defined(CONFIG_AP_WOWLAN) || defined(CONFIG_P2P_WOWLAN)
 			if (pwrpriv->wowlan_mode == _TRUE ||
 			    pwrpriv->wowlan_ap_mode == _TRUE ||
 			    pwrpriv->wowlan_p2p_mode == _TRUE) {
@@ -940,11 +940,6 @@ void rtw_set_ps_mode(PADAPTER padapter, u8 ps_mode, u8 smart_ps, u8 bcn_ant_mode
 				rtw_hal_set_hwreg(padapter, HW_VAR_LPS_PG_HANDLE, (u8 *)(&lps_pg_hdl_id));
 			}
 #endif
-#ifdef CONFIG_WOWLAN
-			if (pwrpriv->wowlan_mode == _TRUE)
-				rtw_hal_set_hwreg(padapter, HW_VAR_H2C_INACTIVE_IPS, (u8 *)(&ps_mode));
-#endif /* CONFIG_WOWLAN */
-
 			rtw_leave_lps_and_chk(padapter, ps_mode);
 
 #ifdef CONFIG_LPS_PG
@@ -967,9 +962,6 @@ void rtw_set_ps_mode(PADAPTER padapter, u8 ps_mode, u8 smart_ps, u8 bcn_ant_mode
 #ifdef CONFIG_P2P_WOWLAN
 		    || (_TRUE == pwrpriv->wowlan_p2p_mode)
 #endif /* CONFIG_P2P_WOWLAN */
-#ifdef CONFIG_WOWLAN
-			|| WOWLAN_IS_STA_MIX_MODE(padapter)
-#endif /* CONFIG_WOWLAN */
 		   ) {
 			u8 pslv;
 
@@ -1005,10 +997,6 @@ void rtw_set_ps_mode(PADAPTER padapter, u8 ps_mode, u8 smart_ps, u8 bcn_ant_mode
 			
 			if (check_fwstate(pmlmepriv, _FW_LINKED))
 				rtw_hal_set_hwreg(padapter, HW_VAR_H2C_FW_PWRMODE, (u8 *)(&ps_mode));
-#ifdef CONFIG_WOWLAN
-			if (pwrpriv->wowlan_mode == _TRUE)
-				rtw_hal_set_hwreg(padapter, HW_VAR_H2C_INACTIVE_IPS, (u8 *)(&ps_mode));
-#endif /* CONFIG_WOWLAN */
 
 #ifdef CONFIG_P2P_PS
 			/* Set CTWindow after LPS */
@@ -1171,27 +1159,6 @@ void LPS_Leave(PADAPTER padapter, const char *msg)
 
 }
 
-#ifdef CONFIG_WOWLAN
-void rtw_wow_lps_level_decide(_adapter *adapter, u8 wow_en)
-{
-	struct dvobj_priv *dvobj = adapter_to_dvobj(adapter);
-	struct pwrctrl_priv *pwrpriv = dvobj_to_pwrctl(dvobj);
-
-	if (wow_en) {
-		pwrpriv->lps_level_bk = pwrpriv->lps_level;
-		pwrpriv->lps_level = pwrpriv->wowlan_lps_level;
-		#ifdef CONFIG_LPS_1T1R
-		pwrpriv->lps_1t1r_bk = pwrpriv->lps_1t1r;
-		pwrpriv->lps_1t1r = pwrpriv->wowlan_lps_1t1r;
-		#endif
-	} else {
-		pwrpriv->lps_level = pwrpriv->lps_level_bk;
-		#ifdef CONFIG_LPS_1T1R
-		pwrpriv->lps_1t1r = pwrpriv->lps_1t1r_bk;
-		#endif
-	}
-}
-#endif /* CONFIG_WOWLAN */
 #endif /* CONFIG_LPS */
 
 void LeaveAllPowerSaveModeDirect(PADAPTER Adapter)
@@ -1987,9 +1954,6 @@ void rtw_init_pwrctrl_priv(PADAPTER padapter)
 #endif
 
 	struct pwrctrl_priv *pwrctrlpriv = adapter_to_pwrctl(padapter);
-#ifdef CONFIG_WOWLAN
-	struct registry_priv  *registry_par = &padapter->registrypriv;
-#endif
 #ifdef CONFIG_GPIO_WAKEUP
 	u8 val8 = 0;
 #endif
@@ -2129,44 +2093,6 @@ void rtw_init_pwrctrl_priv(PADAPTER padapter)
 #endif /* CONFIG_RTW_ONE_PIN_GPIO */
 #endif /* CONFIG_GPIO_WAKEUP */
 
-#ifdef CONFIG_WOWLAN
-#ifdef CONFIG_LPS_1T1R
-#define WOW_LPS_1T1R_FMT ", WOW_LPS_1T1R=%d"
-#define WOW_LPS_1T1R_ARG , pwrctrlpriv->wowlan_lps_1t1r
-#else
-#define WOW_LPS_1T1R_FMT ""
-#define WOW_LPS_1T1R_ARG
-#endif
-
-	pwrctrlpriv->wowlan_power_mgmt = padapter->registrypriv.wow_power_mgnt;
-	pwrctrlpriv->wowlan_lps_level = padapter->registrypriv.wow_lps_level;
-#ifdef CONFIG_LPS_1T1R
-	pwrctrlpriv->wowlan_lps_1t1r = padapter->registrypriv.wow_lps_1t1r;
-#endif
-
-	RTW_INFO("%s: WOW_LPS_mode=%d, WOW_LPS_level=%d"WOW_LPS_1T1R_FMT"\n",
-		__func__, pwrctrlpriv->wowlan_power_mgmt, pwrctrlpriv->wowlan_lps_level
-		WOW_LPS_1T1R_ARG
-	);
-
-	if (registry_par->wakeup_event & BIT(1))
-		pwrctrlpriv->default_patterns_en = _TRUE;
-	else
-		pwrctrlpriv->default_patterns_en = _FALSE;
-
-	rtw_wow_pattern_sw_reset(padapter);
-#ifdef CONFIG_PNO_SUPPORT
-	pwrctrlpriv->pno_inited = _FALSE;
-	pwrctrlpriv->pnlo_info = NULL;
-	pwrctrlpriv->pscan_info = NULL;
-	pwrctrlpriv->pno_ssid_list = NULL;
-#endif /* CONFIG_PNO_SUPPORT */
-#ifdef CONFIG_WOW_PATTERN_HW_CAM
-	_rtw_mutex_init(&pwrctrlpriv->wowlan_pattern_cam_mutex);
-#endif
-	pwrctrlpriv->wowlan_aoac_rpt_loc = 0;
-#endif /* CONFIG_WOWLAN */
-
 #ifdef CONFIG_LPS_POFF
 	rtw_hal_set_hwreg(padapter, HW_VAR_LPS_POFF_INIT, 0);
 #endif
@@ -2217,23 +2143,6 @@ void rtw_free_pwrctrl_priv(PADAPTER adapter)
 	rsvd_page_cache_free(&pwrctrlpriv->lpspg_iqk_info);
 	#endif
 #endif
-
-#ifdef CONFIG_WOWLAN
-#ifdef CONFIG_PNO_SUPPORT
-	if (pwrctrlpriv->pnlo_info != NULL)
-		printk("****** pnlo_info memory leak********\n");
-
-	if (pwrctrlpriv->pscan_info != NULL)
-		printk("****** pscan_info memory leak********\n");
-
-	if (pwrctrlpriv->pno_ssid_list != NULL)
-		printk("****** pno_ssid_list memory leak********\n");
-#endif
-#ifdef CONFIG_WOW_PATTERN_HW_CAM
-	_rtw_mutex_free(&pwrctrlpriv->wowlan_pattern_cam_mutex);
-#endif
-
-#endif /* CONFIG_WOWLAN */
 
 #if defined(CONFIG_HAS_EARLYSUSPEND) || defined(CONFIG_ANDROID_POWER)
 	rtw_unregister_early_suspend(pwrctrlpriv);
@@ -2611,47 +2520,6 @@ inline void rtw_set_lps_deny(_adapter *adapter, u32 ms)
 	struct pwrctrl_priv *pwrpriv = adapter_to_pwrctl(adapter);
 	pwrpriv->lps_deny_time = rtw_get_current_time() + rtw_ms_to_systime(ms);
 }
-
-#ifdef CONFIG_WOWLAN
-int rtw_pm_set_wow_lps(_adapter *padapter, u8 mode)
-{
-	int	ret = 0;
-	struct pwrctrl_priv *pwrctrlpriv = adapter_to_pwrctl(padapter);
-
-	if (mode < PS_MODE_NUM) {
-		if (pwrctrlpriv->wowlan_power_mgmt != mode) 
-			pwrctrlpriv->wowlan_power_mgmt = mode;
-	} else
-		ret = -EINVAL;
-
-	return ret;
-}
-int rtw_pm_set_wow_lps_level(_adapter *padapter, u8 level)
-{
-	int	ret = 0;
-	struct pwrctrl_priv *pwrctrlpriv = adapter_to_pwrctl(padapter);
-
-	if (level < LPS_LEVEL_MAX)
-		pwrctrlpriv->wowlan_lps_level = level;
-	else
-		ret = -EINVAL;
-
-	return ret;
-}
-
-#ifdef CONFIG_LPS_1T1R
-int rtw_pm_set_wow_lps_1t1r(_adapter *padapter, u8 en)
-{
-	int	ret = 0;
-	struct pwrctrl_priv *pwrctrlpriv = adapter_to_pwrctl(padapter);
-
-	en = en ? 1 : 0;
-	pwrctrlpriv->wowlan_lps_1t1r = en;
-
-	return ret;
-}
-#endif /* CONFIG_LPS_1T1R */
-#endif /* CONFIG_WOWLAN */
 
 int rtw_pm_set_ips(_adapter *padapter, u8 mode)
 {

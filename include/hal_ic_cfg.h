@@ -207,17 +207,6 @@
 	#define CONFIG_DFS	/* Enable 5G band 2&3 channel */
 	#define RTW_AMPDU_AGG_RETRY_AND_NEW
 
-	#ifdef CONFIG_WOWLAN
-		#define CONFIG_GTK_OL
-		/*#define CONFIG_ARP_KEEP_ALIVE*/
-
-		#ifdef CONFIG_GPIO_WAKEUP
-			#ifndef WAKEUP_GPIO_IDX
-				#define WAKEUP_GPIO_IDX	6	/* WIFI Chip Side */
-			#endif /* !WAKEUP_GPIO_IDX */
-		#endif /* CONFIG_GPIO_WAKEUP */
-	#endif /* CONFIG_WOWLAN */
-
 	#ifdef CONFIG_CONCURRENT_MODE
 		#define CONFIG_AP_PORT_SWAP
 		#define CONFIG_FW_MULTI_PORT_SUPPORT
@@ -293,17 +282,6 @@
 	#endif /* CONFIG_FW_C2H_PKT */
 	#define RTW_TX_PA_BIAS	/* Adjust TX PA Bias from eFuse */
 	#define CONFIG_DFS	/* Enable 5G band 2&3 channel */
-
-	#ifdef CONFIG_WOWLAN
-		#define CONFIG_GTK_OL
-		/*#define CONFIG_ARP_KEEP_ALIVE*/
-
-		#ifdef CONFIG_GPIO_WAKEUP
-			#ifndef WAKEUP_GPIO_IDX
-				#define WAKEUP_GPIO_IDX	6	/* WIFI Chip Side */
-			#endif /* !WAKEUP_GPIO_IDX */
-		#endif /* CONFIG_GPIO_WAKEUP */
-	#endif /* CONFIG_WOWLAN */
 
 	#ifdef CONFIG_CONCURRENT_MODE
 		#define CONFIG_AP_PORT_SWAP
@@ -435,17 +413,6 @@
 	#define RTW_TX_PA_BIAS	/* Adjust TX PA Bias from eFuse */
 	//#define CONFIG_DFS	/* Enable 5G band 2&3 channel */
 	#define RTW_AMPDU_AGG_RETRY_AND_NEW
-
-	#ifdef CONFIG_WOWLAN
-		#define CONFIG_GTK_OL
-		/*#define CONFIG_ARP_KEEP_ALIVE*/
-
-		#ifdef CONFIG_GPIO_WAKEUP
-			#ifndef WAKEUP_GPIO_IDX
-				#define WAKEUP_GPIO_IDX	6	/* WIFI Chip Side */
-			#endif /* !WAKEUP_GPIO_IDX */
-		#endif /* CONFIG_GPIO_WAKEUP */
-	#endif /* CONFIG_WOWLAN */
 
 	#ifdef CONFIG_CONCURRENT_MODE
 		/*#define CONFIG_AP_PORT_SWAP*/

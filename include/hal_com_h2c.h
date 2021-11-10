@@ -190,7 +190,7 @@ enum h2c_cmd {
 #define cpIpAddr(des, src)					((des)[0] = (src)[0], (des)[1] = (src)[1], (des)[2] = (src)[2], (des)[3] = (src)[3])
 
 
-#if defined(CONFIG_WOWLAN) || defined(CONFIG_AP_WOWLAN)
+#if defined(CONFIG_AP_WOWLAN)
 #define FW_WOWLAN_FUN_EN				BIT(0)
 #define FW_WOWLAN_PATTERN_MATCH			BIT(1)
 #define FW_WOWLAN_MAGIC_PKT				BIT(2)
@@ -218,7 +218,7 @@ enum h2c_cmd {
 #define FW_IPS_DISABLE_BBRF		BIT(0)
 #define FW_IPS_WRC				BIT(1)
 
-#endif /* CONFIG_WOWLAN */
+#endif
 
 /* _RSVDPAGE_LOC_CMD_0x00 */
 #define SET_H2CCMD_RSVDPAGE_LOC_PROBE_RSP(__pH2CCmd, __Value)		SET_BITS_TO_LE_1BYTE(__pH2CCmd, 0, 8, __Value)
@@ -579,26 +579,6 @@ typedef struct _RSVDPAGE_LOC {
 	u8 LocNullData;
 	u8 LocQosNull;
 	u8 LocBTQosNull;
-#ifdef CONFIG_WOWLAN
-	u8 LocRemoteCtrlInfo;
-	u8 LocArpRsp;
-	u8 LocNbrAdv;
-	u8 LocGTKRsp;
-	u8 LocGTKInfo;
-	u8 LocProbeReq;
-	u8 LocNetList;
-#ifdef CONFIG_GTK_OL
-	u8 LocGTKEXTMEM;
-#endif /* CONFIG_GTK_OL */
-	u8 LocNDPInfo;
-	u8 LocAOACReport;
-#ifdef CONFIG_PNO_SUPPORT
-	u8 LocPNOInfo;
-	u8 LocScanInfo;
-	u8 LocSSIDInfo;
-	u8 LocProbePacket;
-#endif /* CONFIG_PNO_SUPPORT */
-#endif /* CONFIG_WOWLAN	 */
 	u8 LocApOffloadBCN;
 #ifdef CONFIG_P2P_WOWLAN
 	u8 LocP2PBeacon;
@@ -630,7 +610,7 @@ void rsvd_page_cache_free(struct rsvd_page_cache_t *cache);
 #endif
 void dump_TX_FIFO(PADAPTER padapter, u8 page_num, u16 page_size);
 u8 rtw_hal_set_fw_media_status_cmd(_adapter *adapter, u8 mstatus, u8 macid);
-#if defined(CONFIG_WOWLAN) || defined(CONFIG_AP_WOWLAN)
+#if defined(CONFIG_AP_WOWLAN)
 	/* WOW command function */
 	void rtw_hal_set_fw_wow_related_cmd(_adapter *padapter, u8 enable);
 	#ifdef CONFIG_P2P_WOWLAN

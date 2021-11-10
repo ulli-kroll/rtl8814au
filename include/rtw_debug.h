@@ -450,16 +450,6 @@ int proc_get_tx_logs(struct seq_file *m, void *v);
 int proc_get_int_logs(struct seq_file *m, void *v);
 #endif
 
-#ifdef CONFIG_WOWLAN
-int proc_get_pattern_info(struct seq_file *m, void *v);
-ssize_t proc_set_pattern_info(struct file *file, const char __user *buffer,
-		size_t count, loff_t *pos, void *data);
-int proc_get_wakeup_event(struct seq_file *m, void *v);
-ssize_t proc_set_wakeup_event(struct file *file, const char __user *buffer,
-		size_t count, loff_t *pos, void *data);
-int proc_get_wakeup_reason(struct seq_file *m, void *v);
-#endif
-
 #ifdef CONFIG_GPIO_WAKEUP
 int proc_get_wowlan_gpio_info(struct seq_file *m, void *v);
 ssize_t proc_set_wowlan_gpio_info(struct file *file, const char __user *buffer,

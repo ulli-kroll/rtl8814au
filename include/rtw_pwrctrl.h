@@ -36,52 +36,6 @@
 #define CMD_ALIVE	BIT(2)
 #define EVT_ALIVE	BIT(3)
 
-#ifdef CONFIG_WOWLAN
-	#ifdef CONFIG_PLATFORM_ANDROID_INTEL_X86
-		/* TCP/ICMP/UDP multicast with specific IP addr */
-		#define DEFAULT_PATTERN_NUM 4
-	#else
-		/* TCP/ICMP */
-		#define DEFAULT_PATTERN_NUM 3
-	#endif
-
-#ifdef CONFIG_WOW_PATTERN_HW_CAM	/* Frame Mask Cam number for pattern match */
-#define MAX_WKFM_CAM_NUM	12
-#else
-#define MAX_WKFM_CAM_NUM	16
-#endif
-
-#define MAX_WKFM_SIZE	16 /* (16 bytes for WKFM bit mask, 16*8 = 128 bits) */
-#define MAX_WKFM_PATTERN_SIZE	128
-
-/*
- * MAX_WKFM_PATTERN_STR_LEN : the max. length of wow pattern string
- *	e.g. echo 00:01:02:...:7f > /proc/net/rtl88x2bu/wlan0/wow_pattern_info
- *	- each byte of pattern is represented as 2-bytes ascii : MAX_WKFM_PATTERN_SIZE * 2
- *	- the number of common ':' in pattern string : MAX_WKFM_PATTERN_SIZE - 1
- *	- 1 byte '\n'(0x0a) is generated at the end when we use echo command
- *	so total max. length is (MAX_WKFM_PATTERN_SIZE * 3)
- */
-#define MAX_WKFM_PATTERN_STR_LEN (MAX_WKFM_PATTERN_SIZE * 3)
-
-#define WKFMCAM_ADDR_NUM 6
-#define WKFMCAM_SIZE 24 /* each entry need 6*4 bytes */
-enum pattern_type {
-	PATTERN_BROADCAST = 0,
-	PATTERN_MULTICAST,
-	PATTERN_UNICAST,
-	PATTERN_VALID,
-	PATTERN_INVALID,
-};
-
-typedef struct rtl_priv_pattern {
-	int len;
-	char content[MAX_WKFM_PATTERN_SIZE];
-	char mask[MAX_WKFM_SIZE];
-} rtl_priv_pattern_t;
-
-#endif /* CONFIG_WOWLAN */
-
 enum Power_Mgnt {
 	PS_MODE_ACTIVE	= 0	,
 	PS_MODE_MIN			,
@@ -399,32 +353,6 @@ struct pwrctrl_priv {
 	u8		is_high_active;
 #endif /* CONFIG_GPIO_WAKEUP */
 	u8		hst2dev_high_active;
-#ifdef CONFIG_WOWLAN
-	bool		default_patterns_en;
-#ifdef CONFIG_IPV6
-	u8		wowlan_ns_offload_en;
-#endif /*CONFIG_IPV6*/
-	u8		wowlan_txpause_status;
-	u8		wowlan_pattern_idx;
-	u64		wowlan_fw_iv;
-	struct rtl_priv_pattern	patterns[MAX_WKFM_CAM_NUM];
-#ifdef CONFIG_PNO_SUPPORT
-	u8		pno_inited;
-	pno_nlo_info_t	*pnlo_info;
-	pno_scan_info_t	*pscan_info;
-	pno_ssid_list_t	*pno_ssid_list;
-#endif /* CONFIG_PNO_SUPPORT */
-#ifdef CONFIG_WOW_PATTERN_HW_CAM
-	_mutex	wowlan_pattern_cam_mutex;
-#endif
-	u8		wowlan_aoac_rpt_loc;
-	struct aoac_report wowlan_aoac_rpt;
-	u8		wowlan_power_mgmt;
-	u8		wowlan_lps_level;
-	#ifdef CONFIG_LPS_1T1R
-	u8		wowlan_lps_1t1r;
-	#endif
-#endif /* CONFIG_WOWLAN */
 	_timer	pwr_state_check_timer;
 	int		pwr_state_check_interval;
 	u8		pwr_state_check_cnts;
@@ -561,9 +489,6 @@ void traffic_check_for_leave_lps(PADAPTER padapter, u8 tx, u32 tx_packets);
 void rtw_set_ps_mode(PADAPTER padapter, u8 ps_mode, u8 smart_ps, u8 bcn_ant_mode, const char *msg);
 void rtw_set_fw_in_ips_mode(PADAPTER padapter, u8 enable);
 u8 rtw_set_rpwm(_adapter *padapter, u8 val8);
-#ifdef CONFIG_WOWLAN
-void rtw_wow_lps_level_decide(_adapter *adapter, u8 wow_en);
-#endif /* CONFIG_WOWLAN */
 #endif /* CONFIG_LPS */
 
 #ifdef CONFIG_RESUME_IN_WORKQUEUE
@@ -596,27 +521,11 @@ int rtw_pm_set_lps_level(_adapter *padapter, u8 level);
 int rtw_pm_set_lps_1t1r(_adapter *padapter, u8 en);
 #endif
 void rtw_set_lps_deny(_adapter *adapter, u32 ms);
-#ifdef CONFIG_WOWLAN
-int rtw_pm_set_wow_lps(_adapter *padapter, u8 mode);
-int rtw_pm_set_wow_lps_level(_adapter *padapter, u8 level);
-#ifdef CONFIG_LPS_1T1R
-int rtw_pm_set_wow_lps_1t1r(_adapter *padapter, u8 en);
-#endif
-#endif /* CONFIG_WOWLAN */
 
 void rtw_ps_deny(PADAPTER padapter, PS_DENY_REASON reason);
 void rtw_ps_deny_cancel(PADAPTER padapter, PS_DENY_REASON reason);
 u32 rtw_ps_deny_get(PADAPTER padapter);
 
-#if defined(CONFIG_WOWLAN)
-void rtw_get_current_ip_address(PADAPTER padapter, u8 *pcurrentip);
-void rtw_get_sec_iv(PADAPTER padapter, u8 *pcur_dot11txpn, u8 *StaAddr);
-bool rtw_wowlan_parser_pattern_cmd(u8 *input, char *pattern,
-				int *pattern_len, char *bit_mask);
-void rtw_wow_pattern_sw_reset(_adapter *adapter);
-u8 rtw_set_default_pattern(_adapter *adapter);
-void rtw_wow_pattern_sw_dump(_adapter *adapter);
-#endif /* CONFIG_WOWLAN */
 void rtw_ssmps_enter(_adapter *adapter, struct sta_info *sta);
 void rtw_ssmps_leave(_adapter *adapter, struct sta_info *sta);
 #endif /* __RTL871X_PWRCTRL_H_ */

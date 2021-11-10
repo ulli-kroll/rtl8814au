@@ -374,9 +374,6 @@ defined(CONFIG_RTL8723B) || defined(CONFIG_RTL8703B) || defined(CONFIG_RTL8723D)
 	#undef CONFIG_POWER_SAVING
 	#endif
 
-	#ifdef CONFIG_WOWLAN
-	#error "This IC can't support MI and WoWLan at the same time"
-	#endif
 #endif
 
 #if defined(CONFIG_HWMPCAP_GEN1) && (CONFIG_IFACE_NUMBER > 3)
@@ -430,10 +427,6 @@ defined(CONFIG_RTL8723B) || defined(CONFIG_RTL8703B) || defined(CONFIG_RTL8723D)
 
 #if defined(CONFIG_RTL8812A) || defined(CONFIG_RTL8821A) || defined(CONFIG_RTL8814A)
 	#define CONFIG_IEEE80211_BAND_5GHZ
-#endif
-
-#if defined(CONFIG_WOWLAN) && (defined(CONFIG_RTL8822B) || defined(CONFIG_RTL8821C) || defined(CONFIG_RTL8814A) || defined(CONFIG_RTL8822C) || defined(CONFIG_RTL8814B))
-	#define CONFIG_WOW_PATTERN_HW_CAM
 #endif
 
 #ifndef CONFIG_TSF_UPDATE_PAUSE_FACTOR

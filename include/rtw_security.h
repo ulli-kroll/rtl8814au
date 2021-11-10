@@ -480,10 +480,6 @@ u32	rtw_BIP_verify(_adapter *padapter, u8 *whdr_pos, sint flen
 void rtw_sec_restore_wep_key(_adapter *adapter);
 u8 rtw_handle_tkip_countermeasure(_adapter *adapter, const char *caller);
 
-#ifdef CONFIG_WOWLAN
-u16 rtw_calc_crc(u8  *pdata, int length);
-#endif /*CONFIG_WOWLAN*/
-
 #define rtw_sec_chk_auth_alg(a, s) \
 	((a)->securitypriv.auth_alg == (s))
 

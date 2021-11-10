@@ -173,8 +173,8 @@ extern u8 HalQueryTxBufferStatus8723ASdio(PADAPTER padapter);
 	extern void ClearInterrupt8188EGspi(PADAPTER padapter);
 	extern u8 CheckIPSStatus(PADAPTER padapter);
 #endif /* CONFIG_RTL8188E */
-#if defined(CONFIG_WOWLAN) || defined(CONFIG_AP_WOWLAN)
+#if defined(CONFIG_AP_WOWLAN)
 	extern u8 RecvOnePkt(PADAPTER padapter);
-#endif /* CONFIG_WOWLAN */
+#endif 
 
 #endif /* __GSPI_OPS_H__ */
