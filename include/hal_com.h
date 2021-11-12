@@ -581,14 +581,6 @@ u64 rtw_hal_get_tsftr_by_port(_adapter *adapter, u8 port);
 
 void rtw_lps_state_chk(_adapter *adapter, u8 ps_mode);
 
-#ifdef CONFIG_GPIO_API
-	u8 rtw_hal_get_gpio(_adapter *adapter, u8 gpio_num);
-	int rtw_hal_set_gpio_output_value(_adapter *adapter, u8 gpio_num, bool isHigh);
-	int rtw_hal_config_gpio(_adapter *adapter, u8 gpio_num, bool isOutput);
-	int rtw_hal_register_gpio_interrupt(_adapter *adapter, int gpio_num, void(*callback)(u8 level));
-	int rtw_hal_disable_gpio_interrupt(_adapter *adapter, int gpio_num);
-#endif
-
 s8 rtw_hal_ch_sw_iqk_info_search(_adapter *padapter, u8 central_chnl, u8 bw_mode);
 void rtw_hal_ch_sw_iqk_info_backup(_adapter *adapter);
 void rtw_hal_ch_sw_iqk_info_restore(_adapter *padapter, u8 ch_sw_use_case);
