@@ -4546,22 +4546,3 @@ EXPORT_SYMBOL(rtw_disable_gpio_interrupt);
 
 #endif /* #ifdef CONFIG_GPIO_API */
 
-#ifdef CONFIG_APPEND_VENDOR_IE_ENABLE
-
-int rtw_vendor_ie_get_api(struct net_device *dev, int ie_num, char *extra,
-		u16 extra_len)
-{
-	int ret = 0;
-
-	ret = rtw_vendor_ie_get_raw_data(dev, ie_num, extra, extra_len);
-	return ret;
-}
-EXPORT_SYMBOL(rtw_vendor_ie_get_api);
-
-int rtw_vendor_ie_set_api(struct net_device *dev, char *extra)
-{
-	return rtw_vendor_ie_set(dev, NULL, NULL, extra);
-}
-EXPORT_SYMBOL(rtw_vendor_ie_set_api);
-
-#endif

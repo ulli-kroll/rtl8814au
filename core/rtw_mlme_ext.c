@@ -3645,25 +3645,6 @@ unsigned int OnAction_back(_adapter *padapter, union recv_frame *precv_frame)
 	return _SUCCESS;
 }
 
-#ifdef CONFIG_APPEND_VENDOR_IE_ENABLE
-u32 rtw_build_vendor_ie(_adapter *padapter , unsigned char **pframe , u8 mgmt_frame_tyte)
-{
-	int vendor_ie_num = 0;
-	struct mlme_priv *pmlmepriv = &(padapter->mlmepriv);
-	u32 len = 0;
-
-	for (vendor_ie_num = 0 ; vendor_ie_num < WLAN_MAX_VENDOR_IE_NUM ; vendor_ie_num++) {
-		if (pmlmepriv->vendor_ielen[vendor_ie_num] > 0 && pmlmepriv->vendor_ie_mask[vendor_ie_num] & mgmt_frame_tyte) {
-			_rtw_memcpy(*pframe , pmlmepriv->vendor_ie[vendor_ie_num] , pmlmepriv->vendor_ielen[vendor_ie_num]);
-			*pframe +=  pmlmepriv->vendor_ielen[vendor_ie_num];
-			len += pmlmepriv->vendor_ielen[vendor_ie_num];
-		}
-	}
-
-	return len;
-}
-#endif
-
 #ifdef CONFIG_P2P
 int get_reg_classes_full_count(struct p2p_channels *channel_list)
 {
@@ -5670,9 +5651,6 @@ void issue_probersp_p2p(_adapter *padapter, unsigned char *da)
 #endif
 
 /* Vendor Specific IE */
-#ifdef CONFIG_APPEND_VENDOR_IE_ENABLE
-	pattrib->pktlen += rtw_build_vendor_ie(padapter , &pframe , WIFI_P2P_PROBERESP_VENDOR_IE_BIT);
-#endif
 
 	pattrib->last_txcmdsz = pattrib->pktlen;
 
@@ -5990,9 +5968,6 @@ int _issue_probereq_p2p(_adapter *padapter, u8 *da, int wait_ack)
 #endif
 
 /* Vendor Specific IE */
-#ifdef CONFIG_APPEND_VENDOR_IE_ENABLE
-	pattrib->pktlen += rtw_build_vendor_ie(padapter , &pframe , WIFI_P2P_PROBEREQ_VENDOR_IE_BIT);
-#endif
 
 	pattrib->last_txcmdsz = pattrib->pktlen;
 
@@ -7892,9 +7867,6 @@ void issue_beacon(_adapter *padapter, int timeout_ms)
 #ifdef CONFIG_RTW_REPEATER_SON
 		rtw_rson_append_ie(padapter, pframe, &pattrib->pktlen);
 #endif
-#ifdef CONFIG_APPEND_VENDOR_IE_ENABLE
-		pattrib->pktlen += rtw_build_vendor_ie(padapter , &pframe , WIFI_BEACON_VENDOR_IE_BIT);
-#endif
 
 #ifdef CONFIG_RTL8812A 
 		pframe = rtw_hal_set_8812a_vendor_ie(padapter, pframe, &pattrib->pktlen );
@@ -8119,9 +8091,6 @@ void issue_probersp(_adapter *padapter, unsigned char *da, u8 is_valid_p2p_probe
 		}
 #ifdef CONFIG_RTW_REPEATER_SON
 		rtw_rson_append_ie(padapter, pframe, &pattrib->pktlen);
-#endif
-#ifdef CONFIG_APPEND_VENDOR_IE_ENABLE
-		pattrib->pktlen += rtw_build_vendor_ie(padapter , &pframe , WIFI_PROBERESP_VENDOR_IE_BIT);
 #endif
 	} else
 #endif
@@ -8377,9 +8346,6 @@ int _issue_probereq(_adapter *padapter, const NDIS_802_11_SSID *pssid, const u8 
 			/* pmlmepriv->wps_probe_req_ie_len = 0 ; */ /* reset to zero */
 		}
 	}
-#ifdef CONFIG_APPEND_VENDOR_IE_ENABLE
-	pattrib->pktlen += rtw_build_vendor_ie(padapter , &pframe , WIFI_PROBEREQ_VENDOR_IE_BIT);
-#endif
 
 #ifdef CONFIG_RTL8812A 
 	pframe = rtw_hal_set_8812a_vendor_ie(padapter, pframe, &pattrib->pktlen );
@@ -8818,9 +8784,6 @@ void issue_asocrsp(_adapter *padapter, unsigned short status, struct sta_info *p
 #endif
 
 #endif /* CONFIG_P2P */
-#ifdef CONFIG_APPEND_VENDOR_IE_ENABLE
-	pattrib->pktlen += rtw_build_vendor_ie(padapter , &pframe , WIFI_ASSOCRESP_VENDOR_IE_BIT);
-#endif
 
 #ifdef CONFIG_RTL8812A 
 	pframe = rtw_hal_set_8812a_vendor_ie(padapter, pframe, &pattrib->pktlen );
@@ -9282,9 +9245,6 @@ void _issue_assocreq(_adapter *padapter, u8 is_reassoc)
 
 #ifdef CONFIG_RTW_REPEATER_SON
 	rtw_rson_append_ie(padapter, pframe, &pattrib->pktlen);
-#endif
-#ifdef CONFIG_APPEND_VENDOR_IE_ENABLE
-	pattrib->pktlen += rtw_build_vendor_ie(padapter , &pframe , WIFI_ASSOCREQ_VENDOR_IE_BIT);
 #endif
 
 #ifdef CONFIG_RTL8812A 
