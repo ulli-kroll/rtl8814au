@@ -652,7 +652,6 @@ FirmwareDownload8814A(
 	u8				*pFirmwareBuf;
 	u32				FirmwareLen;
 	u32 u32tmp;
-	BOOLEAN bUsedWoWLANFw = false;
 
 
 	pFirmware = (PRT_FIRMWARE_8814)rtw_zmalloc(sizeof(RT_FIRMWARE_8814));
@@ -670,12 +669,9 @@ FirmwareDownload8814A(
 	case FW_SOURCE_IMG_FILE:
 		break;
 	case FW_SOURCE_HEADER_FILE:
-		if (bUsedWoWLANFw) {
-		} else {
-			pFirmware->szFwBuffer = array_mp_8814a_fw_nic;
-			pFirmware->ulFwLength = array_length_mp_8814a_fw_nic;
-			RTW_INFO("%s fw:%s, size: %d\n", __FUNCTION__, "NIC", pFirmware->ulFwLength);
-		}
+		pFirmware->szFwBuffer = array_mp_8814a_fw_nic;
+		pFirmware->ulFwLength = array_length_mp_8814a_fw_nic;
+		RTW_INFO("%s fw:%s, size: %d\n", __FUNCTION__, "NIC", pFirmware->ulFwLength);
 		break;
 	}
 
