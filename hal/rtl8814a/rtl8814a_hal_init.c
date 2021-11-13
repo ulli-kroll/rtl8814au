@@ -17,6 +17,7 @@
 /* #include <drv_types.h> */
 #include <rtl8814a_hal.h>
 #include "hal8814a_fw.h"
+#include <linux/firmware.h>
 /* -------------------------------------------------------------------------
  *
  * LLT R/W/Init function
@@ -645,50 +646,32 @@ FirmwareDownload8814A(
 	systime fwdl_start_time;
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(Adapter);
 
-	u8				*pFwImageFileName;
+	const struct firmware *fw;
+	char *fw_name;
 	u8				*pucMappedFile = NULL;
-	PRT_FIRMWARE_8814	pFirmware = NULL;
 	u8				*pFwHdr = NULL;
-	u8				*pFirmwareBuf;
-	u32				FirmwareLen;
 	u32 u32tmp;
 
+	fw_name = "rtlwifi/rtl8814aufw.bin";
+	pr_info("Loading firmware %s\n", fw_name);
 
-	pFirmware = (PRT_FIRMWARE_8814)rtw_zmalloc(sizeof(RT_FIRMWARE_8814));
-	if (!pFirmware) {
+	if (request_firmware(&fw, fw_name, &Adapter->dvobj->pusbdev->dev)) {
+		RTW_ERR("Firmware %s not available\n", fw_name);
+		return -ENOENT;
+	}
+
+	if (fw->size == 0) {
+		RTW_ERR("Firmware size:%d\n", (int) fw->size);
+		goto exit;
+	}
+
+	if ((fw->size - 64) > FW_SIZE) {
 		rtStatus = _FAIL;
+		RTW_ERR("Firmware size:%u exceed %d\n", (int) fw->size, FW_SIZE);
 		goto exit;
 	}
 
-	{
-		RTW_INFO("%s fw source from Header\n", __FUNCTION__);
-		pFirmware->eFWSource = FW_SOURCE_HEADER_FILE;
-	}
-
-	switch (pFirmware->eFWSource) {
-	case FW_SOURCE_IMG_FILE:
-		break;
-	case FW_SOURCE_HEADER_FILE:
-		pFirmware->szFwBuffer = array_mp_8814a_fw_nic;
-		pFirmware->ulFwLength = array_length_mp_8814a_fw_nic;
-		RTW_INFO("%s fw:%s, size: %d\n", __FUNCTION__, "NIC", pFirmware->ulFwLength);
-		break;
-	}
-
-	if (pFirmware->ulFwLength == 0) {
-		RTW_ERR("Firmware size:%u\n", pFirmware->ulFwLength);
-		goto exit;
-	}
-
-	if ((pFirmware->ulFwLength - 64) > FW_SIZE) {
-		rtStatus = _FAIL;
-		RTW_ERR("Firmware size:%u exceed %u\n", pFirmware->ulFwLength, FW_SIZE);
-		goto exit;
-	}
-
-	pFirmwareBuf = pFirmware->szFwBuffer;
-	FirmwareLen = pFirmware->ulFwLength;
-	pFwHdr = (u8 *)pFirmware->szFwBuffer;
+	pFwHdr = (u8 *)fw->data;
 
 	pHalData->firmware_version = (u16)GET_FIRMWARE_HDR_VERSION_3081(pFwHdr);
 	pHalData->firmware_sub_version = (u16)GET_FIRMWARE_HDR_SUB_VER_3081(pFwHdr);
@@ -707,7 +690,7 @@ FirmwareDownload8814A(
 	rtw_write32(Adapter, REG_CPU_DMEM_CON_8814A, u32tmp&(~BIT16));
 	rtw_write32(Adapter, REG_CPU_DMEM_CON_8814A, u32tmp | BIT16);
 
-	HalROMDownloadFWRSVDPage8814A(Adapter, pFirmwareBuf, FirmwareLen);
+	HalROMDownloadFWRSVDPage8814A(Adapter, (void *) fw->data, fw->size);
 
 	_3081Enable8814A(Adapter);/* add by gw 2013026 for Enable mcu core */
 
@@ -725,8 +708,7 @@ fwdl_stat:
 		);
 
 exit:
-	if (pFirmware)
-		rtw_mfree((u8 *)pFirmware, sizeof(RT_FIRMWARE_8814));
+	release_firmware(fw);
 
 	InitializeFirmwareVars8814(Adapter);
 
