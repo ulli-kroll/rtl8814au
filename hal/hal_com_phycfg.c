@@ -262,14 +262,6 @@ const struct map_t pg_txpwr_def_info =
 	);
 
 
-#ifdef CONFIG_RTL8188F
-static const struct map_t rtl8188f_pg_txpwr_def_info =
-	MAP_ENT(0xB8, 1, 0xFF
-		, MAPSEG_ARRAY_ENT(0x10, 12,
-			0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x27, 0x27, 0x27, 0x27, 0x27, 0x24)
-	);
-#endif
-
 #ifdef CONFIG_RTL8188GTV
 static const struct map_t rtl8188gtv_pg_txpwr_def_info =
 	MAP_ENT(0xB8, 1, 0xFF
@@ -451,11 +443,6 @@ const struct map_t *hal_pg_txpwr_def_info(_adapter *adapter)
 #ifdef CONFIG_RTL8723D
 	case RTL8723D:
 		map = &rtl8723d_pg_txpwr_def_info;
-		break;
-#endif
-#ifdef CONFIG_RTL8188F
-	case RTL8188F:
-		map = &rtl8188f_pg_txpwr_def_info;
 		break;
 #endif
 #ifdef CONFIG_RTL8188GTV

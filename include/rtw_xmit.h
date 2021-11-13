@@ -147,7 +147,7 @@
 #if defined(CONFIG_RTL8812A) || defined(CONFIG_RTL8821A) ||\
 	defined(CONFIG_RTL8723B) || defined(CONFIG_RTL8192E) ||\
 	defined(CONFIG_RTL8814A) || defined(CONFIG_RTL8703B) ||\
-	defined(CONFIG_RTL8188F) || defined(CONFIG_RTL8188GTV) || defined(CONFIG_RTL8723D) ||\
+	defined(CONFIG_RTL8188GTV) || defined(CONFIG_RTL8723D) ||\
 	defined(CONFIG_RTL8710B) || defined(CONFIG_RTL8192F)
 	#define TXDESC_SIZE 40
 #elif defined(CONFIG_RTL8822B) || defined(CONFIG_RTL8822C)
@@ -182,7 +182,7 @@ enum TXDESC_SC {
 };
 
 #if defined(CONFIG_RTL8812A) || defined(CONFIG_RTL8821A) || defined(CONFIG_RTL8723B) \
-	|| defined(CONFIG_RTL8188F) || defined(CONFIG_RTL8188GTV) || defined(CONFIG_RTL8723D) \
+	|| defined(CONFIG_RTL8188GTV) || defined(CONFIG_RTL8723D) \
 	|| defined(CONFIG_RTL8192F)
 	#define TXDESC_40_BYTES
 #endif

@@ -117,9 +117,6 @@ typedef enum _RX_AGG_MODE {
 #ifdef CONFIG_RTL8723D
 	#define EFUSE_MAP_SIZE	512
 #endif
-#ifdef CONFIG_RTL8188F
-	#define EFUSE_MAP_SIZE	512
-#endif
 #ifdef CONFIG_RTL8188GTV
 	#define EFUSE_MAP_SIZE	512
 #endif
@@ -132,7 +129,7 @@ typedef enum _RX_AGG_MODE {
 
 #if defined(CONFIG_RTL8814A) || defined(CONFIG_RTL8822B) || defined(CONFIG_RTL8821C) || defined(CONFIG_RTL8814B)
 	#define EFUSE_MAX_SIZE	1024
-#elif defined(CONFIG_RTL8188F) || defined(CONFIG_RTL8188GTV) || defined(CONFIG_RTL8703B) || defined(CONFIG_RTL8710B)
+#elif defined(CONFIG_RTL8188GTV) || defined(CONFIG_RTL8703B) || defined(CONFIG_RTL8710B)
 	#define EFUSE_MAX_SIZE	256
 #else
 	#define EFUSE_MAX_SIZE	512
@@ -630,7 +627,7 @@ typedef struct hal_com_data {
 
 
 #if defined(CONFIG_RTL8723B) || defined(CONFIG_RTL8703B) \
-	|| defined(CONFIG_RTL8188F) || defined(CONFIG_RTL8188GTV) || defined(CONFIG_RTL8723D)|| defined(CONFIG_RTL8192F)
+	|| defined(CONFIG_RTL8188GTV) || defined(CONFIG_RTL8723D)|| defined(CONFIG_RTL8192F)
 	/* Interrupt relatd register information. */
 	u32			SysIntrStatus;
 	u32			SysIntrMask;

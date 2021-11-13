@@ -47,10 +47,6 @@ void rtl8192eu_set_hw_type(struct dvobj_priv *pdvobj);
 
 #endif
 
-#ifdef CONFIG_RTL8188F
-void rtl8188fu_set_hw_type(struct dvobj_priv *pdvobj);
-#endif
-
 #ifdef CONFIG_RTL8188GTV
 void rtl8188gtvu_set_hw_type(struct dvobj_priv *pdvobj);
 #endif

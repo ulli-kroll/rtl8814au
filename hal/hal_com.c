@@ -1668,7 +1668,7 @@ int c2h_mac_hidden_rpt_2_hdl(_adapter *adapter, u8 *data, u8 len)
 			RTW_PRINT("%s: 0x%02X\n", __func__, *(data + i));
 	}
 
-	#if defined(CONFIG_RTL8188F) || defined(CONFIG_RTL8188GTV)
+	#if defined(CONFIG_RTL8188GTV)
 	if (IS_8188F(hal_data->version_id) || IS_8188GTV(hal_data->version_id)) {
 		#define GET_C2H_MAC_HIDDEN_RPT_IRV(_data)	LE_BITS_TO_1BYTE(((u8 *)(_data)) + 0, 0, 4)
 		u8 irv = GET_C2H_MAC_HIDDEN_RPT_IRV(data);
@@ -6696,7 +6696,7 @@ u64 rtw_hal_get_tsftr_by_port(_adapter *adapter, u8 port)
 		break;
 	}
 #endif
-#if defined(CONFIG_RTL8188F) || defined(CONFIG_RTL8188GTV) \
+#if defined(CONFIG_RTL8188GTV) \
 		|| defined(CONFIG_RTL8192E) || defined(CONFIG_RTL8192F) \
 		|| defined(CONFIG_RTL8723B) || defined(CONFIG_RTL8703B) || defined(CONFIG_RTL8723D) \
 		|| defined(CONFIG_RTL8812A) || defined(CONFIG_RTL8821A) \
@@ -7980,14 +7980,6 @@ int hal_efuse_macaddr_offset(_adapter *adapter)
 		break;
 #endif
 
-#ifdef CONFIG_RTL8188F
-	case RTL8188F:
-		if (interface_type == RTW_USB)
-			addr_offset = EEPROM_MAC_ADDR_8188FU;
-		else if (interface_type == RTW_SDIO)
-			addr_offset = EEPROM_MAC_ADDR_8188FS;
-		break;
-#endif
 #ifdef CONFIG_RTL8188GTV
 	case RTL8188GTV:
 		if (interface_type == RTW_USB)
@@ -8931,11 +8923,6 @@ int hal_spec_init(_adapter *adapter)
 #ifdef CONFIG_RTL8723D
 	case RTL8723D:
 		init_hal_spec_8723d(adapter);
-		break;
-#endif
-#ifdef CONFIG_RTL8188F
-	case RTL8188F:
-		init_hal_spec_8188f(adapter);
 		break;
 #endif
 #ifdef CONFIG_RTL8188GTV

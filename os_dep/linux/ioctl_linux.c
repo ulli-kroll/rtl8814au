@@ -6064,10 +6064,6 @@ static int rtw_mp_efuse_get(struct net_device *dev,
 		addr = EEPROM_VID_8723BU;
 #endif /* CONFIG_RTL8192E */
 
-#ifdef CONFIG_RTL8188F
-		addr = EEPROM_VID_8188FU;
-#endif /* CONFIG_RTL8188F */
-
 #ifdef CONFIG_RTL8188GTV
 		addr = EEPROM_VID_8188GTVU;
 #endif

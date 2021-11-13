@@ -184,10 +184,6 @@ void rtw_phydm_fill_desc_dpt(void *dm, u8 *desc, u8 dpt_lv)
 
 	switch (rtw_get_chip_type(adapter)) {
 /*
-	#ifdef CONFIG_RTL8188F
-	case RTL8188F:
-		break;
-	#endif
 
 	#ifdef CONFIG_RTL8723B
 	case RTL8723B :

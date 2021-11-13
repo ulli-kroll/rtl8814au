@@ -154,21 +154,6 @@
 	#define CONFIG_RTS_FULL_BW
 #endif
 
-#ifdef CONFIG_RTL8188F
-	#undef RTL8188F_SUPPORT
-	#define RTL8188F_SUPPORT				1
-	#ifndef CONFIG_FW_C2H_PKT
-		#define CONFIG_FW_C2H_PKT
-	#endif
-	#ifndef CONFIG_RTW_MAC_HIDDEN_RPT
-		#define CONFIG_RTW_MAC_HIDDEN_RPT
-	#endif
-	#ifndef CONFIG_RTW_CUSTOMER_STR
-		#define CONFIG_RTW_CUSTOMER_STR
-	#endif
-	#define CONFIG_RTS_FULL_BW
-#endif
-
 #ifdef CONFIG_RTL8188GTV
 	#undef RTL8188F_SUPPORT
 	#define RTL8188F_SUPPORT				1

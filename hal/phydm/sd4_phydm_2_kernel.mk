@@ -120,16 +120,6 @@ _PHYDM_FILES += hal/phydm/$(RTL871X)/halhwimg8710b_bb.o\
 endif
 
 
-ifeq ($(CONFIG_RTL8188F), y)
-RTL871X = rtl8188f
-_PHYDM_FILES += hal/phydm/$(RTL871X)/halhwimg8188f_bb.o\
-								hal/phydm/$(RTL871X)/halhwimg8188f_mac.o\
-								hal/phydm/$(RTL871X)/halhwimg8188f_rf.o\
-								hal/phydm/$(RTL871X)/phydm_regconfig8188f.o\
-								hal/phydm/halrf/$(RTL871X)/halrf_8188f.o \
-								hal/phydm/$(RTL871X)/phydm_rtl8188f.o
-endif
-
 ifeq ($(CONFIG_RTL8822B), y)
 RTL871X = rtl8822b
 _PHYDM_FILES +=	hal/phydm/$(RTL871X)/halhwimg8822b_bb.o \
