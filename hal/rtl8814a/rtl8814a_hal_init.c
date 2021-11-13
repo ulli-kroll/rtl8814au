@@ -638,9 +638,7 @@ _FWFreeToGo8814A(
 
 s32
 FirmwareDownload8814A(
-		PADAPTER			Adapter,
-		BOOLEAN			bUsedWoWLANFw
-)
+		PADAPTER			Adapter)
 {
 	s32	rtStatus = _SUCCESS;
 	u8	write_fw = 0;
@@ -654,6 +652,7 @@ FirmwareDownload8814A(
 	u8				*pFirmwareBuf;
 	u32				FirmwareLen;
 	u32 u32tmp;
+	BOOLEAN bUsedWoWLANFw = false;
 
 
 	pFirmware = (PRT_FIRMWARE_8814)rtw_zmalloc(sizeof(RT_FIRMWARE_8814));

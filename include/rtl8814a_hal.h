@@ -218,7 +218,7 @@ Chip specific
 
 
 /* rtl8814_hal_init.c */
-s32 FirmwareDownload8814A(PADAPTER	Adapter, BOOLEAN bUsedWoWLANFw);
+s32 FirmwareDownload8814A(PADAPTER	Adapter);
 void	InitializeFirmwareVars8814(PADAPTER padapter);
 
 void

@@ -659,11 +659,11 @@ u8 rtw_hal_check_ips_status(_adapter *padapter)
 	return val;
 }
 
-s32 rtw_hal_fw_dl(_adapter *padapter, u8 wowlan)
+s32 rtw_hal_fw_dl(_adapter *padapter)
 {
 	s32 ret;
 
-	ret = padapter->hal_func.fw_dl(padapter, wowlan);
+	ret = padapter->hal_func.fw_dl(padapter);
 
 #ifdef CONFIG_LPS_1T1R
 	GET_HAL_DATA(padapter)->lps_1t1r = 0;

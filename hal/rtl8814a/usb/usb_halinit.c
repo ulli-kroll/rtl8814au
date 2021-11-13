@@ -1118,7 +1118,7 @@ u32 rtl8814au_hal_init(PADAPTER Adapter)
 
 	HAL_INIT_PROFILE_TAG(HAL_INIT_STAGES_DOWNLOAD_FW);
 	if (Adapter->registrypriv.mp_mode == 0) {
-		status = FirmwareDownload8814A(Adapter, _FALSE);
+		status = FirmwareDownload8814A(Adapter);
 		if (status != _SUCCESS) {
 			RTW_INFO("%s: Download Firmware failed!!\n", __FUNCTION__);
 			pHalData->bFWReady = _FALSE;
