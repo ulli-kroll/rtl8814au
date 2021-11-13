@@ -61,10 +61,6 @@
 #define RTW_ROCH_BACK_OP
 #endif
 
-#if !defined(CONFIG_P2P) && RTW_P2P_GROUP_INTERFACE
-	#error "RTW_P2P_GROUP_INTERFACE can't be enabled when CONFIG_P2P is disabled\n"
-#endif
-
 #if !RTW_P2P_GROUP_INTERFACE && defined(RTW_DEDICATED_P2P_DEVICE)
 	#error "RTW_DEDICATED_P2P_DEVICE can't be enabled when RTW_P2P_GROUP_INTERFACE is disabled\n"
 #endif
@@ -305,23 +301,6 @@ void rtw_cfg80211_indicate_scan_done_for_buddy(_adapter *padapter, bool bscan_ab
 void rtw_cfg80211_indicate_sta_assoc(_adapter *padapter, u8 *pmgmt_frame, uint frame_len);
 void rtw_cfg80211_indicate_sta_disassoc(_adapter *padapter, const u8 *da, unsigned short reason);
 #endif /* CONFIG_AP_MODE */
-
-#ifdef CONFIG_P2P
-void rtw_cfg80211_set_is_roch(_adapter *adapter, bool val);
-bool rtw_cfg80211_get_is_roch(_adapter *adapter);
-bool rtw_cfg80211_is_ro_ch_once(_adapter *adapter);
-void rtw_cfg80211_set_last_ro_ch_time(_adapter *adapter);
-s32 rtw_cfg80211_get_last_ro_ch_passing_ms(_adapter *adapter);
-
-int rtw_cfg80211_iface_has_p2p_group_cap(_adapter *adapter);
-int rtw_cfg80211_is_p2p_scan(_adapter *adapter);
-#if defined(RTW_DEDICATED_P2P_DEVICE)
-int rtw_cfg80211_redirect_pd_wdev(struct wiphy *wiphy, u8 *ra, struct wireless_dev **wdev);
-int rtw_cfg80211_is_scan_by_pd_wdev(_adapter *adapter);
-int rtw_pd_iface_alloc(struct wiphy *wiphy, const char *name, struct wireless_dev **pd_wdev);
-void rtw_pd_iface_free(struct wiphy *wiphy);
-#endif
-#endif /* CONFIG_P2P */
 
 void rtw_cfg80211_set_is_mgmt_tx(_adapter *adapter, u8 val);
 u8 rtw_cfg80211_get_is_mgmt_tx(_adapter *adapter);

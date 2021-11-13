@@ -202,9 +202,6 @@ bool rtw_pwr_unassociated_idle(_adapter *adapter)
 	struct dvobj_priv *dvobj = adapter_to_dvobj(adapter);
 	struct xmit_priv *pxmit_priv = &adapter->xmitpriv;
 	struct mlme_priv *pmlmepriv;
-#ifdef CONFIG_P2P
-	struct wifidirect_info	*pwdinfo;
-#endif
 
 	bool ret = _FALSE;
 
@@ -222,22 +219,11 @@ bool rtw_pwr_unassociated_idle(_adapter *adapter)
 		iface = dvobj->padapters[i];
 		if ((iface) && rtw_is_adapter_up(iface)) {
 			pmlmepriv = &(iface->mlmepriv);
-#ifdef CONFIG_P2P
-			pwdinfo = &(iface->wdinfo);
-#endif
 			if (check_fwstate(pmlmepriv, WIFI_ASOC_STATE | WIFI_SITE_MONITOR)
 				|| check_fwstate(pmlmepriv, WIFI_UNDER_LINKING | WIFI_UNDER_WPS)
 				|| MLME_IS_AP(iface)
 				|| MLME_IS_MESH(iface)
 				|| check_fwstate(pmlmepriv, WIFI_ADHOC_MASTER_STATE | WIFI_ADHOC_STATE)
-				#if defined(CONFIG_P2P) && defined(CONFIG_IOCTL_CFG80211)
-				|| rtw_cfg80211_get_is_roch(iface) == _TRUE
-				|| (rtw_cfg80211_is_ro_ch_once(adapter)
-					&& rtw_cfg80211_get_last_ro_ch_passing_ms(adapter) < 3000)
-				#elif defined(CONFIG_P2P)
-				|| rtw_p2p_chk_state(pwdinfo, P2P_STATE_IDLE)
-				|| rtw_p2p_chk_state(pwdinfo, P2P_STATE_LISTEN)
-				#endif
 			)
 				goto exit;
 
@@ -663,9 +649,6 @@ u8 PS_RDY_CHECK(_adapter *padapter)
 		|| MLME_IS_MESH(padapter)
 		|| MLME_IS_MONITOR(padapter)
 		|| check_fwstate(pmlmepriv, WIFI_ADHOC_MASTER_STATE | WIFI_ADHOC_STATE)
-		#if defined(CONFIG_P2P) && defined(CONFIG_IOCTL_CFG80211)
-		|| rtw_cfg80211_get_is_roch(padapter) == _TRUE
-		#endif
 		|| rtw_is_scan_deny(padapter)
 		#ifdef CONFIG_DFS_MASTER
 		|| adapter_to_rfctl(padapter)->radar_detect_enabled
@@ -821,9 +804,6 @@ void rtw_set_ps_mode(PADAPTER padapter, u8 ps_mode, u8 smart_ps, u8 bcn_ant_mode
 #ifdef CONFIG_WMMPS_STA	
 	struct registry_priv *pregistrypriv = &padapter->registrypriv;
 #endif
-#ifdef CONFIG_P2P
-	struct wifidirect_info	*pwdinfo = &(padapter->wdinfo);
-#endif /* CONFIG_P2P */
 #ifdef CONFIG_LPS_PG
 	u8 lps_pg_hdl_id = 0;
 #endif
@@ -870,9 +850,6 @@ void rtw_set_ps_mode(PADAPTER padapter, u8 ps_mode, u8 smart_ps, u8 bcn_ant_mode
 	/* if(pwrpriv->pwr_mode == PS_MODE_ACTIVE) */
 	if (ps_mode == PS_MODE_ACTIVE) {
 		if (1
-#ifdef CONFIG_P2P_PS
-		    && (pwdinfo->opp_ps == 0)
-#endif /* CONFIG_P2P_PS */
 		   ) {
 			RTW_INFO(FUNC_ADPT_FMT" Leave 802.11 power save - %s\n",
 				 FUNC_ADPT_ARG(padapter), msg);
@@ -946,11 +923,6 @@ void rtw_set_ps_mode(PADAPTER padapter, u8 ps_mode, u8 smart_ps, u8 bcn_ant_mode
 			if (check_fwstate(pmlmepriv, _FW_LINKED))
 				rtw_hal_set_hwreg(padapter, HW_VAR_H2C_FW_PWRMODE, (u8 *)(&ps_mode));
 
-#ifdef CONFIG_P2P_PS
-			/* Set CTWindow after LPS */
-			if (pwdinfo->opp_ps == 1)
-				p2p_ps_wk_cmd(padapter, P2P_PS_ENABLE, 0);
-#endif /* CONFIG_P2P_PS */
 
 			pslv = PS_STATE_S2;
 #ifdef CONFIG_LPS_LCLK
@@ -1018,12 +990,6 @@ void LPS_Enter(PADAPTER padapter, const char *msg)
 		return;
 	}
 #endif
-
-#ifdef CONFIG_P2P_PS
-	if (padapter->wdinfo.p2p_ps_mode == P2P_PS_NOA) {
-		return;/* supporting p2p client ps NOA via H2C_8723B_P2P_PS_OFFLOAD */
-	}
-#endif /* CONFIG_P2P_PS */
 
 	if (pwrpriv->bLeisurePs) {
 		/* Idle for a while if we connect to AP a while ago. */
@@ -1151,10 +1117,6 @@ void LeaveAllPowerSaveModeDirect(PADAPTER Adapter)
 		_exit_pwrlock(&pwrpriv->lock);
 #endif/*CONFIG_LPS_LCLK*/
 
-#ifdef CONFIG_P2P_PS
-		p2p_ps_wk_cmd(pri_padapter, P2P_PS_DISABLE, 0);
-#endif /* CONFIG_P2P_PS */
-
 #ifdef CONFIG_LPS
 		rtw_lps_ctrl_wk_cmd(pri_padapter, LPS_CTRL_LEAVE, RTW_CMDF_DIRECTLY);
 #endif
@@ -1212,16 +1174,6 @@ void LeaveAllPowerSaveMode(PADAPTER Adapter)
 #ifdef CONFIG_LPS_LCLK
 		enqueue = 1;
 #endif
-
-#ifdef CONFIG_P2P_PS
-		for (i = 0; i < dvobj->iface_nums; i++) {
-			_adapter *iface = dvobj->padapters[i];
-			struct wifidirect_info *pwdinfo = &(iface->wdinfo);
-
-			if (pwdinfo->p2p_ps_mode > P2P_PS_NONE)
-				p2p_ps_wk_cmd(iface, P2P_PS_DISABLE, enqueue);
-		}
-#endif /* CONFIG_P2P_PS */
 
 #ifdef CONFIG_LPS
 		rtw_lps_ctrl_wk_cmd(Adapter, LPS_CTRL_LEAVE, enqueue ? 0 : RTW_CMDF_DIRECTLY);
@@ -1777,17 +1729,6 @@ void rtw_unregister_tx_alive(PADAPTER padapter)
 	pslv = PS_STATE_S0;
 
 
-#ifdef CONFIG_P2P_PS
-	for (i = 0; i < dvobj->iface_nums; i++) {
-		iface = dvobj->padapters[i];
-		if ((iface) && rtw_is_adapter_up(iface)) {
-			if (iface->wdinfo.p2p_ps_mode > P2P_PS_NONE) {
-				pslv = PS_STATE_S2;
-				break;
-			}
-		}
-	}
-#endif
 	_enter_pwrlock(&pwrctrl->lock);
 
 	unregister_task_alive(pwrctrl, XMIT_ALIVE);
@@ -1823,18 +1764,6 @@ void rtw_unregister_cmd_alive(PADAPTER padapter)
 	pwrctrl = adapter_to_pwrctl(padapter);
 	pslv = PS_STATE_S0;
 
-
-#ifdef CONFIG_P2P_PS
-	for (i = 0; i < dvobj->iface_nums; i++) {
-		iface = dvobj->padapters[i];
-		if ((iface) && rtw_is_adapter_up(iface)) {
-			if (iface->wdinfo.p2p_ps_mode > P2P_PS_NONE) {
-				pslv = PS_STATE_S2;
-				break;
-			}
-		}
-	}
-#endif
 
 	_enter_pwrlock(&pwrctrl->lock);
 

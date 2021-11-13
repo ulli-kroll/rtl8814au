@@ -579,13 +579,6 @@ typedef struct hal_com_data {
 	/* 2010/08/09 MH Add CU power down mode. */
 	BOOLEAN		pwrdown;
 
-#ifdef CONFIG_P2P
-#ifdef CONFIG_P2P_PS_NOA_USE_MACID_SLEEP
-	u16 p2p_ps_offload;
-#else
-	u8	p2p_ps_offload;
-#endif
-#endif
 	/* Auto FSM to Turn On, include clock, isolation, power control for MAC only */
 	u8	bMacPwrCtrlOn;
 	u8 hci_sus_state;

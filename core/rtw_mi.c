@@ -28,25 +28,6 @@ void rtw_mi_update_union_chan_inf(_adapter *adapter, u8 ch, u8 offset , u8 bw)
 }
 
 #ifdef DBG_IFACE_STATUS
-#ifdef CONFIG_P2P
-static u8 _rtw_mi_p2p_listen_scan_chk(_adapter *adapter)
-{
-	int i;
-	_adapter *iface;
-	struct dvobj_priv *dvobj = adapter_to_dvobj(adapter);
-	u8 p2p_listen_scan_state = _FALSE;
-
-	for (i = 0; i < dvobj->iface_nums; i++) {
-		iface = dvobj->padapters[i];
-		if (rtw_p2p_chk_state(&iface->wdinfo, P2P_STATE_LISTEN) ||
-			rtw_p2p_chk_state(&iface->wdinfo, P2P_STATE_SCAN)) {
-			p2p_listen_scan_state = _TRUE;
-			break;
-		}
-	}
-	return p2p_listen_scan_state;
-}
-#endif
 #endif
 
 u8 rtw_mi_stayin_union_ch_chk(_adapter *adapter)
@@ -71,10 +52,6 @@ u8 rtw_mi_stayin_union_ch_chk(_adapter *adapter)
 		RTW_ERR("%s Not stay in union channel\n", __func__);
 		if (GET_HAL_DATA(adapter)->bScanInProcess == _TRUE)
 			RTW_ERR("ScanInProcess\n");
-		#ifdef CONFIG_P2P
-		if (_rtw_mi_p2p_listen_scan_chk(adapter))
-			RTW_ERR("P2P in listen or scan state\n");
-		#endif
 		RTW_ERR("union ch, bw, offset: %u,%u,%u\n", u_ch, u_bw, u_offset);
 		RTW_ERR("oper ch, bw, offset: %u,%u,%u\n", o_ch, o_bw, o_offset);
 		RTW_ERR("=========================\n");
@@ -201,10 +178,6 @@ void rtw_mi_status_by_ifbmp(struct dvobj_priv *dvobj, u8 ifbmp, struct mi_state 
 			if (check_fwstate(&iface->mlmepriv, _FW_LINKED) == _TRUE) {
 				MSTATE_STA_LD_NUM(mstate)++;
 
-				#ifdef CONFIG_P2P
-				if (MLME_IS_GC(iface))
-					MSTATE_P2P_GC_NUM(mstate)++;
-				#endif
 			}
 			if (check_fwstate(&iface->mlmepriv, _FW_UNDER_LINKING) == _TRUE)
 				MSTATE_STA_LG_NUM(mstate)++;
@@ -215,10 +188,6 @@ void rtw_mi_status_by_ifbmp(struct dvobj_priv *dvobj, u8 ifbmp, struct mi_state 
 				MSTATE_AP_NUM(mstate)++;
 				if (iface->stapriv.asoc_sta_count > 2)
 					MSTATE_AP_LD_NUM(mstate)++;
-				#ifdef CONFIG_P2P
-				if (MLME_IS_GO(iface))
-					MSTATE_P2P_GO_NUM(mstate)++;
-				#endif
 			} else
 				MSTATE_AP_STARTING_NUM(mstate)++;
 #endif
@@ -255,15 +224,7 @@ void rtw_mi_status_by_ifbmp(struct dvobj_priv *dvobj, u8 ifbmp, struct mi_state 
 #ifdef CONFIG_IOCTL_CFG80211
 		if (rtw_cfg80211_get_is_mgmt_tx(iface))
 			MSTATE_MGMT_TX_NUM(mstate)++;
-		#ifdef CONFIG_P2P
-		if (rtw_cfg80211_get_is_roch(iface) == _TRUE)
-			MSTATE_ROCH_NUM(mstate)++;
-		#endif
 #endif /* CONFIG_IOCTL_CFG80211 */
-#ifdef CONFIG_P2P
-		if (MLME_IS_PD(iface))
-			MSTATE_P2P_DV_NUM(mstate)++;
-#endif
 	}
 }
 
@@ -302,9 +263,6 @@ inline void rtw_mi_status_merge(struct mi_state *d, struct mi_state *a)
 	d->scan_enter_num += a->scan_enter_num;
 	d->uwps_num += a->uwps_num;
 #ifdef CONFIG_IOCTL_CFG80211
-	#ifdef CONFIG_P2P
-	d->roch_num += a->roch_num;
-	#endif
 	d->mgmt_tx_num += a->mgmt_tx_num;
 #endif
 }
@@ -326,17 +284,9 @@ void dump_mi_status(void *sel, struct dvobj_priv *dvobj)
 	RTW_PRINT_SEL(sel, "mesh_num:%d\n", DEV_MESH_NUM(dvobj));
 	RTW_PRINT_SEL(sel, "linked_mesh_num:%d\n", DEV_MESH_LD_NUM(dvobj));
 #endif
-#ifdef CONFIG_P2P
-	RTW_PRINT_SEL(sel, "p2p_device_num:%d\n", DEV_P2P_DV_NUM(dvobj));
-	RTW_PRINT_SEL(sel, "p2p_gc_num:%d\n", DEV_P2P_GC_NUM(dvobj));
-	RTW_PRINT_SEL(sel, "p2p_go_num:%d\n", DEV_P2P_GO_NUM(dvobj));
-#endif
 	RTW_PRINT_SEL(sel, "scan_num:%d\n", DEV_SCAN_NUM(dvobj));
 	RTW_PRINT_SEL(sel, "under_wps_num:%d\n", DEV_WPS_NUM(dvobj));
 #if defined(CONFIG_IOCTL_CFG80211)
-	#if defined(CONFIG_P2P)
-	RTW_PRINT_SEL(sel, "roch_num:%d\n", DEV_ROCH_NUM(dvobj));
-	#endif
 	RTW_PRINT_SEL(sel, "mgmt_tx_num:%d\n", DEV_MGMT_TX_NUM(dvobj));
 #endif
 	RTW_PRINT_SEL(sel, "union_ch:%d\n", DEV_U_CH(dvobj));
@@ -1181,44 +1131,6 @@ u8 rtw_mi_buddy_set_tx_beacon_cmd(_adapter *padapter)
 {
 	return _rtw_mi_process(padapter, _TRUE, NULL, _rtw_mi_set_tx_beacon_cmd);
 }
-
-#ifdef CONFIG_P2P
-static u8 _rtw_mi_p2p_chk_state(_adapter *adapter, void *data)
-{
-	struct wifidirect_info *pwdinfo = &(adapter->wdinfo);
-	enum P2P_STATE state = *(enum P2P_STATE *)data;
-
-	return rtw_p2p_chk_state(pwdinfo, state);
-}
-u8 rtw_mi_p2p_chk_state(_adapter *padapter, enum P2P_STATE p2p_state)
-{
-	u8 in_data = p2p_state;
-
-	return _rtw_mi_process(padapter, _FALSE, &in_data, _rtw_mi_p2p_chk_state);
-}
-u8 rtw_mi_buddy_p2p_chk_state(_adapter *padapter, enum P2P_STATE p2p_state)
-{
-	u8 in_data  = p2p_state;
-
-	return _rtw_mi_process(padapter, _TRUE, &in_data, _rtw_mi_p2p_chk_state);
-}
-static u8 _rtw_mi_stay_in_p2p_mode(_adapter *adapter, void *data)
-{
-	struct wifidirect_info *pwdinfo = &(adapter->wdinfo);
-
-	if (rtw_p2p_role(pwdinfo) != P2P_ROLE_DISABLE)
-		return _TRUE;
-	return _FALSE;
-}
-u8 rtw_mi_stay_in_p2p_mode(_adapter *padapter)
-{
-	return _rtw_mi_process(padapter, _FALSE, NULL, _rtw_mi_stay_in_p2p_mode);
-}
-u8 rtw_mi_buddy_stay_in_p2p_mode(_adapter *padapter)
-{
-	return _rtw_mi_process(padapter, _TRUE, NULL, _rtw_mi_stay_in_p2p_mode);
-}
-#endif /*CONFIG_P2P*/
 
 _adapter *rtw_get_iface_by_id(_adapter *padapter, u8 iface_id)
 {

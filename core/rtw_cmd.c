@@ -852,10 +852,6 @@ u8 rtw_sitesurvey_cmd(_adapter *padapter, struct sitesurvey_parm *pparm)
 		rtw_lps_ctrl_wk_cmd(padapter, LPS_CTRL_SCAN, 0);
 #endif
 
-#ifdef CONFIG_P2P_PS
-	if (check_fwstate(pmlmepriv, _FW_LINKED) == _TRUE)
-		p2p_ps_wk_cmd(padapter, P2P_PS_SCAN, 1);
-#endif /* CONFIG_P2P_PS */
 
 	ph2c = (struct cmd_obj *)rtw_zmalloc(sizeof(struct cmd_obj));
 	if (ph2c == NULL)
@@ -3606,147 +3602,6 @@ void reset_securitypriv_hdl(_adapter *padapter)
 	rtw_reset_securitypriv(padapter);
 }
 
-#ifdef CONFIG_P2P
-u8 p2p_protocol_wk_cmd(_adapter *padapter, int intCmdType)
-{
-	struct cmd_obj	*ph2c;
-	struct drvextra_cmd_parm	*pdrvextra_cmd_parm;
-	struct wifidirect_info	*pwdinfo = &(padapter->wdinfo);
-	struct cmd_priv	*pcmdpriv = &padapter->cmdpriv;
-	u8	res = _SUCCESS;
-
-
-	if (rtw_p2p_chk_state(pwdinfo, P2P_STATE_NONE))
-		return res;
-
-	ph2c = (struct cmd_obj *)rtw_zmalloc(sizeof(struct cmd_obj));
-	if (ph2c == NULL) {
-		res = _FAIL;
-		goto exit;
-	}
-
-	pdrvextra_cmd_parm = (struct drvextra_cmd_parm *)rtw_zmalloc(sizeof(struct drvextra_cmd_parm));
-	if (pdrvextra_cmd_parm == NULL) {
-		rtw_mfree((unsigned char *)ph2c, sizeof(struct cmd_obj));
-		res = _FAIL;
-		goto exit;
-	}
-
-	pdrvextra_cmd_parm->ec_id = P2P_PROTO_WK_CID;
-	pdrvextra_cmd_parm->type = intCmdType;	/*	As the command tppe. */
-	pdrvextra_cmd_parm->size = 0;
-	pdrvextra_cmd_parm->pbuf = NULL;		/*	Must be NULL here */
-
-	init_h2fwcmd_w_parm_no_rsp(ph2c, pdrvextra_cmd_parm, GEN_CMD_CODE(_Set_Drv_Extra));
-
-	res = rtw_enqueue_cmd(pcmdpriv, ph2c);
-
-exit:
-
-
-	return res;
-
-}
-
-#ifdef CONFIG_IOCTL_CFG80211
-static u8 _p2p_roch_cmd(_adapter *adapter
-	, u64 cookie, struct wireless_dev *wdev
-	, struct ieee80211_channel *ch, enum nl80211_channel_type ch_type
-	, unsigned int duration
-	, u8 flags
-)
-{
-	struct cmd_obj *cmdobj;
-	struct drvextra_cmd_parm *parm;
-	struct p2p_roch_parm *roch_parm;
-	struct cmd_priv *pcmdpriv = &adapter->cmdpriv;
-	struct submit_ctx sctx;
-	u8 cancel = duration ? 0 : 1;
-	u8	res = _SUCCESS;
-
-	roch_parm = (struct p2p_roch_parm *)rtw_zmalloc(sizeof(struct p2p_roch_parm));
-	if (roch_parm == NULL) {
-		res = _FAIL;
-		goto exit;
-	}
-
-	roch_parm->cookie = cookie;
-	roch_parm->wdev = wdev;
-	if (!cancel) {
-		_rtw_memcpy(&roch_parm->ch, ch, sizeof(struct ieee80211_channel));
-		roch_parm->ch_type = ch_type;
-		roch_parm->duration = duration;
-	}
-
-	if (flags & RTW_CMDF_DIRECTLY) {
-		/* no need to enqueue, do the cmd hdl directly and free cmd parameter */
-		if (H2C_SUCCESS != p2p_protocol_wk_hdl(adapter, cancel ? P2P_CANCEL_RO_CH_WK : P2P_RO_CH_WK, (u8 *)roch_parm))
-			res = _FAIL;
-		rtw_mfree((u8 *)roch_parm, sizeof(*roch_parm));
-	} else {
-		/* need enqueue, prepare cmd_obj and enqueue */
-		parm = (struct drvextra_cmd_parm *)rtw_zmalloc(sizeof(struct drvextra_cmd_parm));
-		if (parm == NULL) {
-			rtw_mfree((u8 *)roch_parm, sizeof(*roch_parm));
-			res = _FAIL;
-			goto exit;
-		}
-
-		parm->ec_id = P2P_PROTO_WK_CID;
-		parm->type = cancel ? P2P_CANCEL_RO_CH_WK : P2P_RO_CH_WK;
-		parm->size = sizeof(*roch_parm);
-		parm->pbuf = (u8 *)roch_parm;
-
-		cmdobj = (struct cmd_obj *)rtw_zmalloc(sizeof(*cmdobj));
-		if (cmdobj == NULL) {
-			res = _FAIL;
-			rtw_mfree((u8 *)roch_parm, sizeof(*roch_parm));
-			rtw_mfree((u8 *)parm, sizeof(*parm));
-			goto exit;
-		}
-
-		init_h2fwcmd_w_parm_no_rsp(cmdobj, parm, GEN_CMD_CODE(_Set_Drv_Extra));
-
-		if (flags & RTW_CMDF_WAIT_ACK) {
-			cmdobj->sctx = &sctx;
-			rtw_sctx_init(&sctx, 10 * 1000);
-		}
-
-		res = rtw_enqueue_cmd(pcmdpriv, cmdobj);
-
-		if (res == _SUCCESS && (flags & RTW_CMDF_WAIT_ACK)) {
-			rtw_sctx_wait(&sctx, __func__);
-			_enter_critical_mutex(&pcmdpriv->sctx_mutex, NULL);
-			if (sctx.status == RTW_SCTX_SUBMITTED)
-				cmdobj->sctx = NULL;
-			_exit_critical_mutex(&pcmdpriv->sctx_mutex, NULL);
-			if (sctx.status != RTW_SCTX_DONE_SUCCESS)
-				res = _FAIL;
-		}
-	}
-
-exit:
-	return res;
-}
-
-inline u8 p2p_roch_cmd(_adapter *adapter
-	, u64 cookie, struct wireless_dev *wdev
-	, struct ieee80211_channel *ch, enum nl80211_channel_type ch_type
-	, unsigned int duration
-	, u8 flags
-)
-{
-	return _p2p_roch_cmd(adapter, cookie, wdev, ch, ch_type, duration, flags);
-}
-
-inline u8 p2p_cancel_roch_cmd(_adapter *adapter, u64 cookie, struct wireless_dev *wdev, u8 flags)
-{
-	return _p2p_roch_cmd(adapter, cookie, wdev, NULL, 0, 0, flags);
-}
-
-#endif /* CONFIG_IOCTL_CFG80211 */
-#endif /* CONFIG_P2P */
-
 #ifdef CONFIG_IOCTL_CFG80211 
 inline u8 rtw_mgnt_tx_cmd(_adapter *adapter, u8 tx_ch, u8 no_cck, const u8 *buf, size_t len, int wait_ack, u8 flags)
 {
@@ -5043,20 +4898,6 @@ u8 rtw_drvextra_cmd_hdl(_adapter *padapter, unsigned char *pbuf)
 #if (RATE_ADAPTIVE_SUPPORT == 1)
 	case RTP_TIMER_CFG_WK_CID:
 		rpt_timer_setting_wk_hdl(padapter, pdrvextra_cmd->type);
-		break;
-#endif
-#ifdef CONFIG_P2P_PS
-	case P2P_PS_WK_CID:
-		p2p_ps_wk_hdl(padapter, pdrvextra_cmd->type);
-		break;
-#endif
-#ifdef CONFIG_P2P
-	case P2P_PROTO_WK_CID:
-		/*
-		* Commented by Albert 2011/07/01
-		* I used the type_size as the type command
-		*/
-		ret = p2p_protocol_wk_hdl(padapter, pdrvextra_cmd->type, pdrvextra_cmd->pbuf);
 		break;
 #endif
 #ifdef CONFIG_AP_MODE

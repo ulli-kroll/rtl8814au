@@ -691,13 +691,6 @@ int is_same_network(WLAN_BSSID_EX *src, WLAN_BSSID_EX *dst, u8 feature)
 	d_cap = le16_to_cpu(d_cap);
 
 
-#ifdef CONFIG_P2P
-	if ((feature == 1) && /* 1: P2P supported */
-	    (_rtw_memcmp(src->MacAddress, dst->MacAddress, ETH_ALEN) == _TRUE)
-	   )
-		return _TRUE;
-#endif
-
 	/* Wi-Fi driver doesn't consider the situation of BCN and ProbRsp sent from the same hidden AP, 
 	  * it considers these two packets are sent from different AP. 
 	  * Therefore, the scan queue may store two scan results of the same hidden AP, likes below.
@@ -937,9 +930,6 @@ bool rtw_update_scanned_network(_adapter *adapter, WLAN_BSSID_EX *target)
 	_list	*plist, *phead;
 	u32	bssid_ex_sz;
 	struct mlme_priv	*pmlmepriv = &(adapter->mlmepriv);
-#ifdef CONFIG_P2P
-	struct wifidirect_info *pwdinfo = &(adapter->wdinfo);
-#endif /* CONFIG_P2P */
 	_queue	*queue	= &(pmlmepriv->scanned_queue);
 	struct wlan_network	*pnetwork = NULL;
 	struct wlan_network	*choice = NULL;
@@ -956,11 +946,6 @@ bool rtw_update_scanned_network(_adapter *adapter, WLAN_BSSID_EX *target)
 		__func__, target->Ssid.Ssid, target->Rssi, target->PhyInfo.SignalStrength);
 #endif
 
-#ifdef CONFIG_P2P
-	if (!rtw_p2p_chk_state(pwdinfo, P2P_STATE_NONE))
-		feature = 1; /* p2p enable */
-#endif
-
 	while (1) {
 		if (rtw_end_of_queue_search(phead, plist) == _TRUE)
 			break;
@@ -968,14 +953,6 @@ bool rtw_update_scanned_network(_adapter *adapter, WLAN_BSSID_EX *target)
 		pnetwork = LIST_CONTAINOR(plist, struct wlan_network, list);
 
 		rtw_bug_check(pnetwork, pnetwork, pnetwork, pnetwork);
-
-#ifdef CONFIG_P2P
-		if (!rtw_p2p_chk_state(pwdinfo, P2P_STATE_NONE) &&
-		    (_rtw_memcmp(pnetwork->network.MacAddress, target->MacAddress, ETH_ALEN) == _TRUE)) {
-			target_find = 1;
-			break;
-		}
-#endif
 
 		if (is_same_network(&(pnetwork->network), target, feature)) {
 			target_find = 1;
@@ -1129,11 +1106,6 @@ void rtw_add_network(_adapter *adapter, WLAN_BSSID_EX *pnetwork)
 	/* _queue	*queue	= &(pmlmepriv->scanned_queue); */
 
 	/* _enter_critical_bh(&queue->lock, &irqL); */
-
-#if defined(CONFIG_P2P) && defined(CONFIG_P2P_REMOVE_GROUP_INFO)
-	if (adapter->registrypriv.wifi_spec == 0)
-		rtw_bss_ex_del_p2p_attr(pnetwork, P2P_ATTR_GROUP_INFO);
-#endif
 
 	if (!hal_chk_wl_func(adapter, WL_FUNC_MIRACAST))
 		rtw_bss_ex_del_wfd_ie(pnetwork);
@@ -1389,11 +1361,6 @@ void rtw_surveydone_event_callback(_adapter	*adapter, u8 *pbuf)
 	/* RTW_INFO("scan complete in %dms\n",rtw_get_passing_time_ms(pmlmepriv->scan_start_time)); */
 
 	_exit_critical_bh(&pmlmepriv->lock, &irqL);
-
-#ifdef CONFIG_P2P_PS
-	if (check_fwstate(pmlmepriv, _FW_LINKED) == _TRUE)
-		p2p_ps_wk_cmd(adapter, P2P_PS_SCAN_DONE, 0);
-#endif /* CONFIG_P2P_PS */
 
 	rtw_mi_os_xmit_schedule(adapter);
 
@@ -1654,12 +1621,6 @@ void rtw_free_assoc_resources(_adapter *adapter, u8 lock_scanned_queue)
 
 			RTW_INFO("Free disconnecting network of scanned_queue\n");
 			rtw_free_network_nolock(adapter, pwlan);
-#ifdef CONFIG_P2P
-			if (!rtw_p2p_chk_state(&adapter->wdinfo, P2P_STATE_NONE)) {
-				rtw_set_scan_deny(adapter, 2000);
-				/* rtw_clear_scan_deny(adapter); */
-			}
-#endif /* CONFIG_P2P */
 		} else
 			RTW_ERR("Free disconnecting network of scanned_queue failed due to pwlan == NULL\n\n");
 	}
@@ -1772,10 +1733,6 @@ void rtw_indicate_disconnect(_adapter *padapter, u16 reason, u8 locally_generate
 
 		rtw_clear_scan_deny(padapter);
 	}
-
-#ifdef CONFIG_P2P_PS
-	p2p_ps_wk_cmd(padapter, P2P_PS_DISABLE, 1);
-#endif /* CONFIG_P2P_PS */
 
 #ifdef CONFIG_LPS
 	rtw_lps_ctrl_wk_cmd(padapter, LPS_CTRL_DISCONNECT, 0);
@@ -3168,11 +3125,6 @@ static void rtw_auto_scan_handler(_adapter *padapter)
 	u8 reason = RTW_AUTO_SCAN_REASON_UNSPECIFIED;
 
 	rtw_mlme_reset_auto_scan_int(padapter, &reason);
-
-#ifdef CONFIG_P2P
-	if (!rtw_p2p_chk_state(&padapter->wdinfo, P2P_STATE_NONE))
-		goto exit;
-#endif
 
 	if (pmlmepriv->auto_scan_int_ms == 0
 	    || rtw_get_passing_time_ms(pmlmepriv->scan_start_time) < pmlmepriv->auto_scan_int_ms)

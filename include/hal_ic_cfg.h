@@ -107,9 +107,6 @@
 	#endif
 	/*#define CONFIG_AMPDU_PRETX_CD*/
 	/*#define DBG_LA_MODE*/
-	#ifdef CONFIG_P2P_PS
-		#define CONFIG_P2P_PS_NOA_USE_MACID_SLEEP
-	#endif
 	#define CONFIG_RTS_FULL_BW
 /*	#define CONFIG_NARROWBAND_SUPPORTING	*/
 	#ifdef CONFIG_NARROWBAND_SUPPORTING
@@ -263,9 +260,6 @@
 	#define CONFIG_SUPPORT_FIFO_DUMP
 	#define CONFIG_HW_P0_TSF_SYNC
 	#define CONFIG_BCN_RECV_TIME
-	#ifdef CONFIG_P2P_PS
-		#define CONFIG_P2P_PS_NOA_USE_MACID_SLEEP
-	#endif
 	#define CONFIG_RTS_FULL_BW
 
 	#ifdef CONFIG_LPS
@@ -337,9 +331,6 @@
 	#endif
 	#define CONFIG_TCP_CSUM_OFFLOAD_RX
 
-	#ifdef CONFIG_P2P_PS
-		#define CONFIG_P2P_PS_NOA_USE_MACID_SLEEP
-	#endif
 	#define CONFIG_RTS_FULL_BW
 	
 	#ifdef CONFIG_LPS
@@ -385,9 +376,6 @@
 	#endif /* CONFIG_BEAMFORMING */
 	#define CONFIG_HW_P0_TSF_SYNC
 	#define CONFIG_BCN_RECV_TIME
-	#ifdef CONFIG_P2P_PS
-		#define CONFIG_P2P_PS_NOA_USE_MACID_SLEEP
-	#endif
 	#define CONFIG_RTS_FULL_BW
 
 	#ifdef CONFIG_LPS
@@ -464,9 +452,6 @@
 	#define CONFIG_SUPPORT_FIFO_DUMP
 	#define CONFIG_HW_P0_TSF_SYNC
 	#define CONFIG_BCN_RECV_TIME
-	#ifdef CONFIG_P2P_PS
-		#define CONFIG_P2P_PS_NOA_USE_MACID_SLEEP
-	#endif
 	#define CONFIG_RTS_FULL_BW
 
 	#define CONFIG_PROTSEL_PORT

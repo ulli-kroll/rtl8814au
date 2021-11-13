@@ -3523,12 +3523,6 @@ u8 SetHwReg8814A(PADAPTER padapter, u8 variable, u8 *pval)
 	case HW_VAR_DL_RSVD_PAGE:
 		break;
 
-#ifdef CONFIG_P2P_PS
-	case HW_VAR_H2C_FW_P2P_PS_OFFLOAD:
-		rtl8814_set_p2p_ps_offload_cmd(padapter, *pval);
-		break;
-#endif /* CONFIG_P2P_PS */
-
 	case HW_VAR_EFUSE_USAGE:
 		pHalData->EfuseUsedPercentage = *pval;
 		break;

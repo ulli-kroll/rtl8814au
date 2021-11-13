@@ -1370,16 +1370,9 @@ struct _ADAPTER {
 #endif
 
 #ifdef CONFIG_IOCTL_CFG80211
-#ifdef CONFIG_P2P
-	struct cfg80211_wifidirect_info	cfg80211_wdinfo;
-#endif /* CONFIG_P2P */
 #endif /* CONFIG_IOCTL_CFG80211 */
 	u32	setband;
 	ATOMIC_T bandskip;
-
-#ifdef CONFIG_P2P
-	struct wifidirect_info	wdinfo;
-#endif /* CONFIG_P2P */
 
 #ifdef CONFIG_WAPI_SUPPORT
 	u8	WapiSupport;
@@ -1468,11 +1461,6 @@ struct _ADAPTER {
 	/*	The driver will show up the desired channel number when this flag is 1. */
 	u8 bNotifyChannelChange;
 	u8 bsta_tp_dump;
-#ifdef CONFIG_P2P
-	/*	Added by Albert 2012/12/06 */
-	/*	The driver will show the current P2P status when the upper application reads it. */
-	u8 bShowGetP2PState;
-#endif
 #ifdef CONFIG_AUTOSUSPEND
 	u8	bDisableAutosuspend;
 #endif

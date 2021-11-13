@@ -3734,17 +3734,6 @@ static u8 set_mcc_duration_hdl(PADAPTER adapter, const u8 *val)
 	if (!mccobjpriv->enable_runtime_duration)
 		goto exit;
 
-#ifdef CONFIG_P2P_PS
-	/* check noa enable or not */
-	for (i = 0; i < dvobj->iface_nums; i++) {
-		iface = dvobj->padapters[i];
-		if (iface->wdinfo.p2p_ps_mode == P2P_PS_NOA) {
-			noa_enable = _TRUE;
-			break;
-		}
-	}
-#endif /* CONFIG_P2P_PS */
-
 	type = val[0];
 	duration = val[1];
 

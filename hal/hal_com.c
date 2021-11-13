@@ -4413,19 +4413,11 @@ _adapter * _rtw_search_dp_iface(_adapter *adapter)
 				if (iface->tdlsinfo.link_established == _TRUE)
 					tdls_num++;
 				#endif
-				#ifdef CONFIG_P2P
-				if (MLME_IS_GC(iface))
-					gc_ifs[p2p_gc_num++] = iface;
-				#endif
 			}
 #ifdef CONFIG_AP_MODE
 		} else if (check_fwstate(&iface->mlmepriv, WIFI_AP_STATE) == _TRUE ) {
 			if (check_fwstate(&iface->mlmepriv, _FW_LINKED) == _TRUE) {
 				ap_ifs[ap_num++] = iface;
-				#ifdef CONFIG_P2P
-				if (MLME_IS_GO(iface))
-					go_ifs[p2p_go_num++] = iface;
-				#endif
 			}
 #endif
 		} else if (check_fwstate(&iface->mlmepriv, WIFI_ADHOC_STATE | WIFI_ADHOC_MASTER_STATE) == _TRUE
@@ -4496,139 +4488,6 @@ exit :
 }
 #endif
 #endif /*CONFIG_FW_MULTI_PORT_SUPPORT*/
-
-#ifdef CONFIG_P2P_PS
-#ifdef RTW_HALMAC
-void rtw_set_p2p_ps_offload_cmd(_adapter *adapter, u8 p2p_ps_state)
-{
-	PHAL_DATA_TYPE hal = GET_HAL_DATA(adapter);
-	struct wifidirect_info *pwdinfo = &adapter->wdinfo;
-	struct mlme_ext_priv	*pmlmeext = &adapter->mlmeextpriv;
-	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
-	WLAN_BSSID_EX		*cur_network = &(pmlmeinfo->network);
-	struct sta_priv		*pstapriv = &adapter->stapriv;
-	struct sta_info		*psta;
-	HAL_P2P_PS_PARA p2p_ps_para;
-	int status = -1;
-	u8 i;
-	u8 hw_port = rtw_hal_get_port(adapter);
-
-	_rtw_memset(&p2p_ps_para, 0, sizeof(HAL_P2P_PS_PARA));
-	_rtw_memcpy((&p2p_ps_para) , &hal->p2p_ps_offload , sizeof(hal->p2p_ps_offload));
-
-	(&p2p_ps_para)->p2p_port_id = hw_port;
-	(&p2p_ps_para)->p2p_group = 0;
-	psta = rtw_get_stainfo(pstapriv, cur_network->MacAddress);
-	if (psta) {
-		(&p2p_ps_para)->p2p_macid = psta->cmn.mac_id;
-	} else {
-		if (p2p_ps_state != P2P_PS_DISABLE) {
-			RTW_ERR("%s , psta was NULL\n", __func__);
-			return;
-		}
-	}
-
-
-	switch (p2p_ps_state) {
-	case P2P_PS_DISABLE:
-		RTW_INFO("P2P_PS_DISABLE\n");
-		_rtw_memset(&p2p_ps_para , 0, sizeof(HAL_P2P_PS_PARA));
-		break;
-
-	case P2P_PS_ENABLE:
-		RTW_INFO("P2P_PS_ENABLE\n");
-		/* update CTWindow value. */
-		if (pwdinfo->ctwindow > 0) {
-			(&p2p_ps_para)->ctwindow_en = 1;
-			(&p2p_ps_para)->ctwindow_length = pwdinfo->ctwindow;
-			/*RTW_INFO("%s , ctwindow_length = %d\n" , __func__ , (&p2p_ps_para)->ctwindow_length);*/
-		}
-
-
-		if ((pwdinfo->opp_ps == 1) || (pwdinfo->noa_num > 0)) {
-			(&p2p_ps_para)->offload_en = 1;
-			if (pwdinfo->role == P2P_ROLE_GO) {
-				(&p2p_ps_para)->role = 1;
-				(&p2p_ps_para)->all_sta_sleep = 0;
-			} else
-				(&p2p_ps_para)->role = 0;
-
-			(&p2p_ps_para)->discovery = 0;
-		}
-		/* hw only support 2 set of NoA */
-		for (i = 0; i < pwdinfo->noa_num; i++) {
-			/* To control the register setting for which NOA */
-			(&p2p_ps_para)->noa_sel = i;
-			(&p2p_ps_para)->noa_en = 1;
-			(&p2p_ps_para)->disable_close_rf = 0;
-#ifdef CONFIG_P2P_PS_NOA_USE_MACID_SLEEP
-#ifdef CONFIG_CONCURRENT_MODE
-			if (rtw_mi_buddy_check_fwstate(adapter, WIFI_ASOC_STATE))
-#endif /* CONFIG_CONCURRENT_MODE */
-				(&p2p_ps_para)->disable_close_rf = 1;
-#endif /* CONFIG_P2P_PS_NOA_USE_MACID_SLEEP */
-			/* config P2P NoA Descriptor Register */
-			/* config NOA duration */
-			(&p2p_ps_para)->noa_duration_para = pwdinfo->noa_duration[i];
-			/* config NOA interval */
-			(&p2p_ps_para)->noa_interval_para = pwdinfo->noa_interval[i];
-			/* config NOA start time */
-			(&p2p_ps_para)->noa_start_time_para = pwdinfo->noa_start_time[i];
-			/* config NOA count */
-			(&p2p_ps_para)->noa_count_para = pwdinfo->noa_count[i];
-			/*RTW_INFO("%s , noa_duration_para = %d , noa_interval_para = %d , noa_start_time_para = %d , noa_count_para = %d\n" , __func__ ,
-				(&p2p_ps_para)->noa_duration_para , (&p2p_ps_para)->noa_interval_para ,
-				(&p2p_ps_para)->noa_start_time_para , (&p2p_ps_para)->noa_count_para);*/
-			status = rtw_halmac_p2pps(adapter_to_dvobj(adapter) , (&p2p_ps_para));
-			if (status == -1)
-				RTW_ERR("%s , rtw_halmac_p2pps fail\n", __func__);
-		}
-
-		break;
-
-	case P2P_PS_SCAN:
-		/*This feature FW not ready 20161116 YiWei*/
-		return;
-		/*
-		RTW_INFO("P2P_PS_SCAN\n");
-		(&p2p_ps_para)->discovery = 1;
-		(&p2p_ps_para)->ctwindow_length = pwdinfo->ctwindow;
-		(&p2p_ps_para)->noa_duration_para = pwdinfo->noa_duration[0];
-		(&p2p_ps_para)->noa_interval_para = pwdinfo->noa_interval[0];
-		(&p2p_ps_para)->noa_start_time_para = pwdinfo->noa_start_time[0];
-		(&p2p_ps_para)->noa_count_para = pwdinfo->noa_count[0];
-		*/
-		break;
-
-	case P2P_PS_SCAN_DONE:
-		/*This feature FW not ready 20161116 YiWei*/
-		return;
-		/*
-		RTW_INFO("P2P_PS_SCAN_DONE\n");
-		(&p2p_ps_para)->discovery = 0;
-		pwdinfo->p2p_ps_state = P2P_PS_ENABLE;
-		(&p2p_ps_para)->ctwindow_length = pwdinfo->ctwindow;
-		(&p2p_ps_para)->noa_duration_para = pwdinfo->noa_duration[0];
-		(&p2p_ps_para)->noa_interval_para = pwdinfo->noa_interval[0];
-		(&p2p_ps_para)->noa_start_time_para = pwdinfo->noa_start_time[0];
-		(&p2p_ps_para)->noa_count_para = pwdinfo->noa_count[0];
-		*/
-		break;
-
-	default:
-		break;
-	}
-
-	if (p2p_ps_state != P2P_PS_ENABLE || (&p2p_ps_para)->noa_en == 0) {
-		status = rtw_halmac_p2pps(adapter_to_dvobj(adapter) , (&p2p_ps_para));
-		if (status == -1)
-			RTW_ERR("%s , rtw_halmac_p2pps fail\n", __func__);
-	}
-	_rtw_memcpy(&hal->p2p_ps_offload , (&p2p_ps_para) , sizeof(hal->p2p_ps_offload));
-
-}
-#endif /* RTW_HALMAC */
-#endif /* CONFIG_P2P */
 
 /*
 * rtw_hal_set_FwMediaStatusRpt_cmd -
