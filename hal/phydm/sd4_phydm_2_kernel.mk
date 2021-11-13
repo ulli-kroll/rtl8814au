@@ -27,17 +27,6 @@ _PHYDM_FILES := hal/phydm/phydm_debug.o	\
 								hal/phydm/halrf/halrf_powertracking.o\
 								hal/phydm/halrf/halrf_kfree.o
 
-ifeq ($(CONFIG_RTL8188E), y)
-RTL871X = rtl8188e
-_PHYDM_FILES += hal/phydm/$(RTL871X)/halhwimg8188e_mac.o\
-								hal/phydm/$(RTL871X)/halhwimg8188e_bb.o\
-								hal/phydm/$(RTL871X)/halhwimg8188e_rf.o\
-								hal/phydm/halrf/$(RTL871X)/halrf_8188e_ce.o\
-								hal/phydm/$(RTL871X)/phydm_regconfig8188e.o\
-								hal/phydm/$(RTL871X)/hal8188erateadaptive.o\
-								hal/phydm/$(RTL871X)/phydm_rtl8188e.o
-endif
-
 ifeq ($(CONFIG_RTL8192E), y)
 RTL871X = rtl8192e
 _PHYDM_FILES += hal/phydm/$(RTL871X)/halhwimg8192e_mac.o\

@@ -23,10 +23,6 @@ void usb_c2h_hisr_hdl(_adapter *adapter, u8 *buf);
 
 u8 rtw_set_hal_ops(_adapter *padapter);
 
-#ifdef CONFIG_RTL8188E
-void rtl8188eu_set_hal_ops(_adapter *padapter);
-#endif
-
 #if defined(CONFIG_RTL8812A) || defined(CONFIG_RTL8821A)
 void rtl8812au_set_hal_ops(_adapter *padapter);
 #endif

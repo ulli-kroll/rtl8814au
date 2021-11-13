@@ -34,10 +34,6 @@ enum {
 #include <usb_ops_linux.h>
 #endif /* PLATFORM_LINUX */
 
-#ifdef CONFIG_RTL8188E
-void rtl8188eu_set_hw_type(struct dvobj_priv *pdvobj);
-#endif
-
 #if defined(CONFIG_RTL8812A) || defined(CONFIG_RTL8821A)
 void rtl8812au_set_hw_type(struct dvobj_priv *pdvobj);
 #endif

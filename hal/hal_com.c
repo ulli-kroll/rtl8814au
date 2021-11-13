@@ -4528,28 +4528,6 @@ s32 rtw_hal_set_FwMediaStatusRpt_cmd(_adapter *adapter, bool opmode, bool miraca
 	if (ret != _SUCCESS)
 		goto exit;
 
-#if defined(CONFIG_RTL8188E)
-	if (rtw_get_chip_type(adapter) == RTL8188E) {
-		HAL_DATA_TYPE *hal_data = GET_HAL_DATA(adapter);
-
-		/* 8188E FW doesn't set macid no link, driver does it by self */
-		if (opmode)
-			rtw_hal_set_hwreg(adapter, HW_VAR_MACID_LINK, &macid);
-		else
-			rtw_hal_set_hwreg(adapter, HW_VAR_MACID_NOLINK, &macid);
-
-		/* for 8188E RA */
-#if (RATE_ADAPTIVE_SUPPORT == 1)
-		if (hal_data->fw_ractrl == _FALSE) {
-			u8 max_macid;
-
-			max_macid = rtw_search_max_mac_id(adapter);
-			rtw_hal_set_hwreg(adapter, HW_VAR_TX_RPT_MAX_MACID, &max_macid);
-		}
-#endif
-	}
-#endif
-
 #if defined(CONFIG_RTL8812A) || defined(CONFIG_RTL8821A)
 	/* TODO: this should move to IOT issue area */
 	if (rtw_get_chip_type(adapter) == RTL8812
@@ -6718,7 +6696,7 @@ u64 rtw_hal_get_tsftr_by_port(_adapter *adapter, u8 port)
 		break;
 	}
 #endif
-#if defined(CONFIG_RTL8188E) || defined(CONFIG_RTL8188F) || defined(CONFIG_RTL8188GTV) \
+#if defined(CONFIG_RTL8188F) || defined(CONFIG_RTL8188GTV) \
 		|| defined(CONFIG_RTL8192E) || defined(CONFIG_RTL8192F) \
 		|| defined(CONFIG_RTL8723B) || defined(CONFIG_RTL8703B) || defined(CONFIG_RTL8723D) \
 		|| defined(CONFIG_RTL8812A) || defined(CONFIG_RTL8821A) \
@@ -6906,9 +6884,6 @@ void rtw_var_set_basic_rate(PADAPTER padapter, u8 *val) {
 
 	rtw_write8(padapter, REG_RRSR + 2, rtw_read8(padapter, REG_RRSR + 2) & 0xf0);
 
-	#if defined(CONFIG_RTL8188E)
-	rtw_hal_set_hwreg(padapter, HW_VAR_INIT_RTS_RATE, (u8 *)&BrateCfg);
-	#endif
 }
 
 u8 SetHwReg(_adapter *adapter, u8 variable, u8 *val)
@@ -8005,16 +7980,6 @@ int hal_efuse_macaddr_offset(_adapter *adapter)
 		break;
 #endif
 
-#ifdef CONFIG_RTL8188E
-	case RTL8188E:
-		if (interface_type == RTW_USB)
-			addr_offset = EEPROM_MAC_ADDR_88EU;
-		else if (interface_type == RTW_SDIO)
-			addr_offset = EEPROM_MAC_ADDR_88ES;
-		else if (interface_type == RTW_PCIE)
-			addr_offset = EEPROM_MAC_ADDR_88EE;
-		break;
-#endif
 #ifdef CONFIG_RTL8188F
 	case RTL8188F:
 		if (interface_type == RTW_USB)
@@ -8286,31 +8251,6 @@ void rtw_bb_rf_gain_offset(_adapter *padapter)
 	} else
 		RTW_INFO("Using the default RF gain.\n");
 
-#elif defined(CONFIG_RTL8188E)
-	if (value & BIT4 && (registry_par->RegPwrTrimEnable == 1)) {
-		RTW_INFO("8188ES Offset RF Gain.\n");
-		RTW_INFO("8188ES Offset RF Gain. EEPROMRFGainVal=0x%x\n",
-			 pHalData->EEPROMRFGainVal);
-
-		if (pHalData->EEPROMRFGainVal != 0xff) {
-			res = rtw_hal_read_rfreg(padapter, RF_PATH_A,
-					 REG_RF_BB_GAIN_OFFSET, 0xffffffff);
-
-			RTW_INFO("Offset RF Gain. reg 0x55=0x%x\n", res);
-			res &= 0xfff87fff;
-
-			res |= (pHalData->EEPROMRFGainVal & 0x0f) << 15;
-			RTW_INFO("Offset RF Gain. res=0x%x\n", res);
-
-			rtw_hal_write_rfreg(padapter, RF_PATH_A,
-					    REG_RF_BB_GAIN_OFFSET,
-					    RF_GAIN_OFFSET_MASK, res);
-		} else {
-			RTW_INFO("Offset RF Gain. EEPROMRFGainVal=0x%x == 0xff, didn't run Kfree\n",
-				 pHalData->EEPROMRFGainVal);
-		}
-	} else
-		RTW_INFO("Using the default RF gain.\n");
 #else
 	/* TODO: call this when channel switch */
 	if (kfree_data->flag & KFREE_FLAG_ON)
@@ -8875,14 +8815,7 @@ u8 rtw_get_current_tx_sgi(_adapter *padapter, struct sta_info *psta)
 		return curr_tx_sgi;
 
 	if (padapter->fix_rate == 0xff) {
-#if defined(CONFIG_RTL8188E)
-#if (RATE_ADAPTIVE_SUPPORT == 1)
-		curr_tx_sgi = hal_data->odmpriv.ra_info[psta->cmn.mac_id].rate_sgi;
-#endif /* (RATE_ADAPTIVE_SUPPORT == 1)*/
-#else
-		ra_info = &psta->cmn.ra_info;
-		curr_tx_sgi = ((ra_info->curr_tx_rate) & 0x80) >> 7;
-#endif
+		;
 	} else {
 		curr_tx_sgi = ((padapter->fix_rate) & 0x80) >> 7;
 	}
@@ -8900,14 +8833,6 @@ u8 rtw_get_current_tx_rate(_adapter *padapter, struct sta_info *psta)
 		return rate_id;
 
 	if (padapter->fix_rate == 0xff) {
-#if defined(CONFIG_RTL8188E)
-#if (RATE_ADAPTIVE_SUPPORT == 1)
-		rate_id = hal_data->odmpriv.ra_info[psta->cmn.mac_id].decision_rate;
-#endif /* (RATE_ADAPTIVE_SUPPORT == 1)*/
-#else
-		ra_info = &psta->cmn.ra_info;
-		rate_id = ra_info->curr_tx_rate & 0x7f;
-#endif
 	} else {
 		rate_id = padapter->fix_rate & 0x7f;
 	}
@@ -9006,11 +8931,6 @@ int hal_spec_init(_adapter *adapter)
 #ifdef CONFIG_RTL8723D
 	case RTL8723D:
 		init_hal_spec_8723d(adapter);
-		break;
-#endif
-#ifdef CONFIG_RTL8188E
-	case RTL8188E:
-		init_hal_spec_8188e(adapter);
 		break;
 #endif
 #ifdef CONFIG_RTL8188F

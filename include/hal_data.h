@@ -99,9 +99,6 @@ typedef enum _RX_AGG_MODE {
 #endif /* RTW_RX_AGGREGATION */
 
 /* E-Fuse */
-#ifdef CONFIG_RTL8188E
-	#define EFUSE_MAP_SIZE	512
-#endif
 #if defined(CONFIG_RTL8812A) || defined(CONFIG_RTL8821A) || defined(CONFIG_RTL8814A)
 	#define EFUSE_MAP_SIZE	512
 #endif
@@ -135,7 +132,7 @@ typedef enum _RX_AGG_MODE {
 
 #if defined(CONFIG_RTL8814A) || defined(CONFIG_RTL8822B) || defined(CONFIG_RTL8821C) || defined(CONFIG_RTL8814B)
 	#define EFUSE_MAX_SIZE	1024
-#elif defined(CONFIG_RTL8188E) || defined(CONFIG_RTL8188F) || defined(CONFIG_RTL8188GTV) || defined(CONFIG_RTL8703B) || defined(CONFIG_RTL8710B)
+#elif defined(CONFIG_RTL8188F) || defined(CONFIG_RTL8188GTV) || defined(CONFIG_RTL8703B) || defined(CONFIG_RTL8710B)
 	#define EFUSE_MAX_SIZE	256
 #else
 	#define EFUSE_MAX_SIZE	512
@@ -156,9 +153,6 @@ typedef enum _RX_AGG_MODE {
 #ifdef CONFIG_RF_POWER_TRIM
 #if defined(CONFIG_RTL8723B)
 	#define REG_RF_BB_GAIN_OFFSET	0x7f
-	#define RF_GAIN_OFFSET_MASK		0xfffff
-#elif defined(CONFIG_RTL8188E)
-	#define REG_RF_BB_GAIN_OFFSET	0x55
 	#define RF_GAIN_OFFSET_MASK		0xfffff
 #else
 	#define REG_RF_BB_GAIN_OFFSET	0x55

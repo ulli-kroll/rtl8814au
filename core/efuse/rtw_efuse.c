@@ -106,10 +106,6 @@ BOOLEAN efuse_IsMasked(PADAPTER pAdapter, u16 Offset)
 		return FALSE;
 
 #ifdef CONFIG_USB_HCI
-#if defined(CONFIG_RTL8188E)
-	if (IS_HARDWARE_TYPE_8188E(pAdapter))
-		return (IS_MASKED(8188E, _MUSB, Offset)) ? TRUE : FALSE;
-#endif
 #if defined(CONFIG_RTL8812A)
 	if (IS_HARDWARE_TYPE_8812(pAdapter))
 		return (IS_MASKED(8812A, _MUSB, Offset)) ? TRUE : FALSE;
@@ -185,10 +181,6 @@ void rtw_efuse_mask_array(PADAPTER pAdapter, u8 *pArray)
 {
 
 #ifdef CONFIG_USB_HCI
-#if defined(CONFIG_RTL8188E)
-	if (IS_HARDWARE_TYPE_8188E(pAdapter))
-		GET_MASK_ARRAY(8188E, _MUSB, pArray);
-#endif
 #if defined(CONFIG_RTL8812A)
 	if (IS_HARDWARE_TYPE_8812(pAdapter))
 		GET_MASK_ARRAY(8812A, _MUSB, pArray);
@@ -250,10 +242,6 @@ u16 rtw_get_efuse_mask_arraylen(PADAPTER pAdapter)
 {
 
 #ifdef CONFIG_USB_HCI
-#if defined(CONFIG_RTL8188E)
-	if (IS_HARDWARE_TYPE_8188E(pAdapter))
-		return GET_MASK_ARRAY_LEN(8188E, _MUSB);
-#endif
 #if defined(CONFIG_RTL8812A)
 	if (IS_HARDWARE_TYPE_8812(pAdapter))
 		return GET_MASK_ARRAY_LEN(8812A, _MUSB);

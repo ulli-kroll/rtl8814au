@@ -15,10 +15,6 @@
 
 #ifdef CONFIG_USB_HCI
 
-	#if defined(CONFIG_RTL8188E)
-		#include "rtl8188e/HalEfuseMask8188E_USB.h"
-	#endif
-
 	#if defined(CONFIG_RTL8812A)
 		#include "rtl8812a/HalEfuseMask8812A_USB.h"
 	#endif
@@ -81,10 +77,6 @@
 #ifdef CONFIG_SDIO_HCI
 	#if defined(CONFIG_RTL8723B)
 		#include "rtl8723b/HalEfuseMask8723B_SDIO.h"
-	#endif
-
-	#if defined(CONFIG_RTL8188E)
-		#include "rtl8188e/HalEfuseMask8188E_SDIO.h"
 	#endif
 
 	#if defined(CONFIG_RTL8703B)
