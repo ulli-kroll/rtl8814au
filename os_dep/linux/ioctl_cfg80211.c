@@ -2567,17 +2567,6 @@ static int rtw_cfg80211_set_probe_req_wpsp2pie(_adapter *padapter, char *buf, in
 		/* len -= wps_ielen; */
 
 
-		#ifdef CONFIG_WFD
-		wfd_ie = rtw_get_wfd_ie(buf, len, NULL, &wfd_ielen);
-		if (wfd_ie) {
-			#ifdef CONFIG_DEBUG_CFG80211
-			RTW_INFO("probe_req_wfd_ielen=%d\n", wfd_ielen);
-			#endif
-
-			if (rtw_mlme_update_wfd_ie_data(pmlmepriv, MLME_PROBE_REQ_IE, wfd_ie, wfd_ielen) != _SUCCESS)
-				return -EINVAL;
-		}
-		#endif /* CONFIG_WFD */
 	}
 
 	return ret;
@@ -3302,24 +3291,6 @@ static int rtw_cfg80211_set_wpa_ie(_adapter *padapter, u8 *pie, size_t ielen)
 		} else
 			_clr_fwstate_(&padapter->mlmepriv, WIFI_UNDER_WPS);
 	}
-
-	#ifdef CONFIG_WFD
-	{
-		uint wfd_ielen = 0;
-		u8 *wfd_ie;
-		struct mlme_priv *pmlmepriv = &(padapter->mlmepriv);
-
-		wfd_ie = rtw_get_wfd_ie(buf, ielen, NULL, &wfd_ielen);
-		if (wfd_ie) {
-			#ifdef CONFIG_DEBUG_CFG80211
-			RTW_INFO("%s wfd_assoc_req_ielen=%d\n", __FUNCTION__, wfd_ielen);
-			#endif
-
-			if (rtw_mlme_update_wfd_ie_data(pmlmepriv, MLME_ASSOC_REQ_IE, wfd_ie, wfd_ielen) != _SUCCESS)
-				goto exit;
-		}
-	}
-	#endif /* CONFIG_WFD */
 
 	/* TKIP and AES disallow multicast packets until installing group key */
 	if (padapter->securitypriv.dot11PrivacyAlgrthm == _TKIP_
@@ -7483,18 +7454,6 @@ static int rtw_cfg80211_set_beacon_wpsp2pie(struct net_device *ndev, char *buf, 
 		/* buf += wps_ielen; */
 		/* len -= wps_ielen; */
 
-		#ifdef CONFIG_WFD
-		wfd_ie = rtw_get_wfd_ie(buf, len, NULL, &wfd_ielen);
-		if (wfd_ie) {
-			#ifdef CONFIG_DEBUG_CFG80211
-			RTW_INFO("bcn_wfd_ielen=%d\n", wfd_ielen);
-			#endif
-
-			if (rtw_mlme_update_wfd_ie_data(pmlmepriv, MLME_BEACON_IE, wfd_ie, wfd_ielen) != _SUCCESS)
-				return -EINVAL;
-		}
-		#endif /* CONFIG_WFD */
-
 		pmlmeext->bstart_bss = _TRUE;
 
 	}
@@ -7584,18 +7543,6 @@ static int rtw_cfg80211_set_probe_resp_wpsp2pie(struct net_device *net, char *bu
 		/* buf += wps_ielen; */
 		/* len -= wps_ielen; */
 
-		#ifdef CONFIG_WFD
-		wfd_ie = rtw_get_wfd_ie(buf, len, NULL, &wfd_ielen);
-		if (wfd_ie) {
-			#ifdef CONFIG_DEBUG_CFG80211
-			RTW_INFO("probe_resp_wfd_ielen=%d\n", wfd_ielen);
-			#endif
-
-			if (rtw_mlme_update_wfd_ie_data(pmlmepriv, MLME_PROBE_RESP_IE, wfd_ie, wfd_ielen) != _SUCCESS)
-				return -EINVAL;
-		}
-		#endif /* CONFIG_WFD */
-
 	}
 
 	return ret;
@@ -7652,12 +7599,6 @@ static int rtw_cfg80211_set_assoc_resp_wpsp2pie(struct net_device *net, char *bu
 		_rtw_memcpy(pmlmepriv->p2p_assoc_resp_ie, ie, ie_len);
 		pmlmepriv->p2p_assoc_resp_ie_len = ie_len;
 	}
-
-#ifdef CONFIG_WFD
-	ie = rtw_get_wfd_ie(buf, len, NULL, &ie_len);
-	if (rtw_mlme_update_wfd_ie_data(pmlmepriv, MLME_ASSOC_RESP_IE, ie, ie_len) != _SUCCESS)
-		return -EINVAL;
-#endif
 
 exit:
 	return ret;

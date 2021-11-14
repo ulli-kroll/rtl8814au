@@ -396,10 +396,6 @@ struct sta_info {
 	u8 has_legacy_ac;
 	unsigned int sleepq_ac_len;
 
-#ifdef CONFIG_WFD
-	u8 op_wfd_mode;
-#endif
-
 #ifdef CONFIG_TX_MCAST2UNI
 	u8 under_exist_checking;
 #endif /* CONFIG_TX_MCAST2UNI */
@@ -576,13 +572,8 @@ struct sta_info {
 #define sta_rx_uc_bytes(sta) (sta->sta_stats.rx_bytes - sta->sta_stats.rx_bc_bytes - sta->sta_stats.rx_mc_bytes)
 #define sta_last_rx_uc_bytes(sta) (sta->sta_stats.last_rx_bytes - sta->sta_stats.last_rx_bc_bytes - sta->sta_stats.last_rx_mc_bytes)
 
-#ifdef CONFIG_WFD
-#define STA_OP_WFD_MODE(sta) (sta)->op_wfd_mode
-#define STA_SET_OP_WFD_MODE(sta, mode) (sta)->op_wfd_mode = (mode)
-#else
 #define STA_OP_WFD_MODE(sta) 0
 #define STA_SET_OP_WFD_MODE(sta, mode) do {} while (0)
-#endif
 
 #define AID_BMP_LEN(max_aid) ((max_aid + 1) / 8 + (((max_aid + 1) % 8) ? 1 : 0))
 
