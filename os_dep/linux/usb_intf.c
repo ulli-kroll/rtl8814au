@@ -1145,18 +1145,6 @@ _adapter *rtw_usb_primary_adapter_init(struct dvobj_priv *dvobj,
 		goto free_hal_data;
 	}
 
-#ifdef CONFIG_PM
-#if (LINUX_VERSION_CODE > KERNEL_VERSION(2, 6, 18))
-	if (dvobj_to_pwrctl(dvobj)->bSupportRemoteWakeup) {
-		dvobj->pusbdev->do_remote_wakeup = 1;
-		pusb_intf->needs_remote_wakeup = 1;
-		device_init_wakeup(&pusb_intf->dev, 1);
-		RTW_INFO("pwrctrlpriv.bSupportRemoteWakeup~~~~~~\n");
-		RTW_INFO("pwrctrlpriv.bSupportRemoteWakeup~~~[%d]~~~\n", device_may_wakeup(&pusb_intf->dev));
-	}
-#endif
-#endif
-
 #ifdef CONFIG_AUTOSUSPEND
 	if (padapter->registrypriv.power_mgnt != PS_MODE_ACTIVE) {
 		if (padapter->registrypriv.usbss_enable) {	/* autosuspend (2s delay) */
