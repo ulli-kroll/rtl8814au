@@ -585,12 +585,6 @@ s8 rtw_hal_ch_sw_iqk_info_search(_adapter *padapter, u8 central_chnl, u8 bw_mode
 void rtw_hal_ch_sw_iqk_info_backup(_adapter *adapter);
 void rtw_hal_ch_sw_iqk_info_restore(_adapter *padapter, u8 ch_sw_use_case);
 
-#ifdef CONFIG_GPIO_WAKEUP
-	void rtw_hal_switch_gpio_wl_ctrl(_adapter *padapter, u8 index, u8 enable);
-	void rtw_hal_set_output_gpio(_adapter *padapter, u8 index, u8 outputval);
-	void rtw_hal_set_input_gpio(_adapter *padapter, u8 index);
-#endif
-
 void update_IOT_info(_adapter *padapter);
 #ifdef CONFIG_RTS_FULL_BW
 void rtw_set_rts_bw(_adapter *padapter);

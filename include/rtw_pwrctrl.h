@@ -349,9 +349,6 @@ struct pwrctrl_priv {
 	u8		wowlan_pno_enable;
 	u8		wowlan_in_resume;
 
-#ifdef CONFIG_GPIO_WAKEUP
-	u8		is_high_active;
-#endif /* CONFIG_GPIO_WAKEUP */
 	u8		hst2dev_high_active;
 	_timer	pwr_state_check_timer;
 	int		pwr_state_check_interval;

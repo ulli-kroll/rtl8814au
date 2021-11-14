@@ -1831,9 +1831,6 @@ void rtw_init_pwrctrl_priv(PADAPTER padapter)
 #endif
 
 	struct pwrctrl_priv *pwrctrlpriv = adapter_to_pwrctl(padapter);
-#ifdef CONFIG_GPIO_WAKEUP
-	u8 val8 = 0;
-#endif
 
 #if defined(CONFIG_CONCURRENT_MODE)
 	if (!is_primary_adapter(padapter))
@@ -1947,28 +1944,6 @@ void rtw_init_pwrctrl_priv(PADAPTER padapter)
 	pwrctrlpriv->early_suspend.suspend = NULL;
 	rtw_register_early_suspend(pwrctrlpriv);
 #endif /* CONFIG_HAS_EARLYSUSPEND || CONFIG_ANDROID_POWER */
-
-#ifdef CONFIG_GPIO_WAKEUP
-	/*default low active*/
-	pwrctrlpriv->is_high_active = HIGH_ACTIVE_DEV2HST;
-	pwrctrlpriv->hst2dev_high_active = HIGH_ACTIVE_HST2DEV;
-#ifdef CONFIG_RTW_ONE_PIN_GPIO
-	rtw_hal_switch_gpio_wl_ctrl(padapter, WAKEUP_GPIO_IDX, _TRUE);
-	rtw_hal_set_input_gpio(padapter, WAKEUP_GPIO_IDX);
-#else
-	#ifdef CONFIG_WAKEUP_GPIO_INPUT_MODE
-	if (pwrctrlpriv->is_high_active == 0)
-		rtw_hal_set_input_gpio(padapter, WAKEUP_GPIO_IDX);
-	else
-		rtw_hal_set_output_gpio(padapter, WAKEUP_GPIO_IDX, 0);
-	#else
-	val8 = (pwrctrlpriv->is_high_active == 0) ? 1 : 0;
-	rtw_hal_set_output_gpio(padapter, WAKEUP_GPIO_IDX, val8);
-	RTW_INFO("%s: set GPIO_%d %d as default.\n",
-		 __func__, WAKEUP_GPIO_IDX, val8);
-	#endif /*CONFIG_WAKEUP_GPIO_INPUT_MODE*/
-#endif /* CONFIG_RTW_ONE_PIN_GPIO */
-#endif /* CONFIG_GPIO_WAKEUP */
 
 #ifdef CONFIG_LPS_POFF
 	rtw_hal_set_hwreg(padapter, HW_VAR_LPS_POFF_INIT, 0);

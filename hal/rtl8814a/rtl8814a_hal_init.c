@@ -3767,23 +3767,6 @@ u8 SetHwReg8814A(PADAPTER padapter, u8 variable, u8 *pval)
 	}
 #endif/*#ifdef CONFIG_BEAMFORMING*/
 
-#ifdef CONFIG_GPIO_WAKEUP
-	case HW_SET_GPIO_WL_CTRL: {
-		u8 enable = *pval;
-		u8 value = rtw_read8(padapter, 0x4e);
-		if (enable && (value & BIT(6))) {
-			value &= ~BIT(6);
-			rtw_write8(padapter, 0x4e, value);
-		} else if (enable == _FALSE) {
-			value |= BIT(6);
-			rtw_write8(padapter, 0x4e, value);
-		}
-		RTW_INFO("%s: set WL control, 0x4E=0x%02X\n",
-			 __func__, rtw_read8(padapter, 0x4e));
-	}
-	break;
-#endif
-
 #if defined(CONFIG_TDLS) && defined(CONFIG_TDLS_CH_SW)
 	case HW_VAR_TDLS_BCN_EARLY_C2H_RPT:
 		rtl8814_set_BcnEarly_C2H_Rpt_cmd(padapter, *pval);

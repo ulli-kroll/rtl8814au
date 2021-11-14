@@ -187,12 +187,6 @@
 
 /* #define CONFIG_USB_SUPPORT_ASYNC_VDN_REQ 1 */
 
-#ifdef CONFIG_GPIO_WAKEUP
-	#ifndef WAKEUP_GPIO_IDX
-#define WAKEUP_GPIO_IDX	8	/* WIFI Chip Side */
-	#endif /* !WAKEUP_GPIO_IDX */
-#endif /* CONFIG_GPIO_WAKEUP */
-
 /*
  * HAL  Related Config
  */
