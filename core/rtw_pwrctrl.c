@@ -185,11 +185,6 @@ int ips_leave(_adapter *padapter)
 }
 #endif /* CONFIG_IPS */
 
-#ifdef CONFIG_AUTOSUSPEND
-	extern void autosuspend_enter(_adapter *padapter);
-	extern int autoresume_enter(_adapter *padapter);
-#endif
-
 #ifdef SUPPORT_HW_RFOFF_DETECTED
 	int rtw_hw_suspend(_adapter *padapter);
 	int rtw_hw_resume(_adapter *padapter);
@@ -288,27 +283,6 @@ void rtw_ps_processor(_adapter *padapter)
 
 	/* RTW_INFO("==> fw report state(0x%x)\n",rtw_read8(padapter,0x1ca));	 */
 	if (pwrpriv->bHWPwrPindetect) {
-#ifdef CONFIG_AUTOSUSPEND
-		if (padapter->registrypriv.usbss_enable) {
-			if (pwrpriv->rf_pwrstate == rf_on) {
-				if (padapter->net_closed == _TRUE)
-					pwrpriv->ps_flag = _TRUE;
-
-				rfpwrstate = RfOnOffDetect(padapter);
-				RTW_INFO("@@@@- #1  %s==> rfstate:%s\n", __FUNCTION__, (rfpwrstate == rf_on) ? "rf_on" : "rf_off");
-				if (rfpwrstate != pwrpriv->rf_pwrstate) {
-					if (rfpwrstate == rf_off) {
-						pwrpriv->change_rfpwrstate = rf_off;
-
-						pwrpriv->bkeepfwalive = _TRUE;
-						pwrpriv->brfoffbyhw = _TRUE;
-
-						autosuspend_enter(padapter);
-					}
-				}
-			}
-		} else
-#endif /* CONFIG_AUTOSUSPEND */
 		{
 			rfpwrstate = RfOnOffDetect(padapter);
 			RTW_INFO("@@@@- #2  %s==> rfstate:%s\n", __FUNCTION__, (rfpwrstate == rf_on) ? "rf_on" : "rf_off");
@@ -338,18 +312,6 @@ void rtw_ps_processor(_adapter *padapter)
 	if ((pwrpriv->rf_pwrstate == rf_on) && ((pwrpriv->pwr_state_check_cnts % 4) == 0)) {
 		RTW_INFO("==>%s .fw_state(%x)\n", __FUNCTION__, get_fwstate(pmlmepriv));
 		pwrpriv->change_rfpwrstate = rf_off;
-#ifdef CONFIG_AUTOSUSPEND
-		if (padapter->registrypriv.usbss_enable) {
-			if (pwrpriv->bHWPwrPindetect)
-				pwrpriv->bkeepfwalive = _TRUE;
-
-			if (padapter->net_closed == _TRUE)
-				pwrpriv->ps_flag = _TRUE;
-
-			autosuspend_enter(padapter);
-		} else if (pwrpriv->bHWPwrPindetect) {
-		} else
-#endif /* CONFIG_AUTOSUSPEND */
 		{
 
 #ifdef CONFIG_IPS
@@ -1122,15 +1084,6 @@ void LeaveAllPowerSaveModeDirect(PADAPTER Adapter)
 #endif
 	} else {
 		if (pwrpriv->rf_pwrstate == rf_off) {
-#ifdef CONFIG_AUTOSUSPEND
-			if (Adapter->registrypriv.usbss_enable) {
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 35))
-				usb_disable_autosuspend(adapter_to_dvobj(Adapter)->pusbdev);
-#elif (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 22) && LINUX_VERSION_CODE <= KERNEL_VERSION(2, 6, 34))
-				adapter_to_dvobj(Adapter)->pusbdev->autosuspend_disabled = Adapter->bDisableAutosuspend;/* autosuspend disabled by the user */
-#endif
-			} else
-#endif
 			{
 #if defined(CONFIG_FWLPS_IN_IPS) || defined(CONFIG_SWLPS_IN_IPS)
 #ifdef CONFIG_IPS
@@ -1184,15 +1137,6 @@ void LeaveAllPowerSaveMode(PADAPTER Adapter)
 #endif
 	} else {
 		if (adapter_to_pwrctl(Adapter)->rf_pwrstate == rf_off) {
-#ifdef CONFIG_AUTOSUSPEND
-			if (Adapter->registrypriv.usbss_enable) {
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 35))
-				usb_disable_autosuspend(adapter_to_dvobj(Adapter)->pusbdev);
-#elif (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 22) && LINUX_VERSION_CODE <= KERNEL_VERSION(2, 6, 34))
-				adapter_to_dvobj(Adapter)->pusbdev->autosuspend_disabled = Adapter->bDisableAutosuspend;/* autosuspend disabled by the user */
-#endif
-			} else
-#endif
 			{
 #if defined(CONFIG_FWLPS_IN_IPS) || defined(CONFIG_SWLPS_IN_IPS)
 #ifdef CONFIG_IPS
@@ -1865,17 +1809,8 @@ void rtw_init_pwrctrl_priv(PADAPTER padapter)
 
 	pwrctrlpriv->pwr_state_check_interval = RTW_PWR_STATE_CHK_INTERVAL;
 	pwrctrlpriv->pwr_state_check_cnts = 0;
-	#ifdef CONFIG_AUTOSUSPEND
-	pwrctrlpriv->bInternalAutoSuspend = _FALSE;
-	#endif
 	pwrctrlpriv->bInSuspend = _FALSE;
 	pwrctrlpriv->bkeepfwalive = _FALSE;
-
-#ifdef CONFIG_AUTOSUSPEND
-#ifdef SUPPORT_HW_RFOFF_DETECTED
-	pwrctrlpriv->pwr_state_check_interval = (pwrctrlpriv->bHWPwrPindetect) ? 1000 : 2000;
-#endif
-#endif
 
 	pwrctrlpriv->LpsIdleCount = 0;
 
@@ -2224,9 +2159,6 @@ int _rtw_pwr_wakeup(_adapter *padapter, u32 ips_deffer_ms, const char *caller)
 #endif
 
 	if (pwrpriv->bInSuspend
-		#ifdef CONFIG_AUTOSUSPEND
-		&& pwrpriv->bInternalAutoSuspend == _FALSE
-		#endif
 		) {
 		RTW_INFO("%s wait bInSuspend...\n", __func__);
 		while (pwrpriv->bInSuspend
@@ -2242,20 +2174,10 @@ int _rtw_pwr_wakeup(_adapter *padapter, u32 ips_deffer_ms, const char *caller)
 
 	/* System suspend is not allowed to wakeup */
 	if ((_TRUE == pwrpriv->bInSuspend)
-		#ifdef CONFIG_AUTOSUSPEND
-		&& (pwrpriv->bInternalAutoSuspend == _FALSE)
-		#endif
 	) {
 		ret = _FAIL;
 		goto exit;
 	}
-#ifdef CONFIG_AUTOSUSPEND
-	/* usb autosuspend block??? */
-	if ((pwrpriv->bInternalAutoSuspend == _TRUE)  && (padapter->net_closed == _TRUE)) {
-		ret = _FAIL;
-		goto exit;
-	}
-#endif
 	/* I think this should be check in IPS, LPS, autosuspend functions... */
 	if (check_fwstate(pmlmepriv, _FW_LINKED) == _TRUE) {
 			ret = _SUCCESS;
@@ -2264,20 +2186,6 @@ int _rtw_pwr_wakeup(_adapter *padapter, u32 ips_deffer_ms, const char *caller)
 
 	if (rf_off == pwrpriv->rf_pwrstate) {
 #ifdef CONFIG_USB_HCI
-#ifdef CONFIG_AUTOSUSPEND
-		if (pwrpriv->brfoffbyhw == _TRUE) {
-			RTW_INFO("hw still in rf_off state ...........\n");
-			ret = _FAIL;
-			goto exit;
-		} else if (padapter->registrypriv.usbss_enable) {
-			RTW_INFO("%s call autoresume_enter....\n", __FUNCTION__);
-			if (_FAIL ==  autoresume_enter(padapter)) {
-				RTW_INFO("======> autoresume fail.............\n");
-				ret = _FAIL;
-				goto exit;
-			}
-		} else
-#endif
 #endif
 		{
 #ifdef CONFIG_IPS

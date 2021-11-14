@@ -278,9 +278,6 @@ struct rtw_usb_drv usb_drv = {
 #if (LINUX_VERSION_CODE > KERNEL_VERSION(2, 6, 22))
 	.usbdrv.reset_resume   = rtw_resume,
 #endif
-#ifdef CONFIG_AUTOSUSPEND
-	.usbdrv.supports_autosuspend = 1,
-#endif
 
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 19))
 	.usbdrv.drvwrap.driver.shutdown = rtw_dev_shutdown,
@@ -889,18 +886,6 @@ static int rtw_suspend(struct usb_interface *pusb_intf, pm_message_t message)
 	}
 
 	if ((padapter->bup) || !rtw_is_drv_stopped(padapter) || !rtw_is_surprise_removed(padapter)) {
-#ifdef CONFIG_AUTOSUSPEND
-		if (pwrpriv->bInternalAutoSuspend) {
-
-#ifdef SUPPORT_HW_RFOFF_DETECTED
-			/* The FW command register update must after MAC and FW init ready. */
-			if ((GET_HAL_DATA(padapter)->bFWReady) && (pwrpriv->bHWPwrPindetect) && (padapter->registrypriv.usbss_enable)) {
-				u8 bOpen = _TRUE;
-				rtw_interface_ps_func(padapter, HAL_USB_SELECT_SUSPEND, &bOpen);
-			}
-#endif/* SUPPORT_HW_RFOFF_DETECTED */
-		}
-#endif/* CONFIG_AUTOSUSPEND */
 	}
 
 	ret =  rtw_suspend_common(padapter);
@@ -935,21 +920,6 @@ int rtw_resume_process(_adapter *padapter)
 
 	ret =  rtw_resume_common(padapter);
 
-#ifdef CONFIG_AUTOSUSPEND
-	if (pwrpriv->bInternalAutoSuspend) {
-#ifdef SUPPORT_HW_RFOFF_DETECTED
-		/* The FW command register update must after MAC and FW init ready. */
-		if ((GET_HAL_DATA(padapter)->bFWReady) && (pwrpriv->bHWPwrPindetect) && (padapter->registrypriv.usbss_enable)) {
-			u8 bOpen = _FALSE;
-			rtw_interface_ps_func(padapter, HAL_USB_SELECT_SUSPEND, &bOpen);
-		}
-#endif
-		pwrpriv->bInternalAutoSuspend = _FALSE;
-		pwrpriv->brfoffbyhw = _FALSE;
-	}
-#endif/* CONFIG_AUTOSUSPEND */
-
-
 	return ret;
 }
 
@@ -972,11 +942,6 @@ static int rtw_resume(struct usb_interface *pusb_intf)
 	RTW_INFO("==> %s (%s:%d)\n", __FUNCTION__, current->comm, current->pid);
 	pdbgpriv->dbg_resume_cnt++;
 
-	#ifdef CONFIG_AUTOSUSPEND
-	if (pwrpriv->bInternalAutoSuspend)
-		ret = rtw_resume_process(padapter);
-	else 
-	#endif
 	{
 		if (pwrpriv->wowlan_mode || pwrpriv->wowlan_ap_mode) {
 			rtw_resume_lock_suspend();
@@ -1005,78 +970,6 @@ static int rtw_resume(struct usb_interface *pusb_intf)
 }
 
 
-
-#ifdef CONFIG_AUTOSUSPEND
-void autosuspend_enter(_adapter *padapter)
-{
-	struct dvobj_priv *dvobj = adapter_to_dvobj(padapter);
-	struct pwrctrl_priv *pwrpriv = dvobj_to_pwrctl(dvobj);
-
-	RTW_INFO("==>autosuspend_enter...........\n");
-
-	pwrpriv->bInternalAutoSuspend = _TRUE;
-	pwrpriv->bips_processing = _TRUE;
-
-	if (rf_off == pwrpriv->change_rfpwrstate) {
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 35))
-		usb_enable_autosuspend(dvobj->pusbdev);
-#else
-		dvobj->pusbdev->autosuspend_disabled = 0;/* autosuspend disabled by the user */
-#endif
-
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 33))
-		usb_autopm_put_interface(dvobj->pusbintf);
-#elif (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 20))
-		usb_autopm_enable(dvobj->pusbintf);
-#else
-		usb_autosuspend_device(dvobj->pusbdev, 1);
-#endif
-	}
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 32))
-	RTW_INFO("...pm_usage_cnt(%d).....\n", atomic_read(&(dvobj->pusbintf->pm_usage_cnt)));
-#else
-	RTW_INFO("...pm_usage_cnt(%d).....\n", dvobj->pusbintf->pm_usage_cnt);
-#endif
-
-}
-
-int autoresume_enter(_adapter *padapter)
-{
-	int result = _SUCCESS;
-	struct security_priv *psecuritypriv = &(padapter->securitypriv);
-	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
-	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
-	struct dvobj_priv *dvobj = adapter_to_dvobj(padapter);
-	struct pwrctrl_priv *pwrpriv = dvobj_to_pwrctl(dvobj);
-
-	RTW_INFO("====> autoresume_enter\n");
-
-	if (rf_off == pwrpriv->rf_pwrstate) {
-		pwrpriv->ps_flag = _FALSE;
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 33))
-		if (usb_autopm_get_interface(dvobj->pusbintf) < 0) {
-			RTW_INFO("can't get autopm: %d\n", result);
-			result = _FAIL;
-			goto error_exit;
-		}
-#elif (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 20))
-		usb_autopm_disable(dvobj->pusbintf);
-#else
-		usb_autoresume_device(dvobj->pusbdev, 1);
-#endif
-
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 32))
-		RTW_INFO("...pm_usage_cnt(%d).....\n", atomic_read(&(dvobj->pusbintf->pm_usage_cnt)));
-#else
-		RTW_INFO("...pm_usage_cnt(%d).....\n", dvobj->pusbintf->pm_usage_cnt);
-#endif
-	}
-	RTW_INFO("<==== autoresume_enter\n");
-error_exit:
-
-	return result;
-}
-#endif
 
 #ifdef CONFIG_PLATFORM_RTD2880B
 extern void rtd2885_wlan_netlink_sendMsg(char *action_string, char *name);
@@ -1145,32 +1038,6 @@ _adapter *rtw_usb_primary_adapter_init(struct dvobj_priv *dvobj,
 		goto free_hal_data;
 	}
 
-#ifdef CONFIG_AUTOSUSPEND
-	if (padapter->registrypriv.power_mgnt != PS_MODE_ACTIVE) {
-		if (padapter->registrypriv.usbss_enable) {	/* autosuspend (2s delay) */
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 38))
-			dvobj->pusbdev->dev.power.autosuspend_delay = 0 * HZ;/* 15 * HZ; idle-delay time */
-#else
-			dvobj->pusbdev->autosuspend_delay = 0 * HZ;/* 15 * HZ; idle-delay time */
-#endif
-
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 35))
-			usb_enable_autosuspend(dvobj->pusbdev);
-#elif (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 22) && LINUX_VERSION_CODE <= KERNEL_VERSION(2, 6, 34))
-			padapter->bDisableAutosuspend = dvobj->pusbdev->autosuspend_disabled ;
-			dvobj->pusbdev->autosuspend_disabled = 0;/* autosuspend disabled by the user */
-#endif
-
-			/* usb_autopm_get_interface(adapter_to_dvobj(padapter)->pusbintf ); */ /* init pm_usage_cnt ,let it start from 1 */
-
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 32))
-			RTW_INFO("%s...pm_usage_cnt(%d).....\n", __FUNCTION__, atomic_read(&(dvobj->pusbintf->pm_usage_cnt)));
-#else
-			RTW_INFO("%s...pm_usage_cnt(%d).....\n", __FUNCTION__, dvobj->pusbintf->pm_usage_cnt);
-#endif
-		}
-	}
-#endif
 	/* 2012-07-11 Move here to prevent the 8723AS-VAU BT auto suspend influence */
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 33))
 	if (usb_autopm_get_interface(pusb_intf) < 0)

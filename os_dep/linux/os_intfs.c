@@ -1117,9 +1117,6 @@ uint loadparam(_adapter *padapter)
 
 	registry_par->switch_usb_mode = (u8)rtw_switch_usb_mode;
 
-#ifdef CONFIG_AUTOSUSPEND
-	registry_par->usbss_enable = (u8)rtw_enusbss;/* 0:disable,1:enable */
-#endif
 #ifdef SUPPORT_HW_RFOFF_DETECTED
 	registry_par->hwpdn_mode = (u8)rtw_hwpdn_mode;/* 0:disable,1:enable,2:by EFUSE config */
 	registry_par->hwpwrp_detect = (u8)rtw_hwpwrp_detect;/* 0:disable,1:enable */
@@ -2354,12 +2351,6 @@ u8 rtw_reset_drv_sw(_adapter *padapter)
 
 	_clr_fwstate_(pmlmepriv, _FW_UNDER_SURVEY | _FW_UNDER_LINKING);
 
-#ifdef CONFIG_AUTOSUSPEND
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 22) && LINUX_VERSION_CODE <= KERNEL_VERSION(2, 6, 34))
-	adapter_to_dvobj(padapter)->pusbdev->autosuspend_disabled = 1;/* autosuspend disabled by the user */
-#endif
-#endif
-
 #ifdef DBG_CONFIG_ERROR_DETECT
 	if (is_primary_adapter(padapter))
 		rtw_hal_sreset_reset_value(padapter);
@@ -3246,13 +3237,6 @@ int _netdev_open(struct net_device *pnetdev)
 
 	RTW_INFO(FUNC_NDEV_FMT" start\n", FUNC_NDEV_ARG(pnetdev));
 
-	#ifdef CONFIG_AUTOSUSPEND
-	if (pwrctrlpriv->ps_flag == _TRUE) {
-		padapter->net_closed = _FALSE;
-		goto netdev_open_normal_process;
-	}
-	#endif /*CONFIG_AUTOSUSPEND*/
-
 	if (!rtw_is_hw_init_completed(padapter)) { // ips 
 		rtw_clr_surprise_removed(padapter);
 		rtw_clr_drv_stopped(padapter);
@@ -3307,9 +3291,6 @@ int _netdev_open(struct net_device *pnetdev)
 		pwrctrlpriv->bips_processing = _FALSE;
 	}
 
-#ifdef CONFIG_AUTOSUSPEND
-netdev_open_normal_process:
-#endif
 	RTW_INFO(FUNC_NDEV_FMT" Success (bup=%d)\n", FUNC_NDEV_ARG(pnetdev), padapter->bup);
 	return 0;
 
@@ -3347,13 +3328,6 @@ int _netdev_open(struct net_device *pnetdev)
 #ifdef CONFIG_PLATFORM_INTEL_BYT
 	rtw_sdio_set_power(1);
 #endif /* CONFIG_PLATFORM_INTEL_BYT */
-
-	#ifdef CONFIG_AUTOSUSPEND
-	if (pwrctrlpriv->ps_flag == _TRUE) {
-		padapter->net_closed = _FALSE;
-		goto netdev_open_normal_process;
-	}
-	#endif
 
 	if (padapter->bup == _FALSE) {
 #ifdef CONFIG_PLATFORM_INTEL_BYT
@@ -3421,10 +3395,6 @@ int _netdev_open(struct net_device *pnetdev)
 	/* rtw_netif_carrier_on(pnetdev); */ /* call this func when rtw_joinbss_event_callback return success */
 	rtw_netif_wake_queue(pnetdev);
 
-
-#ifdef CONFIG_AUTOSUSPEND
-netdev_open_normal_process:
-#endif
 
 #ifdef CONFIG_CONCURRENT_MODE
 	{
@@ -3624,13 +3594,6 @@ int _pm_netdev_open(_adapter *padapter)
 
 	RTW_INFO(FUNC_NDEV_FMT" start\n", FUNC_NDEV_ARG(pnetdev));
 
-	#ifdef CONFIG_AUTOSUSPEND
-	if (pwrctrlpriv->ps_flag == _TRUE) {
-		padapter->net_closed = _FALSE;
-		goto netdev_open_normal_process;
-	}
-	#endif /*CONFIG_AUTOSUSPEND*/
-
 	if (!rtw_is_hw_init_completed(padapter)) { // ips 
 		rtw_clr_surprise_removed(padapter);
 		rtw_clr_drv_stopped(padapter);
@@ -3668,9 +3631,6 @@ int _pm_netdev_open(_adapter *padapter)
 		pwrctrlpriv->bips_processing = _FALSE;
 	}
 
-#ifdef CONFIG_AUTOSUSPEND
-netdev_open_normal_process:
-#endif
 	RTW_INFO(FUNC_NDEV_FMT" Success (bup=%d)\n", FUNC_NDEV_ARG(pnetdev), padapter->bup);
 	return 0;
 
@@ -3740,13 +3700,6 @@ static int netdev_close(struct net_device *pnetdev)
 
 	RTW_INFO(FUNC_NDEV_FMT" , bup=%d\n", FUNC_NDEV_ARG(pnetdev), padapter->bup);
 #ifndef CONFIG_PLATFORM_INTEL_BYT
-	#ifdef CONFIG_AUTOSUSPEND
-	if (pwrctl->bInternalAutoSuspend == _TRUE) {
-		/* rtw_pwr_wakeup(padapter); */
-		if (pwrctl->rf_pwrstate == rf_off)
-			pwrctl->ps_flag = _TRUE;
-	}
-	#endif
 	padapter->net_closed = _TRUE;
 	padapter->netif_up = _FALSE;
 	pmlmepriv->LinkDetectInfo.bBusyTraffic = _FALSE;
@@ -4155,9 +4108,6 @@ void rtw_dev_unload(PADAPTER padapter)
 
 		rtw_intf_stop(padapter);
 
-		#ifdef CONFIG_AUTOSUSPEND
-		if (!pwrctl->bInternalAutoSuspend)
-		#endif
 		{
 			rtw_stop_drv_threads(padapter);
 
@@ -4223,9 +4173,6 @@ int rtw_suspend_free_assoc_resource(_adapter *padapter)
 	rtw_free_assoc_resources(padapter, _TRUE);
 
 	/* s2-4. */
-#ifdef CONFIG_AUTOSUSPEND
-	if (is_primary_adapter(padapter) && (!adapter_to_pwrctl(padapter)->bInternalAutoSuspend))
-#endif
 		rtw_free_network_queue(padapter, _TRUE);
 
 	if (check_fwstate(pmlmepriv, _FW_UNDER_SURVEY)) {
