@@ -488,9 +488,6 @@ struct mlme_ext_priv {
 	_timer		survey_timer;
 	_timer		link_timer;
 
-#ifdef CONFIG_RTW_REPEATER_SON
-	_timer		rson_scan_timer;
-#endif
 #ifdef CONFIG_RTW_80211R
 	_timer		ft_link_timer;
 	_timer		ft_roam_timer;
@@ -995,9 +992,6 @@ void rtw_collect_bcn_info(_adapter *adapter);
 void _linked_info_dump(_adapter *padapter);
 
 void survey_timer_hdl(void *ctx);
-#ifdef CONFIG_RTW_REPEATER_SON
-void rson_timer_hdl(void *ctx);
-#endif
 void link_timer_hdl(void *ctx);
 void addba_timer_hdl(void *ctx);
 #ifdef CONFIG_IEEE80211W

@@ -1122,9 +1122,6 @@ void init_mlme_ext_timer(_adapter *padapter)
 	rtw_init_timer(&pmlmeext->ft_roam_timer, padapter, rtw_ft_roam_timer_hdl, padapter);
 #endif
 
-#ifdef CONFIG_RTW_REPEATER_SON
-	rtw_init_timer(&pmlmeext->rson_scan_timer, padapter, rson_timer_hdl, padapter);
-#endif
 }
 
 int	init_mlme_ext_priv(_adapter *padapter)
@@ -1592,9 +1589,6 @@ unsigned int OnProbeRsp(_adapter *padapter, union recv_frame *precv_frame)
 
 	if ((mlmeext_chk_scan_state(pmlmeext, SCAN_PROCESS))
 		|| (MLME_IS_MESH(padapter) && check_fwstate(&padapter->mlmepriv, WIFI_ASOC_STATE))
-		#ifdef CONFIG_RTW_REPEATER_SON
-		|| (padapter->rtw_rson_scanstage == RSON_SCAN_PROCESS)
-		#endif
 	) {
 		rtw_mi_report_survey_event(padapter, precv_frame);
 		return _SUCCESS;
@@ -1679,10 +1673,6 @@ unsigned int OnBeacon(_adapter *padapter, union recv_frame *precv_frame)
 		rtw_mi_report_survey_event(padapter, precv_frame);
 		return _SUCCESS;
 	}
-#ifdef CONFIG_RTW_REPEATER_SON
-	if (padapter->rtw_rson_scanstage == RSON_SCAN_PROCESS)
-		rtw_mi_report_survey_event(padapter, precv_frame);
-#endif
 
 	rtw_check_legacy_ap(padapter, pframe, len);
 
@@ -2378,10 +2368,6 @@ unsigned int OnAssocReq(_adapter *padapter, union recv_frame *precv_frame)
 		*/
 	}
 
-#ifdef CONFIG_RTW_REPEATER_SON
-	if (rtw_rson_ap_check_sta(padapter, pframe, pkt_len, ie_offset))
-		goto OnAssocReqFail;
-#endif
 
 	/* TODO: identify_proprietary_vendor_ie(); */
 	/* Realtek proprietary IE */
@@ -4707,9 +4693,6 @@ void issue_beacon(_adapter *padapter, int timeout_ms)
 			padapter->rmpriv.rm_en_cap_def, &pattrib->pktlen);
 #endif
 
-#ifdef CONFIG_RTW_REPEATER_SON
-		rtw_rson_append_ie(padapter, pframe, &pattrib->pktlen);
-#endif
 
 #ifdef CONFIG_RTL8812A 
 		pframe = rtw_hal_set_8812a_vendor_ie(padapter, pframe, &pattrib->pktlen );
@@ -4929,9 +4912,6 @@ void issue_probersp(_adapter *padapter, unsigned char *da, u8 is_valid_p2p_probe
 				pattrib->pktlen += ssid_ielen_diff;
 			}
 		}
-#ifdef CONFIG_RTW_REPEATER_SON
-		rtw_rson_append_ie(padapter, pframe, &pattrib->pktlen);
-#endif
 	} else
 #endif
 	{
@@ -5861,10 +5841,6 @@ void _issue_assocreq(_adapter *padapter, u8 is_reassoc)
 	rtw_build_assoc_req_wapi_ie(padapter, pframe, pattrib);
 #endif
 
-
-#ifdef CONFIG_RTW_REPEATER_SON
-	rtw_rson_append_ie(padapter, pframe, &pattrib->pktlen);
-#endif
 
 #ifdef CONFIG_RTL8812A 
 	pframe = rtw_hal_set_8812a_vendor_ie(padapter, pframe, &pattrib->pktlen );
@@ -7768,9 +7744,6 @@ unsigned int receive_disconnect(_adapter *padapter, unsigned char *MacAddr, unsi
 
 	RTW_INFO("%s\n", __FUNCTION__);
 
-#ifdef CONFIG_RTW_REPEATER_SON
-	rtw_rson_do_disconnect(padapter);
-#endif
 	if ((pmlmeinfo->state & 0x03) == WIFI_FW_STATION_STATE) {
 		if (pmlmeinfo->state & WIFI_FW_ASSOC_SUCCESS) {
 			if (report_del_sta_event(padapter, MacAddr, reason, _TRUE, locally_generated) != _FAIL)
@@ -8784,9 +8757,6 @@ void mlmeext_joinbss_event_callback(_adapter *padapter, int join_res)
 exit_mlmeext_joinbss_event_callback:
 
 	rtw_join_done_chk_ch(padapter, join_res);
-#ifdef CONFIG_RTW_REPEATER_SON
-	rtw_rson_join_done(padapter);
-#endif
 
 #ifdef CONFIG_PCI_DYNAMIC_ASPM
 	rtw_pci_dynamic_aspm_set_mode(padapter, ASPM_MODE_PERF);
@@ -9006,9 +8976,7 @@ void linked_status_chk(_adapter *padapter, u8 from_timer)
 		int rx_chk_limit;
 		int link_count_limit;
 
-#if defined(CONFIG_RTW_REPEATER_SON)
-	rtw_rson_scan_wk_cmd(padapter, RSON_SCAN_PROCESS);
-#elif defined(CONFIG_LAYER2_ROAMING)
+#if defined(CONFIG_LAYER2_ROAMING)
 		if (rtw_chk_roam_flags(padapter, RTW_ROAM_ACTIVE)) {
 			RTW_INFO("signal_strength_data.avg_val = %d\n", precvpriv->signal_strength_data.avg_val);
 			if ((precvpriv->signal_strength_data.avg_val < pmlmepriv->roam_rssi_threshold)
@@ -9242,17 +9210,6 @@ void survey_timer_hdl(void *ctx)
 exit:
 	return;
 }
-
-#ifdef CONFIG_RTW_REPEATER_SON
-/*	 100ms pass, stop rson_scan	*/
-void rson_timer_hdl(void *ctx)
-{
-	_adapter *padapter = (_adapter *)ctx;
-
-	rtw_rson_scan_wk_cmd(padapter, RSON_SCAN_DISABLE);
-}
-
-#endif
 
 void link_timer_hdl(void *ctx)
 {

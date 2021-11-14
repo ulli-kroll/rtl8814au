@@ -18,22 +18,6 @@
 #include "hal_ic_cfg.h"
 
 #define CONFIG_RSSI_PRIORITY
-#ifdef CONFIG_RTW_REPEATER_SON
-	#ifndef CONFIG_AP
-		#define CONFIG_AP
-	#endif
-	#ifndef CONFIG_CONCURRENT_MODE
-		#define CONFIG_CONCURRENT_MODE
-	#endif
-	#ifndef CONFIG_RTW_REPEATER_SON_ID
-		#define CONFIG_RTW_REPEATER_SON_ID			0x02040608
-	#endif
-	//#define CONFIG_RTW_REPEATER_SON_ROOT
-	#ifndef CONFIG_RTW_REPEATER_SON_ROOT
-		#define CONFIG_LAYER2_ROAMING_ACTIVE
-	#endif
-	#undef CONFIG_POWER_SAVING
-#endif
 
 #if defined(CONFIG_MCC_MODE) && (!defined(CONFIG_CONCURRENT_MODE))
 

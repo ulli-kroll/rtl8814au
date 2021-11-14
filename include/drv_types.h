@@ -135,10 +135,6 @@ typedef struct _ADAPTER _adapter, ADAPTER, *PADAPTER;
 	#include <rtw_mcc.h>
 #endif /*CONFIG_MCC_MODE */
 
-#ifdef CONFIG_RTW_REPEATER_SON
-	#include <rtw_rson.h>
-#endif /*CONFIG_RTW_REPEATER_SON */
-
 #define SPEC_DEV_ID_NONE BIT(0)
 #define SPEC_DEV_ID_DISABLE_HT BIT(1)
 #define SPEC_DEV_ID_ENABLE_PS BIT(2)
@@ -1057,9 +1053,6 @@ struct dvobj_priv {
 	u8		fw_bcn_offload;
 	u8		vap_tbtt_rpt_map;
 	#endif /*CONFIG_SUPPORT_MULTI_BCN*/
-	#ifdef CONFIG_RTW_REPEATER_SON
-	struct rtw_rson_struct  rson_data;
-	#endif
 #endif
 #ifdef CONFIG_CLIENT_PORT_CFG
 	struct clt_port_t clt_port;
@@ -1377,10 +1370,6 @@ struct _ADAPTER {
 #ifdef CONFIG_WAPI_SUPPORT
 	u8	WapiSupport;
 	RT_WAPI_T	wapiInfo;
-#endif
-
-#ifdef CONFIG_RTW_REPEATER_SON
-	u8	rtw_rson_scanstage;
 #endif
 
 #ifdef CONFIG_WFD

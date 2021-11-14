@@ -1833,9 +1833,6 @@ static int rtw_wx_set_mlme(struct net_device *dev,
 	default:
 		return -EOPNOTSUPP;
 	}
-#ifdef CONFIG_RTW_REPEATER_SON
-	rtw_rson_do_disconnect(padapter);
-#endif
 	return ret;
 }
 
@@ -1910,13 +1907,6 @@ static int rtw_wx_set_scan(struct net_device *dev, struct iw_request_info *a,
 	/* wpa_supplicant will not issue SIOCSIWSCAN cmd again after scan timeout. */
 	/* modify by thomas 2011-02-22. */
 	if (rtw_mi_busy_traffic_check(padapter, _FALSE)) {
-		indicate_wx_scan_complete_event(padapter);
-		goto cancel_ps_deny;
-	}
-#endif
-#ifdef CONFIG_RTW_REPEATER_SON
-	if (padapter->rtw_rson_scanstage == RSON_SCAN_PROCESS) {
-		RTW_INFO(FUNC_ADPT_FMT" blocking scan for under rson scanning process\n", FUNC_ADPT_ARG(padapter));
 		indicate_wx_scan_complete_event(padapter);
 		goto cancel_ps_deny;
 	}
@@ -4528,9 +4518,6 @@ static int wpa_mlme(struct net_device *dev, u32 command, u32 reason)
 		ret = -EOPNOTSUPP;
 		break;
 	}
-#ifdef CONFIG_RTW_REPEATER_SON
-	rtw_rson_do_disconnect(padapter);
-#endif
 	return ret;
 
 }

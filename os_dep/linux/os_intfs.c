@@ -2536,10 +2536,6 @@ u8 rtw_init_drv_sw(_adapter *padapter)
 #endif /* RTW_BEAMFORMING_VERSION_2 */
 #endif /* CONFIG_BEAMFORMING */
 
-#ifdef CONFIG_RTW_REPEATER_SON
-	init_rtw_rson_data(adapter_to_dvobj(padapter));
-#endif
-
 #ifdef CONFIG_RTW_80211K
 	rtw_init_rm(padapter);
 #endif

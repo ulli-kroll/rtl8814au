@@ -2753,9 +2753,6 @@ bypass_p2p_chk:
 			ret = -EPERM;
 			goto exit;
 		#endif
-		#ifdef CONFIG_RTW_REPEATER_SON
-		case SS_DENY_RSON_SCANING :
-		#endif
 		case SS_DENY_BLOCK_SCAN :
 		case SS_DENY_SELF_AP_UNDER_WPS :
 		case SS_DENY_SELF_AP_UNDER_LINKING :
@@ -2813,14 +2810,6 @@ bypass_p2p_chk:
 
 	if (request->ie && request->ie_len > 0)
 		rtw_cfg80211_set_probe_req_wpsp2pie(padapter, (u8 *)request->ie, request->ie_len);
-
-#ifdef CONFIG_RTW_REPEATER_SON
-	if (padapter->rtw_rson_scanstage == RSON_SCAN_PROCESS) {
-		RTW_INFO(FUNC_ADPT_FMT" blocking scan for under rson scanning process\n", FUNC_ADPT_ARG(padapter));
-		need_indicate_scan_done = _TRUE;
-		goto check_need_indicate_scan_done;
-	}
-#endif
 
 	if (adapter_wdev_data(padapter)->block_scan == _TRUE) {
 		RTW_INFO(FUNC_ADPT_FMT" wdev_priv.block_scan is set\n", FUNC_ADPT_ARG(padapter));
@@ -3488,9 +3477,6 @@ static int _rtw_disconnect(struct wiphy *wiphy, struct net_device *ndev)
 		rtw_join_abort_timeout(padapter, 300);
 		LeaveAllPowerSaveMode(padapter);
 		rtw_disassoc_cmd(padapter, 500, RTW_CMDF_WAIT_ACK);
-#ifdef CONFIG_RTW_REPEATER_SON
-		rtw_rson_do_disconnect(padapter);
-#endif
 		RTW_INFO("%s...call rtw_indicate_disconnect\n", __func__);
 
 		rtw_free_assoc_resources_cmd(padapter, _TRUE, RTW_CMDF_WAIT_ACK);

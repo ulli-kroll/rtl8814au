@@ -311,7 +311,7 @@ u32	_rtw_init_sta_priv(struct	sta_priv *pstapriv)
 	rtw_pre_link_sta_ctl_init(pstapriv);
 #endif
 
-#if defined(DBG_ROAMING_TEST) || defined(CONFIG_RTW_REPEATER_SON)
+#if defined(DBG_ROAMING_TEST)
 	rtw_set_rx_chk_limit(adapter,1);
 #elif defined(CONFIG_ACTIVE_KEEP_ALIVE_CHECK) && !defined(CONFIG_LPS_LCLK_WD_TIMER)
 	rtw_set_rx_chk_limit(adapter,4);
