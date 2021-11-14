@@ -2602,20 +2602,9 @@ void rtw_sec_write_cam_ent(_adapter *adapter, u8 id, u16 ctrl, u8 *mac, u8 *key)
 
 		addr = (id << 3) + j;
 
-#if defined(CONFIG_RTL8192F)
-		if(j == 1) {
-			wdata1 = wdata;
-			addr1 = addr;
-			continue;
-		}
-#endif
-
 		rtw_sec_write_cam(adapter, addr, wdata);
 	}
 
-#if defined(CONFIG_RTL8192F)
-	rtw_sec_write_cam(adapter, addr1, wdata1);
-#endif
 }
 
 void rtw_sec_clr_cam_ent(_adapter *adapter, u8 id)
@@ -4116,10 +4105,6 @@ void hw_var_port_switch(_adapter *adapter)
 	u8 bssid[6];
 	u8 macid_1[6];
 	u8 bssid_1[6];
-#if defined(CONFIG_RTL8192F)
-	u16 wlan_act_mask_ctrl = 0;
-	u16 en_port_mask = EN_PORT_0_FUNCTION | EN_PORT_1_FUNCTION;
-#endif
 
 	u8 hw_port;
 	struct dvobj_priv *dvobj = adapter_to_dvobj(adapter);
@@ -4128,9 +4113,6 @@ void hw_var_port_switch(_adapter *adapter)
 	msr = rtw_read8(adapter, MSR);
 	bcn_ctrl = rtw_read8(adapter, REG_BCN_CTRL);
 	bcn_ctrl_1 = rtw_read8(adapter, REG_BCN_CTRL_1);
-#if defined(CONFIG_RTL8192F)
-	wlan_act_mask_ctrl = rtw_read16(adapter, REG_WLAN_ACT_MASK_CTRL_1);
-#endif
 
 	for (i = 0; i < 2; i++)
 		atimwnd[i] = rtw_read8(adapter, REG_ATIMWND + i);
@@ -4159,9 +4141,6 @@ void hw_var_port_switch(_adapter *adapter)
 		 "msr:0x%02x\n"
 		 "bcn_ctrl:0x%02x\n"
 		 "bcn_ctrl_1:0x%02x\n"
-#if defined(CONFIG_RTL8192F)
-		 "wlan_act_mask_ctrl:0x%02x\n"
-#endif
 		 "atimwnd:0x%04x\n"
 		 "atimwnd_1:0x%04x\n"
 		 "tsftr:%llu\n"
@@ -4174,9 +4153,6 @@ void hw_var_port_switch(_adapter *adapter)
 		 , msr
 		 , bcn_ctrl
 		 , bcn_ctrl_1
-#if defined(CONFIG_RTL8192F)
-		 , wlan_act_mask_ctrl
-#endif
 		 , *((u16 *)atimwnd)
 		 , *((u16 *)atimwnd_1)
 		 , *((u64 *)tsftr)
@@ -4191,10 +4167,6 @@ void hw_var_port_switch(_adapter *adapter)
 	/* disable bcn function, disable update TSF */
 	rtw_write8(adapter, REG_BCN_CTRL, (bcn_ctrl & (~EN_BCN_FUNCTION)) | DIS_TSF_UDT);
 	rtw_write8(adapter, REG_BCN_CTRL_1, (bcn_ctrl_1 & (~EN_BCN_FUNCTION)) | DIS_TSF_UDT);
-
-#if defined(CONFIG_RTL8192F)
-	rtw_write16(adapter, REG_WLAN_ACT_MASK_CTRL_1, wlan_act_mask_ctrl & ~en_port_mask);
-#endif
 
 	/* switch msr */
 	msr = (msr & 0xf0) | ((msr & 0x03) << 2) | ((msr & 0x0c) >> 2);
@@ -4226,14 +4198,6 @@ void hw_var_port_switch(_adapter *adapter)
 	rtw_write8(adapter, REG_BCN_CTRL, bcn_ctrl_1);
 	rtw_write8(adapter, REG_BCN_CTRL_1, bcn_ctrl);
 
-#if defined(CONFIG_RTL8192F)
-	/* if the setting of port0 and port1 are the same, it does not need to switch port setting*/
-	if(((wlan_act_mask_ctrl & en_port_mask) != 0) && ((wlan_act_mask_ctrl & en_port_mask)
-		!= (EN_PORT_0_FUNCTION | EN_PORT_1_FUNCTION)))
-		wlan_act_mask_ctrl ^= en_port_mask;
-	rtw_write16(adapter, REG_WLAN_ACT_MASK_CTRL_1, wlan_act_mask_ctrl);
-#endif
-
 	if (adapter->iface_id == IFACE_ID0)
 		iface = dvobj->padapters[IFACE_ID1];
 	else if (adapter->iface_id == IFACE_ID1)
@@ -4256,9 +4220,6 @@ void hw_var_port_switch(_adapter *adapter)
 	msr = rtw_read8(adapter, MSR);
 	bcn_ctrl = rtw_read8(adapter, REG_BCN_CTRL);
 	bcn_ctrl_1 = rtw_read8(adapter, REG_BCN_CTRL_1);
-#if defined(CONFIG_RTL8192F)
-	wlan_act_mask_ctrl = rtw_read16(adapter, REG_WLAN_ACT_MASK_CTRL_1);
-#endif
 
 	for (i = 0; i < 2; i++)
 		atimwnd[i] = rtw_read8(adapter, REG_ATIMWND + i);
@@ -4286,9 +4247,6 @@ void hw_var_port_switch(_adapter *adapter)
 		 "msr:0x%02x\n"
 		 "bcn_ctrl:0x%02x\n"
 		 "bcn_ctrl_1:0x%02x\n"
-#if defined(CONFIG_RTL8192F)
-		 "wlan_act_mask_ctrl:0x%02x\n"
-#endif
 		 "atimwnd:%u\n"
 		 "atimwnd_1:%u\n"
 		 "tsftr:%llu\n"
@@ -4301,9 +4259,6 @@ void hw_var_port_switch(_adapter *adapter)
 		 , msr
 		 , bcn_ctrl
 		 , bcn_ctrl_1
-#if defined(CONFIG_RTL8192F)
-		 , wlan_act_mask_ctrl
-#endif
 		 , *((u16 *)atimwnd)
 		 , *((u16 *)atimwnd_1)
 		 , *((u64 *)tsftr)
@@ -4620,9 +4575,6 @@ void rtw_hal_switch_gpio_wl_ctrl(_adapter *padapter, u8 index, u8 enable)
 
 void rtw_hal_set_output_gpio(_adapter *padapter, u8 index, u8 outputval)
 {
-#if defined(CONFIG_RTL8192F)
-	rtw_hal_set_hwreg(padapter, HW_VAR_WOW_OUTPUT_GPIO, (u8 *)(&index));
-#else
 	if (index <= 7) {
 		/* config GPIO mode */
 		rtw_write8(padapter, REG_GPIO_PIN_CTRL + 3,
@@ -4672,13 +4624,9 @@ void rtw_hal_set_output_gpio(_adapter *padapter, u8 index, u8 outputval)
 		RTW_INFO("%s: invalid GPIO%d=%d\n",
 			 __FUNCTION__, index, outputval);
 	}
-#endif
 }
 void rtw_hal_set_input_gpio(_adapter *padapter, u8 index)
 {
-#if defined(CONFIG_RTL8192F)
-	rtw_hal_set_hwreg(padapter, HW_VAR_WOW_INPUT_GPIO, (u8 *)(&index));
-#else
 	if (index <= 7) {
 		/* config GPIO mode */
 		rtw_write8(padapter, REG_GPIO_PIN_CTRL + 3,
@@ -4709,7 +4657,6 @@ void rtw_hal_set_input_gpio(_adapter *padapter, u8 index)
 			rtw_read8(padapter, REG_GPIO_PIN_CTRL_2 + 2) & ~BIT(index));
 	} else
 		RTW_INFO("%s: invalid GPIO%d\n", __func__, index);
-#endif
 }
 
 #endif
@@ -6039,32 +5986,6 @@ static void hw_var_set_bcn_func(_adapter *adapter, u8 enable)
 		rtw_write8(adapter, bcn_ctrl_reg, val8);
 	}
 
-#ifdef CONFIG_RTL8192F
-	if (IS_HARDWARE_TYPE_8192F(adapter)) {
-		u16 val16, val16_ori;
-
-		val16_ori = val16 = rtw_read16(adapter, REG_WLAN_ACT_MASK_CTRL_1);
-
-		#ifdef CONFIG_CONCURRENT_MODE
-		if (adapter->hw_port == HW_PORT1) {
-			if (enable)
-				val16 |= EN_PORT_1_FUNCTION;
-			else
-				val16 &= ~EN_PORT_1_FUNCTION;
-		} else
-		#endif
-		{
-			if (enable)
-				val16 |= EN_PORT_0_FUNCTION;
-			else
-				val16 &= ~EN_PORT_0_FUNCTION;
-
-		}
-
-		if (val16 != val16_ori)
-			rtw_write16(adapter, REG_WLAN_ACT_MASK_CTRL_1,  val16);
-	}
-#endif
 }
 #endif
 
@@ -6561,37 +6482,21 @@ static void rtw_hal_correct_tsf(_adapter *padapter, u8 hw_port, u64 tsf)
 	if (hw_port == HW_PORT0) {
 		/*disable related TSF function*/
 		rtw_write8(padapter, REG_BCN_CTRL, rtw_read8(padapter, REG_BCN_CTRL) & (~EN_BCN_FUNCTION));
-#if defined(CONFIG_RTL8192F)
-		rtw_write16(padapter, REG_WLAN_ACT_MASK_CTRL_1, rtw_read16(padapter,
-					REG_WLAN_ACT_MASK_CTRL_1) & ~EN_PORT_0_FUNCTION);
-#endif
 
 		rtw_write32(padapter, REG_TSFTR, tsf);
 		rtw_write32(padapter, REG_TSFTR + 4, tsf >> 32);
 
 		/*enable related TSF function*/
 		rtw_write8(padapter, REG_BCN_CTRL, rtw_read8(padapter, REG_BCN_CTRL) | EN_BCN_FUNCTION);
-#if defined(CONFIG_RTL8192F)
-		rtw_write16(padapter, REG_WLAN_ACT_MASK_CTRL_1, rtw_read16(padapter,
-					REG_WLAN_ACT_MASK_CTRL_1) | EN_PORT_0_FUNCTION);
-#endif
 	} else if (hw_port == HW_PORT1) {
 		/*disable related TSF function*/
 		rtw_write8(padapter, REG_BCN_CTRL_1, rtw_read8(padapter, REG_BCN_CTRL_1) & (~EN_BCN_FUNCTION));
-#if defined(CONFIG_RTL8192F)
-		rtw_write16(padapter, REG_WLAN_ACT_MASK_CTRL_1, rtw_read16(padapter,
-					REG_WLAN_ACT_MASK_CTRL_1) & ~EN_PORT_1_FUNCTION);
-#endif
 
 		rtw_write32(padapter, REG_TSFTR1, tsf);
 		rtw_write32(padapter, REG_TSFTR1 + 4, tsf >> 32);
 
 		/*enable related TSF function*/
 		rtw_write8(padapter, REG_BCN_CTRL_1, rtw_read8(padapter, REG_BCN_CTRL_1) | EN_BCN_FUNCTION);
-#if defined(CONFIG_RTL8192F)
-		rtw_write16(padapter, REG_WLAN_ACT_MASK_CTRL_1, rtw_read16(padapter,
-					REG_WLAN_ACT_MASK_CTRL_1) | EN_PORT_1_FUNCTION);
-#endif
 	} else
 		RTW_INFO("%s-[WARN] "ADPT_FMT" invalid hw_port:%d\n", __func__, ADPT_ARG(padapter), hw_port);
 }
@@ -6697,7 +6602,6 @@ u64 rtw_hal_get_tsftr_by_port(_adapter *adapter, u8 port)
 	}
 #endif
 #if defined(CONFIG_RTL8188GTV) \
-		|| defined(CONFIG_RTL8192E) || defined(CONFIG_RTL8192F) \
 		|| defined(CONFIG_RTL8723B) || defined(CONFIG_RTL8703B) || defined(CONFIG_RTL8723D) \
 		|| defined(CONFIG_RTL8812A) || defined(CONFIG_RTL8821A) \
 		|| defined(CONFIG_RTL8710B)
@@ -8006,16 +7910,6 @@ int hal_efuse_macaddr_offset(_adapter *adapter)
 			addr_offset = EEPROM_MAC_ADDR_8821AE;
 		break;
 #endif
-#ifdef CONFIG_RTL8192E
-	case RTL8192E:
-		if (interface_type == RTW_USB)
-			addr_offset = EEPROM_MAC_ADDR_8192EU;
-		else if (interface_type == RTW_SDIO)
-			addr_offset = EEPROM_MAC_ADDR_8192ES;
-		else if (interface_type == RTW_PCIE)
-			addr_offset = EEPROM_MAC_ADDR_8192EE;
-		break;
-#endif
 #ifdef CONFIG_RTL8814A
 	case RTL8814A:
 		if (interface_type == RTW_USB)
@@ -8053,17 +7947,6 @@ int hal_efuse_macaddr_offset(_adapter *adapter)
 			addr_offset = EEPROM_MAC_ADDR_8710B;
 		break;
 #endif
-
-#ifdef CONFIG_RTL8192F
-	case RTL8192F:
-		if (interface_type == RTW_USB)
-			addr_offset = EEPROM_MAC_ADDR_8192FU;
-		else if (interface_type == RTW_SDIO)
-			addr_offset = EEPROM_MAC_ADDR_8192FS;
-		else if (interface_type == RTW_PCIE)
-			addr_offset = EEPROM_MAC_ADDR_8192FE;
-		break;
-#endif /* CONFIG_RTL8192F */
 
 #ifdef CONFIG_RTL8822C
 	case RTL8822C:
@@ -8940,11 +8823,6 @@ int hal_spec_init(_adapter *adapter)
 		init_hal_spec_8821a(adapter);
 		break;
 #endif
-#ifdef CONFIG_RTL8192E
-	case RTL8192E:
-		init_hal_spec_8192e(adapter);
-		break;
-#endif
 #ifdef CONFIG_RTL8814A
 	case RTL8814A:
 		init_hal_spec_8814a(adapter);
@@ -8963,11 +8841,6 @@ int hal_spec_init(_adapter *adapter)
 #ifdef CONFIG_RTL8710B
 	case RTL8710B:
 		init_hal_spec_8710b(adapter);
-		break;
-#endif
-#ifdef CONFIG_RTL8192F
-	case RTL8192F:
-		init_hal_spec_8192f(adapter);
 		break;
 #endif
 #ifdef CONFIG_RTL8822C
@@ -9326,10 +9199,6 @@ void hw_var_set_opmode_mbid(_adapter *Adapter, u8 mode)
 	else
 		rtw_hw_client_port_release(Adapter);
 #endif
-#if defined(CONFIG_RTL8192F)
-		rtw_write16(Adapter, REG_WLAN_ACT_MASK_CTRL_1, rtw_read16(Adapter, 
-					REG_WLAN_ACT_MASK_CTRL_1) | EN_PORT_0_FUNCTION);	
-#endif
 }
 #endif
 
@@ -9536,7 +9405,6 @@ void rtw_hal_switch_chnl_and_set_bw_offload(_adapter *adapter, u8 central_ch, u8
 #endif /* RTW_CHANNEL_SWITCH_OFFLOAD */
 
 #if defined(CONFIG_RTL8814A) || defined(CONFIG_RTL8812A) ||\
-	defined(CONFIG_RTL8192F) || defined(CONFIG_RTL8192E) ||\
 	defined(CONFIG_RTL8822B) || defined(CONFIG_RTL8821A) ||\
 	defined(CONFIG_RTL8822C) || defined(CONFIG_RTL8814B)
 u8 phy_get_current_tx_num(

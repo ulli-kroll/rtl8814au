@@ -6055,14 +6055,9 @@ static int rtw_mp_efuse_get(struct net_device *dev,
 		/*		RTW_INFO("}\n"); */
 	} else if (strcmp(tmp[0], "vidpid") == 0) {
 
-#ifdef CONFIG_RTL8192E
-#ifdef CONFIG_USB_HCI
-		addr = EEPROM_VID_8192EU;
-#endif
-#endif /* CONFIG_RTL8192E */
 #ifdef CONFIG_RTL8723B
 		addr = EEPROM_VID_8723BU;
-#endif /* CONFIG_RTL8192E */
+#endif /* CONFIG_RTL8723B */
 
 #ifdef CONFIG_RTL8188GTV
 		addr = EEPROM_VID_8188GTVU;
@@ -6683,18 +6678,6 @@ extern void rtl8723b_fill_default_txdesc(struct xmit_frame *pxmitframe, u8 *pbuf
 #define cal_txdesc_chksum rtl8710b_cal_txdesc_chksum
 #define fill_default_txdesc rtl8710b_fill_default_txdesc
 #endif /* CONFIG_RTL8710B */
-
-#if defined(CONFIG_RTL8192E)
-extern void rtl8192e_cal_txdesc_chksum(struct tx_desc *ptxdesc);
-#define cal_txdesc_chksum rtl8192e_cal_txdesc_chksum
-#endif /* CONFIG_RTL8192E */
-
-#if defined(CONFIG_RTL8192F)
-/* extern void rtl8192f_cal_txdesc_chksum(struct tx_desc *ptxdesc); */
-#define cal_txdesc_chksum rtl8192f_cal_txdesc_chksum
-/* extern void rtl8192f_fill_default_txdesc(struct xmit_frame *pxmitframe, u8 *pbuf); */
-#define fill_default_txdesc rtl8192f_fill_default_txdesc
-#endif /* CONFIG_RTL8192F */
 
 static s32 initLoopback(PADAPTER padapter)
 {

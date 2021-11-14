@@ -298,16 +298,6 @@ static const struct map_t rtl8723d_pg_txpwr_def_info =
 	);
 #endif
 
-#ifdef CONFIG_RTL8192E
-static const struct map_t rtl8192e_pg_txpwr_def_info =
-	MAP_ENT(0xB8, 2, 0xFF
-		, MAPSEG_ARRAY_ENT(0x10, 14,
-			0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x24, 0xEE, 0xEE)
-		, MAPSEG_ARRAY_ENT(0x3A, 14,
-			0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x24, 0xEE, 0xEE)
-	);
-#endif
-
 #ifdef CONFIG_RTL8821A
 static const struct map_t rtl8821a_pg_txpwr_def_info =
 	MAP_ENT(0xB8, 1, 0xFF
@@ -394,16 +384,6 @@ static const struct map_t rtl8814a_pg_txpwr_def_info =
 	);
 #endif
 
-#ifdef CONFIG_RTL8192F/*use 8192F default,no document*/
-static const struct map_t rtl8192f_pg_txpwr_def_info =
-	MAP_ENT(0xB8, 2, 0xFF
-		, MAPSEG_ARRAY_ENT(0x10, 14,
-			0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x24, 0xEE, 0xEE)
-		, MAPSEG_ARRAY_ENT(0x3A, 14,
-			0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x24, 0xEE, 0xEE)
-	);
-#endif
-
 #ifdef CONFIG_RTL8814B
 static const struct map_t rtl8814b_pg_txpwr_def_info =
 	MAP_ENT(0xB8, 1, 0xFF
@@ -460,11 +440,6 @@ const struct map_t *hal_pg_txpwr_def_info(_adapter *adapter)
 		map = &rtl8821a_pg_txpwr_def_info;
 		break;
 #endif
-#ifdef CONFIG_RTL8192E
-	case RTL8192E:
-		map = &rtl8192e_pg_txpwr_def_info;
-		break;
-#endif
 #ifdef CONFIG_RTL8814A
 	case RTL8814A:
 		map = &rtl8814a_pg_txpwr_def_info;
@@ -483,11 +458,6 @@ const struct map_t *hal_pg_txpwr_def_info(_adapter *adapter)
 #ifdef CONFIG_RTL8710B
 	case RTL8710B:
 		map = &rtl8710b_pg_txpwr_def_info;
-		break;
-#endif
-#ifdef CONFIG_RTL8192F
-	case RTL8192F:
-		map = &rtl8192f_pg_txpwr_def_info;
 		break;
 #endif
 #ifdef CONFIG_RTL8822C

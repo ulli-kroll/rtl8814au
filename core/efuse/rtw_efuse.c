@@ -118,10 +118,6 @@ BOOLEAN efuse_IsMasked(PADAPTER pAdapter, u16 Offset)
 	if (IS_HARDWARE_TYPE_8821(pAdapter))
 		return (IS_MASKED(8821A, _MUSB, Offset)) ? TRUE : FALSE;
 #endif
-#if defined(CONFIG_RTL8192E)
-	if (IS_HARDWARE_TYPE_8192E(pAdapter))
-		return (IS_MASKED(8192E, _MUSB, Offset)) ? TRUE : FALSE;
-#endif
 #if defined(CONFIG_RTL8723B)
 	if (IS_HARDWARE_TYPE_8723B(pAdapter))
 		return (IS_MASKED(8723B, _MUSB, Offset)) ? TRUE : FALSE;
@@ -155,10 +151,6 @@ BOOLEAN efuse_IsMasked(PADAPTER pAdapter, u16 Offset)
 		return (IS_MASKED(8821C, _MUSB, Offset)) ? TRUE : FALSE;
 #endif
 
-#if defined(CONFIG_RTL8192F)
-	if (IS_HARDWARE_TYPE_8192FU(pAdapter))
-		return (IS_MASKED(8192F, _MUSB, Offset)) ? TRUE : FALSE;
-#endif
 #if defined(CONFIG_RTL8822C)
 	if (IS_HARDWARE_TYPE_8822C(pAdapter))
 		return (IS_MASKED(8822C, _MUSB, Offset)) ? TRUE : FALSE;
@@ -185,10 +177,6 @@ void rtw_efuse_mask_array(PADAPTER pAdapter, u8 *pArray)
 	if (IS_HARDWARE_TYPE_8821(pAdapter))
 		GET_MASK_ARRAY(8821A, _MUSB, pArray);
 #endif
-#if defined(CONFIG_RTL8192E)
-	if (IS_HARDWARE_TYPE_8192E(pAdapter))
-		GET_MASK_ARRAY(8192E, _MUSB, pArray);
-#endif
 #if defined(CONFIG_RTL8723B)
 	if (IS_HARDWARE_TYPE_8723B(pAdapter))
 		GET_MASK_ARRAY(8723B, _MUSB, pArray);
@@ -212,10 +200,6 @@ void rtw_efuse_mask_array(PADAPTER pAdapter, u8 *pArray)
 #if defined(CONFIG_RTL8821C)
 	if (IS_HARDWARE_TYPE_8821CU(pAdapter))
 		GET_MASK_ARRAY(8821C, _MUSB, pArray);
-#endif
-#if defined(CONFIG_RTL8192F)
-	if (IS_HARDWARE_TYPE_8192FU(pAdapter))
-		GET_MASK_ARRAY(8192F, _MUSB, pArray);
 #endif
 #if defined(CONFIG_RTL8822C)
 	if (IS_HARDWARE_TYPE_8822C(pAdapter))
@@ -242,10 +226,6 @@ u16 rtw_get_efuse_mask_arraylen(PADAPTER pAdapter)
 	if (IS_HARDWARE_TYPE_8821(pAdapter))
 		return GET_MASK_ARRAY_LEN(8821A, _MUSB);
 #endif
-#if defined(CONFIG_RTL8192E)
-	if (IS_HARDWARE_TYPE_8192E(pAdapter))
-		return GET_MASK_ARRAY_LEN(8192E, _MUSB);
-#endif
 #if defined(CONFIG_RTL8723B)
 	if (IS_HARDWARE_TYPE_8723B(pAdapter))
 		return GET_MASK_ARRAY_LEN(8723B, _MUSB);
@@ -269,10 +249,6 @@ u16 rtw_get_efuse_mask_arraylen(PADAPTER pAdapter)
 #if defined(CONFIG_RTL8821C)
 	if (IS_HARDWARE_TYPE_8821CU(pAdapter))
 		return GET_MASK_ARRAY_LEN(8821C, _MUSB);
-#endif
-#if defined(CONFIG_RTL8192F)
-	if (IS_HARDWARE_TYPE_8192FU(pAdapter))
-		return GET_MASK_ARRAY_LEN(8192F, _MUSB);
 #endif
 #if defined(CONFIG_RTL8822C)
 	if (IS_HARDWARE_TYPE_8822C(pAdapter))

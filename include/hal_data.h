@@ -102,9 +102,6 @@ typedef enum _RX_AGG_MODE {
 #if defined(CONFIG_RTL8812A) || defined(CONFIG_RTL8821A) || defined(CONFIG_RTL8814A)
 	#define EFUSE_MAP_SIZE	512
 #endif
-#ifdef CONFIG_RTL8192E
-	#define EFUSE_MAP_SIZE	512
-#endif
 #ifdef CONFIG_RTL8723B
 	#define EFUSE_MAP_SIZE	512
 #endif
@@ -121,9 +118,6 @@ typedef enum _RX_AGG_MODE {
 	#define EFUSE_MAP_SIZE	512
 #endif
 #ifdef CONFIG_RTL8710B
-	#define EFUSE_MAP_SIZE	512
-#endif
-#ifdef CONFIG_RTL8192F
 	#define EFUSE_MAP_SIZE	512
 #endif
 
@@ -448,9 +442,7 @@ typedef struct hal_com_data {
 	u32	BackUp_BB_REG_4_2nd_CCA[3];
 #endif
 #if defined(CONFIG_RTL8723B) || defined(CONFIG_RTL8703B) || \
-	defined(CONFIG_RTL8723D) || \
-	defined(CONFIG_RTL8192F)
-
+	defined(CONFIG_RTL8723D)
 	u8	adjuseVoltageVal;
 	u8	need_restore;
 #endif
@@ -627,7 +619,7 @@ typedef struct hal_com_data {
 
 
 #if defined(CONFIG_RTL8723B) || defined(CONFIG_RTL8703B) \
-	|| defined(CONFIG_RTL8188GTV) || defined(CONFIG_RTL8723D)|| defined(CONFIG_RTL8192F)
+	|| defined(CONFIG_RTL8188GTV) || defined(CONFIG_RTL8723D)
 	/* Interrupt relatd register information. */
 	u32			SysIntrStatus;
 	u32			SysIntrMask;

@@ -683,7 +683,6 @@ void rtw_hal_beamforming_config_csirate(PADAPTER adapter);
 #endif
 #endif
 #if defined(CONFIG_RTL8814A) || defined(CONFIG_RTL8812A) ||\
-	defined(CONFIG_RTL8192F) || defined(CONFIG_RTL8192E) ||\
 	defined(CONFIG_RTL8822B) || defined(CONFIG_RTL8821A) || \
 	defined(CONFIG_RTL8822C) || defined(CONFIG_RTL8814B)
 u8 phy_get_current_tx_num(PADAPTER pAdapter, u8 Rate);

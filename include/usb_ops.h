@@ -42,11 +42,6 @@ void rtl8812au_set_hw_type(struct dvobj_priv *pdvobj);
 void rtl8814au_set_hw_type(struct dvobj_priv *pdvobj);
 #endif /* CONFIG_RTL8814 */
 
-#ifdef CONFIG_RTL8192E
-void rtl8192eu_set_hw_type(struct dvobj_priv *pdvobj);
-
-#endif
-
 #ifdef CONFIG_RTL8188GTV
 void rtl8188gtvu_set_hw_type(struct dvobj_priv *pdvobj);
 #endif
@@ -74,11 +69,6 @@ void rtl8710bu_set_intf_ops(struct _io_ops *pops);
 void rtl8710bu_recv_tasklet(void *priv);
 void rtl8710bu_xmit_tasklet(void *priv);
 #endif /* CONFIG_RTL8710B */
-
-#ifdef CONFIG_RTL8192F
-void rtl8192fu_set_hw_type(struct dvobj_priv *pdvobj);
-void rtl8192fu_xmit_tasklet(void *priv);
-#endif /* CONFIG_RTL8192F */
 
 enum RTW_USB_SPEED {
 	RTW_USB_SPEED_UNKNOWN	= 0,

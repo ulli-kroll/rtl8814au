@@ -23,10 +23,6 @@
 		#include "rtl8812a/HalEfuseMask8821A_USB.h"
 	#endif
 
-	#if defined(CONFIG_RTL8192E)
-		#include "rtl8192e/HalEfuseMask8192E_USB.h"
-	#endif
-
 	#if defined(CONFIG_RTL8723B)
 		#include "rtl8723b/HalEfuseMask8723B_USB.h"
 	#endif
@@ -59,9 +55,6 @@
 		#include "rtl8710b/HalEfuseMask8710B_USB.h"
 	#endif
 	
-	#if defined(CONFIG_RTL8192F)
-		#include "rtl8192f/HalEfuseMask8192F_USB.h"
-	#endif
 	#if defined(CONFIG_RTL8822C)
 		#include "rtl8822c/HalEfuseMask8822C_USB.h"
 	#endif
@@ -87,10 +80,6 @@
 		#include "rtl8723d/HalEfuseMask8723D_SDIO.h"
 	#endif
 
-	#if defined(CONFIG_RTL8192E)
-		#include "rtl8192e/HalEfuseMask8192E_SDIO.h"
-	#endif
-
 	#if defined(CONFIG_RTL8821A)
 		#include "rtl8812a/HalEfuseMask8821A_SDIO.h"
 	#endif
@@ -102,11 +91,6 @@
 	#if defined(CONFIG_RTL8822B)
 		#include "rtl8822b/HalEfuseMask8822B_SDIO.h"
 	#endif
-
-	#if defined(CONFIG_RTL8192F)
-		#include "rtl8192f/HalEfuseMask8192F_SDIO.h"
-	#endif
-
 
 	#if defined(CONFIG_RTL8822C)
 		#include "rtl8822c/HalEfuseMask8822C_SDIO.h"

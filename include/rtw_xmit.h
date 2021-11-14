@@ -135,9 +135,7 @@
 
 /* For Buffer Descriptor ring architecture */
 #if defined(BUF_DESC_ARCH) || defined(CONFIG_TRX_BD_ARCH)
-	#if defined(CONFIG_RTL8192E)
-		#define TX_BUFFER_SEG_NUM	1 /* 0:2 seg, 1: 4 seg, 2: 8 seg. */
-	#elif defined(CONFIG_RTL8814A)
+	#if defined(CONFIG_RTL8814A)
 		#define TX_BUFFER_SEG_NUM	1 /* 0:2 seg, 1: 4 seg, 2: 8 seg. */
 	#else
 		#define TX_BUFFER_SEG_NUM	1 /* 0:2 seg, 1: 4 seg, 2: 8 seg. */
@@ -145,10 +143,10 @@
 #endif
 
 #if defined(CONFIG_RTL8812A) || defined(CONFIG_RTL8821A) ||\
-	defined(CONFIG_RTL8723B) || defined(CONFIG_RTL8192E) ||\
+	defined(CONFIG_RTL8723B) || \
 	defined(CONFIG_RTL8814A) || defined(CONFIG_RTL8703B) ||\
 	defined(CONFIG_RTL8188GTV) || defined(CONFIG_RTL8723D) ||\
-	defined(CONFIG_RTL8710B) || defined(CONFIG_RTL8192F)
+	defined(CONFIG_RTL8710B)
 	#define TXDESC_SIZE 40
 #elif defined(CONFIG_RTL8822B) || defined(CONFIG_RTL8822C)
 	#define TXDESC_SIZE 48		/* HALMAC_TX_DESC_SIZE_8822B */
@@ -182,8 +180,7 @@ enum TXDESC_SC {
 };
 
 #if defined(CONFIG_RTL8812A) || defined(CONFIG_RTL8821A) || defined(CONFIG_RTL8723B) \
-	|| defined(CONFIG_RTL8188GTV) || defined(CONFIG_RTL8723D) \
-	|| defined(CONFIG_RTL8192F)
+	|| defined(CONFIG_RTL8188GTV) || defined(CONFIG_RTL8723D)
 	#define TXDESC_40_BYTES
 #endif
 
@@ -196,7 +193,7 @@ struct tx_buf_desc {
 #endif
 	unsigned int dword[TX_BUFFER_SEG_SIZE * (2 << TX_BUFFER_SEG_NUM)];
 } __packed;
-#elif (defined(CONFIG_RTL8192E) || defined(CONFIG_RTL8814A) || defined(CONFIG_RTL8822B) || defined(CONFIG_RTL8822C)) && defined(CONFIG_PCI_HCI) /* 8192ee or 8814ae */
+#elif (defined(CONFIG_RTL8814A) || defined(CONFIG_RTL8822B) || defined(CONFIG_RTL8822C)) && defined(CONFIG_PCI_HCI) /* 8192ee or 8814ae */
 /* 8192EE_TODO */
 struct tx_desc {
 	unsigned int txdw0;

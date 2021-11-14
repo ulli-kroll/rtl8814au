@@ -210,17 +210,6 @@ void rtw_phydm_fill_desc_dpt(void *dm, u8 *desc, u8 dpt_lv)
 		break;
 	#endif
 
-	#ifdef CONFIG_RTL8192F
-	case RTL8192F :
-		break;
-	#endif
-*/
-/*
-	#ifdef CONFIG_RTL8192E
-	case RTL8192E :
-		SET_TX_DESC_TX_POWER_0_PSET_92E(desc, dpt_lv);
-		break;
-	#endif
 */
 	#ifdef CONFIG_RTL8822B
 	case RTL8822B :
@@ -1352,7 +1341,7 @@ static u8 rtw_phydm_config_trx_path(_adapter *adapter)
 	tx_path_nss_set_default(hal_data->txpath_nss, hal_data->txpath_num_nss
 		, GET_HAL_TX_PATH_BMP(adapter));
 
-#if defined(CONFIG_RTL8192F) || defined(CONFIG_RTL8822B) ||defined(CONFIG_RTL8822C)
+#if defined(CONFIG_RTL8822B) ||defined(CONFIG_RTL8822C)
 {
 	enum bb_path txpath_1ss;
 
@@ -1420,7 +1409,7 @@ static u8 rtw_phydm_config_trx_path(_adapter *adapter)
 	/* 8814B is always full-TX */
 	tx_path_nss_set_full_tx(hal_data->txpath_nss, hal_data->txpath_num_nss, txpath);
 }
-#elif defined(CONFIG_RTL8812A) || defined(CONFIG_RTL8192E)
+#elif defined(CONFIG_RTL8812A)
 {
 	#ifdef CONFIG_RTW_TX_NPATH_EN
 	if (adapter->registrypriv.tx_npath == 1) {
