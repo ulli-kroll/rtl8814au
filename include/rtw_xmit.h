@@ -330,17 +330,6 @@ struct pkt_attrib {
 	u8	src[ETH_ALEN];
 	u8	ta[ETH_ALEN];
 	u8	ra[ETH_ALEN];
-#ifdef CONFIG_RTW_MESH
-	u8	mda[ETH_ALEN];	/* mesh da */
-	u8	msa[ETH_ALEN];	/* mesh sa */
-	u8	meshctrl_len;	/* Length of Mesh Control field */
-	u8	mesh_frame_mode;
-	#if CONFIG_RTW_MESH_DATA_BMC_TO_UC
-	u8 mb2u;
-	#endif
-	u8 mfwd_ttl;
-	u32 mseq;
-#endif
 #ifdef CONFIG_TCP_CSUM_OFFLOAD_TX
 	u8	hw_csum;
 #endif
@@ -400,11 +389,7 @@ struct pkt_attrib {
 };
 #endif
 
-#ifdef CONFIG_RTW_MESH
-#define XATTRIB_GET_MCTRL_LEN(xattrib) ((xattrib)->meshctrl_len)
-#else
 #define XATTRIB_GET_MCTRL_LEN(xattrib) 0
-#endif
 
 #ifdef CONFIG_TX_AMSDU
 enum {
@@ -754,7 +739,7 @@ extern s32 rtw_xmit_classifier(_adapter *padapter, struct xmit_frame *pxmitframe
 extern u32 rtw_calculate_wlan_pkt_size_by_attribue(struct pkt_attrib *pattrib);
 #define rtw_wlan_pkt_size(f) rtw_calculate_wlan_pkt_size_by_attribue(&f->attrib)
 extern s32 rtw_xmitframe_coalesce(_adapter *padapter, _pkt *pkt, struct xmit_frame *pxmitframe);
-#if defined(CONFIG_IEEE80211W) || defined(CONFIG_RTW_MESH)
+#if defined(CONFIG_IEEE80211W)
 extern s32 rtw_mgmt_xmitframe_coalesce(_adapter *padapter, _pkt *pkt, struct xmit_frame *pxmitframe);
 #endif
 s32 _rtw_init_hw_txqueue(struct hw_txqueue *phw_txqueue, u8 ac_tag);

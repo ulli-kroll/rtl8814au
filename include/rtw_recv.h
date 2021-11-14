@@ -179,12 +179,6 @@ struct rx_pkt_attrib	{
 	u8	ta[ETH_ALEN];
 	u8	ra[ETH_ALEN];
 	u8	bssid[ETH_ALEN];
-#ifdef CONFIG_RTW_MESH
-	u8	msa[ETH_ALEN]; /* mesh sa */
-	u8	mda[ETH_ALEN]; /* mesh da */
-	u8 mesh_ctrl_present;
-	u8	mesh_ctrl_len; /* length of mesh control field */
-#endif
 
 	u8	ack_policy;
 
@@ -210,11 +204,7 @@ struct rx_pkt_attrib	{
 #endif /* CONFIG_TCP_CSUM_OFFLOAD_RX */
 };
 
-#ifdef CONFIG_RTW_MESH
-#define RATTRIB_GET_MCTRL_LEN(rattrib) ((rattrib)->mesh_ctrl_len)
-#else
 #define RATTRIB_GET_MCTRL_LEN(rattrib) 0
-#endif
 
 /* These definition is used for Rx packet reordering. */
 #define SN_LESS(a, b)		(((a-b) & 0x800) != 0)

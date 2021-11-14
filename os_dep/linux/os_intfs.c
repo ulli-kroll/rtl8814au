@@ -185,12 +185,6 @@ module_param_array(rtw_tx_aclt_conf_ap_m2u, uint, &rtw_tx_aclt_conf_ap_m2u_num, 
 MODULE_PARM_DESC(rtw_tx_aclt_conf_ap_m2u, "device TX AC queue lifetime config for AP mode M2U status");
 #endif
 
-#ifdef CONFIG_RTW_MESH
-static uint rtw_tx_aclt_conf_mesh[3] = CONFIG_TX_ACLT_CONF_MESH;
-static uint rtw_tx_aclt_conf_mesh_num = 0;
-module_param_array(rtw_tx_aclt_conf_mesh, uint, &rtw_tx_aclt_conf_mesh_num, 0644);
-MODULE_PARM_DESC(rtw_tx_aclt_conf_mesh, "device TX AC queue lifetime config for MESH status");
-#endif
 #endif /* CONFIG_TX_AC_LIFETIME */
 
 uint rtw_tx_bw_mode = 0x21;
@@ -747,13 +741,6 @@ module_param(rtw_phydm_ability, uint, 0644);
 uint rtw_halrf_ability = 0xffffffff;
 module_param(rtw_halrf_ability, uint, 0644);
 
-#ifdef CONFIG_RTW_MESH
-uint rtw_peer_alive_based_preq = 1;
-module_param(rtw_peer_alive_based_preq, uint, 0644);
-MODULE_PARM_DESC(rtw_peer_alive_based_preq,
-	"On demand PREQ will reference peer alive status. 0: Off, 1: On");
-#endif
-
 int _netdev_open(struct net_device *pnetdev);
 int netdev_open(struct net_device *pnetdev);
 static int netdev_close(struct net_device *pnetdev);
@@ -858,10 +845,6 @@ static void rtw_regsty_load_tx_ac_lifetime(struct registry_priv *regsty)
 		#ifdef CONFIG_TX_MCAST2UNI
 		else if (i == TX_ACLT_CONF_AP_M2U)
 			parm = rtw_tx_aclt_conf_ap_m2u;
-		#endif
-		#ifdef CONFIG_RTW_MESH
-		else if (i == TX_ACLT_CONF_MESH)
-			parm = rtw_tx_aclt_conf_mesh;
 		#endif
 		else
 			parm = NULL;
@@ -1258,9 +1241,6 @@ uint loadparam(_adapter *padapter)
 #endif
 	registry_par->phydm_ability = rtw_phydm_ability;
 	registry_par->halrf_ability = rtw_halrf_ability;
-#ifdef CONFIG_RTW_MESH
-	registry_par->peer_alive_based_preq = rtw_peer_alive_based_preq;
-#endif
 	return status;
 }
 
@@ -2459,10 +2439,6 @@ u8 rtw_init_drv_sw(_adapter *padapter)
 		ret8 = _FAIL;
 		goto exit;
 	}
-
-#ifdef CONFIG_RTW_MESH
-	rtw_mesh_cfg_init(padapter);
-#endif
 
 	if (_rtw_init_xmit_priv(&padapter->xmitpriv, padapter) == _FAIL) {
 		RTW_INFO("Can't _rtw_init_xmit_priv\n");

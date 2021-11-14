@@ -211,9 +211,6 @@ struct ss_res {
 	#ifdef CONFIG_AP_MODE
 	u8 backop_flags_ap; /* policy for ap mode */
 	#endif
-	#ifdef CONFIG_RTW_MESH
-	u8 backop_flags_mesh; /* policy for mesh mode */
-	#endif
 	u8 backop_flags; /* per backop runtime decision */
 	u8 scan_cnt;
 	u8 scan_cnt_max;
@@ -626,18 +623,9 @@ void sitesurvey_set_offch_state(_adapter *adapter, u8 scan_state);
 #define mlmeext_assign_scan_backop_flags_ap(mlmeext, flags) do {} while (0)
 #endif /* defined(CONFIG_SCAN_BACKOP) && defined(CONFIG_AP_MODE) */
 
-#if defined(CONFIG_SCAN_BACKOP) && defined(CONFIG_RTW_MESH)
-#define mlmeext_scan_backop_flags_mesh(mlmeext) ((mlmeext)->sitesurvey_res.backop_flags_mesh)
-#define mlmeext_chk_scan_backop_flags_mesh(mlmeext, flags) ((mlmeext)->sitesurvey_res.backop_flags_mesh & (flags))
-#define mlmeext_assign_scan_backop_flags_mesh(mlmeext, flags) \
-	do { \
-		((mlmeext)->sitesurvey_res.backop_flags_mesh = (flags)); \
-	} while (0)
-#else
 #define mlmeext_scan_backop_flags_mesh(mlmeext) (0)
 #define mlmeext_chk_scan_backop_flags_mesh(mlmeext, flags) (0)
 #define mlmeext_assign_scan_backop_flags_mesh(mlmeext, flags) do {} while (0)
-#endif /* defined(CONFIG_SCAN_BACKOP) && defined(CONFIG_RTW_MESH) */
 
 u32 rtw_scan_timeout_decision(_adapter *padapter);
 

@@ -2051,11 +2051,6 @@ static void per_rate_rpt_update(_adapter *adapter, u8 mac_id,
 				u8 per, u8 rate,
 				u8 bw, u8 total_pkt)
 {
-#ifdef CONFIG_RTW_MESH
-	rtw_ieee80211s_update_metric(adapter, mac_id,
-				     per, rate,
-				     bw, total_pkt);
-#endif
 }
 
 int c2h_per_rate_rpt_hdl(_adapter *adapter, u8 *data, u8 len)
@@ -3769,15 +3764,6 @@ void rtw_hal_rcr_set_chk_bssid(_adapter *adapter, u8 self_action)
 		mstate_s.ld_ap_num = 0;
 		break;
 #endif
-#ifdef CONFIG_RTW_MESH
-	case MLME_MESH_STARTED:
-		mstate_s.mesh_num = 1;
-		break;
-	case MLME_MESH_STOPPED:
-		mstate_s.mesh_num = 0;
-		mstate_s.ld_mesh_num = 0;
-		break;
-#endif
 	case MLME_ACTION_NONE:
 	case MLME_ADHOC_STARTED:
 		/* caller without effect of decision */
@@ -4033,16 +4019,12 @@ void rtw_hal_update_tx_aclt(_adapter *adapter)
 			if (conf->be_bk)
 				lt_be_bk = conf->be_bk;
 		}
-		#if defined(CONFIG_TX_MCAST2UNI) || defined(CONFIG_RTW_MESH)
+		#if defined(CONFIG_TX_MCAST2UNI)
 		else if (0
 			#ifdef CONFIG_TX_MCAST2UNI
 			|| (i == TX_ACLT_CONF_AP_M2U
 				&& !rtw_mc2u_disable
 				&& macid_ctl->op_num[H2C_MSR_ROLE_STA] /* having AP mode with STA connected */)
-			#endif
-			#ifdef CONFIG_RTW_MESH
-			|| (i == TX_ACLT_CONF_MESH
-				&& macid_ctl->op_num[H2C_MSR_ROLE_MESH] > 1 /* implies only 1 MESH mode supported */)
 			#endif
 		) {
 			/* long term status, OR en and MIN lifetime */
@@ -4380,12 +4362,6 @@ _adapter * _rtw_search_dp_iface(_adapter *adapter)
 		) {
 			adhoc_num++;
 
-#ifdef CONFIG_RTW_MESH
-		} else if (check_fwstate(&iface->mlmepriv, WIFI_MESH_STATE) == _TRUE
-			&& check_fwstate(&iface->mlmepriv, _FW_LINKED) == _TRUE
-		) {
-			mesh_ifs[mesh_num++] = iface;
-#endif
 		}
 	}
 

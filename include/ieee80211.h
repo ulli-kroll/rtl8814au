@@ -1860,16 +1860,6 @@ struct rtw_ieee802_11_elems {
 	u8 vht_op_mode_notify_len;
 	u8 *rm_en_cap;
 	u8 rm_en_cap_len;
-#ifdef CONFIG_RTW_MESH
-	u8 *preq;
-	u8 preq_len;
-	u8 *prep;
-	u8 prep_len;
-	u8 *perr;
-	u8 perr_len;
-	u8 *rann;
-	u8 rann_len;
-#endif
 };
 
 typedef enum { ParseOK = 0, ParseUnknown = 1, ParseFailed = -1 } ParseRes;

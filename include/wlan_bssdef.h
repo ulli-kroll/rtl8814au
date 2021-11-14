@@ -177,12 +177,6 @@ struct	wlan_network {
 	int	network_type;	/* refer to ieee80211.h for WIRELESS_11A/B/G */
 	int	fixed;			/* set to fixed when not to be removed as site-surveying */
 	systime last_scanned; /* timestamp for the network */
-#ifdef CONFIG_RTW_MESH
-#if CONFIG_RTW_MESH_ACNODE_PREVENT
-	systime acnode_stime;
-	systime acnode_notify_etime;
-#endif
-#endif
 	int	aid;			/* will only be valid when a BSS is joinned. */
 	int	join_res;
 	WLAN_BSSID_EX	network; /* must be the last item */

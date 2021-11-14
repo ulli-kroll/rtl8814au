@@ -34,10 +34,6 @@ struct mi_state {
 #endif
 	u8 adhoc_num;		/* (WIFI_ADHOC_STATE | WIFI_ADHOC_MASTER_STATE) && _FW_LINKED */
 	u8 ld_adhoc_num;	/* (WIFI_ADHOC_STATE | WIFI_ADHOC_MASTER_STATE) && _FW_LINKED && asoc_sta_count > 2 */
-#ifdef CONFIG_RTW_MESH
-	u8 mesh_num;		/* WIFI_MESH_STATE &&  _FW_LINKED */
-	u8 ld_mesh_num;		/* WIFI_MESH_STATE &&  _FW_LINKED && asoc_sta_count > 2 */
-#endif
 	u8 scan_num;		/* WIFI_SITE_MONITOR */
 	u8 scan_enter_num;	/* WIFI_SITE_MONITOR && !SCAN_DISABLE && !SCAN_BACK_OP */
 	u8 uwps_num;		/* WIFI_UNDER_WPS */
@@ -68,13 +64,8 @@ struct mi_state {
 #define MSTATE_ADHOC_NUM(_mstate)		((_mstate)->adhoc_num)
 #define MSTATE_ADHOC_LD_NUM(_mstate)	((_mstate)->ld_adhoc_num)
 
-#ifdef CONFIG_RTW_MESH
-#define MSTATE_MESH_NUM(_mstate)		((_mstate)->mesh_num)
-#define MSTATE_MESH_LD_NUM(_mstate)		((_mstate)->ld_mesh_num)
-#else
 #define MSTATE_MESH_NUM(_mstate)		0
 #define MSTATE_MESH_LD_NUM(_mstate)		0
-#endif
 
 #define MSTATE_SCAN_NUM(_mstate)		((_mstate)->scan_num)
 #define MSTATE_SCAN_ENTER_NUM(_mstate)	((_mstate)->scan_enter_num)

@@ -474,10 +474,6 @@ void rtw_hal_init_opmode(_adapter *padapter)
 	else if (fw_state & WIFI_AP_STATE)
 		networkType = Ndis802_11APMode;
 #endif
-#ifdef CONFIG_RTW_MESH
-	else if (fw_state & WIFI_MESH_STATE)
-		networkType = Ndis802_11_mesh;
-#endif
 	else
 		return;
 
@@ -735,11 +731,8 @@ s32	rtw_hal_mgnt_xmit(_adapter *padapter, struct xmit_frame *pmgntframe)
 
 	update_mgntframe_attrib_addr(padapter, pmgntframe);
 
-#if defined(CONFIG_IEEE80211W) || defined(CONFIG_RTW_MESH)
+#if defined(CONFIG_IEEE80211W)
 	if ((!MLME_IS_MESH(padapter) && SEC_IS_BIP_KEY_INSTALLED(&padapter->securitypriv) == _TRUE)
-		#ifdef CONFIG_RTW_MESH
-		|| (MLME_IS_MESH(padapter) && padapter->mesh_info.mesh_auth_id)
-		#endif
 	)
 		rtw_mgmt_xmitframe_coalesce(padapter, pmgntframe->pkt, pmgntframe);
 #endif

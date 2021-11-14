@@ -69,12 +69,6 @@
 	#error "RTW_DEDICATED_P2P_DEVICE can't be enabled when kernel < 3.7.0\n"
 #endif
 
-#ifdef CONFIG_RTW_MESH
-	#if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 10, 0))
-		#error "CONFIG_RTW_MESH can't be enabled when kernel < 3.10.0\n"
-	#endif
-#endif
-
 struct rtw_wdev_invit_info {
 	u8 state; /* 0: req, 1:rep */
 	u8 peer_mac[ETH_ALEN];

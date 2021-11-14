@@ -68,11 +68,6 @@ void rtw_os_indicate_connect(_adapter *adapter)
 
 	rtw_indicate_wx_assoc_event(adapter);
 
-#ifdef CONFIG_RTW_MESH
-#if CONFIG_RTW_MESH_CTO_MGATE_CARRIER
-	if (!rtw_mesh_cto_mgate_required(adapter))
-#endif
-#endif
 		rtw_netif_carrier_on(adapter->pnetdev);
 
 	if (adapter->pid[2] != 0)

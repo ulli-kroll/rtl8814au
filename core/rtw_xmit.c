@@ -1429,10 +1429,6 @@ get_sta_info:
 	) {
 		if (pattrib->qos_en) {
 			set_qos(pkt, pattrib);
-			#ifdef CONFIG_RTW_MESH
-			if (MLME_IS_MESH(padapter))
-				rtw_mesh_tx_set_whdr_mctrl_len(pattrib->mesh_frame_mode, pattrib);
-			#endif
 		}
 	} else {
 		{
@@ -1717,17 +1713,6 @@ s32 rtw_make_wlanhdr(_adapter *padapter , u8 *hdr, struct pkt_attrib *pattrib)
 
 			if (pattrib->qos_en)
 				qos_option = _TRUE;
-#ifdef CONFIG_RTW_MESH
-		} else if (check_fwstate(pmlmepriv, WIFI_MESH_STATE) == _TRUE) {
-			rtw_mesh_tx_build_whdr(padapter, pattrib, fctrl, pwlanhdr);
-			if (pattrib->qos_en)
-				qos_option = _TRUE;
-			else {
-				RTW_WARN("[%s] !qos_en in Mesh\n", __FUNCTION__);
-				res = _FAIL;
-				goto exit;
-			}
-#endif
 		} else {
 			res = _FAIL;
 			goto exit;
@@ -1751,18 +1736,6 @@ s32 rtw_make_wlanhdr(_adapter *padapter , u8 *hdr, struct pkt_attrib *pattrib)
 
 			if(pattrib->amsdu)
 				SetAMsdu(qc, pattrib->amsdu);
-#ifdef CONFIG_RTW_MESH
-			if (MLME_IS_MESH(padapter)) {
-				/* active: don't care, light sleep: 0, deep sleep: 1*/
-				set_mps_lv(qc, 0); //TBD
-
-				/* TBD: temporary set (rspi, eosp) = (0, 1) which means End MPSP */
-				set_rspi(qc, 0);
-				SetEOSP(qc, 1);
-				
-				set_mctrl_present(qc, 1);
-			}
-#endif
 		}
 
 		/* TODO: fill HT Control Field */
@@ -2061,19 +2034,6 @@ s32 rtw_xmitframe_coalesce_amsdu(_adapter *padapter, struct xmit_frame *pxmitfra
 		_rtw_open_pktfile(pkt_queue, &pktfile_queue);
 		_rtw_pktfile_read(&pktfile_queue, NULL, pattrib_queue->pkt_hdrlen);
 
-		#ifdef CONFIG_RTW_MESH
-		if (MLME_IS_MESH(padapter)) {
-			/* mDA(6), mSA(6), len(2), mctrl */
-			_rtw_memcpy(pframe, pattrib_queue->mda, ETH_ALEN);
-			pframe += ETH_ALEN;
-			_rtw_memcpy(pframe, pattrib_queue->msa, ETH_ALEN);
-			pframe += ETH_ALEN;
-			len = (u16*)pframe;
-			pframe += 2;
-			rtw_mesh_tx_build_mctrl(padapter, pattrib_queue, pframe);
-			pframe += XATTRIB_GET_MCTRL_LEN(pattrib_queue);
-		} else
-		#endif
 		{
 			/* 802.3 MAC Header DA(6)  SA(6)  Len(2)*/
 			_rtw_memcpy(pframe, pattrib_queue->dst, ETH_ALEN);
@@ -2109,19 +2069,6 @@ s32 rtw_xmitframe_coalesce_amsdu(_adapter *padapter, struct xmit_frame *pxmitfra
 	_rtw_open_pktfile(pkt, &pktfile);
 	_rtw_pktfile_read(&pktfile, NULL, pattrib->pkt_hdrlen);
 
-#ifdef CONFIG_RTW_MESH
-	if (MLME_IS_MESH(padapter)) {
-		/* mDA(6), mSA(6), len(2), mctrl */
-		_rtw_memcpy(pframe, pattrib->mda, ETH_ALEN);
-		pframe += ETH_ALEN;
-		_rtw_memcpy(pframe, pattrib->msa, ETH_ALEN);
-		pframe += ETH_ALEN;
-		len = (u16*)pframe;
-		pframe += 2;
-		rtw_mesh_tx_build_mctrl(padapter, pattrib, pframe);
-		pframe += XATTRIB_GET_MCTRL_LEN(pattrib);
-	} else
-#endif
 	{
 		/* 802.3 MAC Header  DA(6)  SA(6)  Len(2) */
 		_rtw_memcpy(pframe, pattrib->dst, ETH_ALEN);
@@ -2315,14 +2262,6 @@ s32 rtw_xmitframe_coalesce(_adapter *padapter, _pkt *pkt, struct xmit_frame *pxm
 		}
 
 		if (frg_inx == 0) {
-			#ifdef CONFIG_RTW_MESH
-			if (MLME_IS_MESH(padapter)) {
-				rtw_mesh_tx_build_mctrl(padapter, pattrib, pframe);
-				pframe += XATTRIB_GET_MCTRL_LEN(pattrib);
-				mpdu_len -= XATTRIB_GET_MCTRL_LEN(pattrib);
-			}
-			#endif
-
 			llc_sz = rtw_put_snap(pframe, pattrib->ether_type);
 			pframe += llc_sz;
 			mpdu_len -= llc_sz;
@@ -2385,7 +2324,7 @@ exit:
 	return res;
 }
 
-#if defined(CONFIG_IEEE80211W) || defined(CONFIG_RTW_MESH)
+#if defined(CONFIG_IEEE80211W)
 /*
  * CCMP encryption for unicast robust mgmt frame and broadcast group privicy action
  * BIP for broadcast robust mgmt frame
@@ -2705,7 +2644,7 @@ xmitframe_coalesce_fail:
 
 	return _FAIL;
 }
-#endif /* defined(CONFIG_IEEE80211W) || defined(CONFIG_RTW_MESH) */
+#endif /* defined(CONFIG_IEEE80211W) */
 
 /* Logical Link Control(LLC) SubNetwork Attachment Point(SNAP) header
  * IEEE LLC/SNAP header contains 8 octets
@@ -4095,46 +4034,6 @@ s32 rtw_xmit(_adapter *padapter, _pkt **ppkt)
 		DBG_COUNTER(padapter->tx_logs.core_tx_err_pxmitframe);
 		return -1;
 	}
-
-#ifdef CONFIG_RTW_MESH
-	if (MLME_IS_MESH(padapter)) {
-		_list b2u_list;
-
-		res = rtw_mesh_addr_resolve(padapter, pxmitframe, *ppkt, &b2u_list);
-		if (res == RTW_RA_RESOLVING)
-			return 1;
-		if (res == _FAIL)
-			return -1;
-
-		#if CONFIG_RTW_MESH_DATA_BMC_TO_UC
-		if (!rtw_is_list_empty(&b2u_list)) {
-			_list *list = get_next(&b2u_list);
-			struct xmit_frame *b2uframe;
-
-			while ((rtw_end_of_queue_search(&b2u_list, list)) == _FALSE) {
-				b2uframe = LIST_CONTAINOR(list, struct xmit_frame, list);
-				list = get_next(list);
-				rtw_list_delete(&b2uframe->list);
-
-				b2uframe->pkt = rtw_os_pkt_copy(*ppkt);
-				if (!b2uframe->pkt) {
-					if (res == RTW_BMC_NO_NEED)
-						res = _SUCCESS;
-					rtw_free_xmitframe(pxmitpriv, b2uframe);
-					continue;
-				}
-
-				rtw_xmit_posthandle(padapter, b2uframe, b2uframe->pkt);
-			}
-		}
-		#endif /* CONFIG_RTW_MESH_DATA_BMC_TO_UC */
-
-		if (res == RTW_BMC_NO_NEED) {
-			rtw_free_xmitframe(&padapter->xmitpriv, pxmitframe);
-			return 0;
-		}
-	}
-#endif /* CONFIG_RTW_MESH */
 
 	pxmitframe->pkt = NULL; /* let rtw_xmit_posthandle not to free pkt inside */
 	res = rtw_xmit_posthandle(padapter, pxmitframe, *ppkt);

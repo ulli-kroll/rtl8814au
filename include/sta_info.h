@@ -149,10 +149,6 @@ struct	stainfo_stats	{
 	u32 tx_ok_cnt;		/* Read & Clear, in proc_get_tx_stat() */
 	u32 tx_fail_cnt;	/* Read & Clear, in proc_get_tx_stat() */
 	u32 tx_retry_cnt;	/* Read & Clear, in proc_get_tx_stat() */
-#ifdef CONFIG_RTW_MESH
-	u32 rx_hwmp_pkts;
-	u32 last_rx_hwmp_pkts;
-#endif
 };
 
 #ifndef DBG_SESSION_TRACKER
@@ -227,21 +223,6 @@ struct sta_recv_dframe_info {
 };
 #endif
 
-#ifdef CONFIG_RTW_MESH
-struct mesh_plink_ent;
-struct rtw_ewma_err_rate {
-	unsigned long internal;
-};
-
-/* Mesh airtime link metrics parameters */
-struct rtw_atlm_param {
-	struct rtw_ewma_err_rate err_rate; /* Now is PACKET error rate */
-	u16 data_rate; /* The unit is 100Kbps */
-	u16 total_pkt;
-	u16 overhead; /* Channel access overhead */
-};
-#endif
-
 struct sta_info {
 
 	_lock	lock;
@@ -279,20 +260,6 @@ struct sta_info {
 	union Keytype	dot118021x_UncstKey;
 	union pn48		dot11txpn;			/* PN48 used for Unicast xmit */
 	union pn48		dot11rxpn;			/* PN48 used for Unicast recv. */
-#ifdef CONFIG_RTW_MESH
-	/* peer's GTK, RX only */
-	u8 group_privacy;
-	u8 gtk_bmp;
-	union Keytype gtk;
-	union pn48 gtk_pn;
-	#ifdef CONFIG_IEEE80211W
-	/* peer's IGTK, RX only */
-	u8 igtk_bmp;
-	u8 igtk_id;
-	union Keytype igtk;
-	union pn48 igtk_pn;
-	#endif /* CONFIG_IEEE80211W */
-#endif /* CONFIG_RTW_MESH */
 #ifdef CONFIG_GTK_OL
 	u8 kek[RTW_KEK_LEN];
 	u8 kck[RTW_KCK_LEN];
@@ -409,18 +376,6 @@ struct sta_info {
 
 #endif /* CONFIG_AP_MODE	 */
 
-#ifdef CONFIG_RTW_MESH
-	struct mesh_plink_ent *plink;
-
-	u8 local_mps;
-	u8 peer_mps;
-	u8 nonpeer_mps;
-
-	struct rtw_atlm_param metrics;
-	/* The reference for nexthop_lookup */
-	BOOLEAN alive;
-#endif
-
 #ifdef CONFIG_IOCTL_CFG80211
 	u8 *pauth_frame;
 	u32 auth_len;
@@ -453,11 +408,7 @@ struct sta_info {
 	_workitem tx_q_work;
 };
 
-#ifdef CONFIG_RTW_MESH
-#define STA_SET_MESH_PLINK(sta, link) (sta)->plink = link
-#else
 #define STA_SET_MESH_PLINK(sta, link) do {} while (0)
-#endif
 
 #define sta_tx_pkts(sta) \
 	(sta->sta_stats.tx_pkts)
@@ -523,14 +474,7 @@ struct sta_info {
 #define sta_last_rx_probersp_uo_pkts(sta) \
 	(sta->sta_stats.last_rx_probersp_uo_pkts)
 
-#ifdef CONFIG_RTW_MESH
-#define update_last_rx_hwmp_pkts(sta) \
-	do { \
-		sta->sta_stats.last_rx_hwmp_pkts = sta->sta_stats.rx_hwmp_pkts; \
-	} while(0)
-#else
 #define update_last_rx_hwmp_pkts(sta) do {} while(0)
-#endif
 
 #define sta_update_last_rx_pkts(sta) \
 	do { \

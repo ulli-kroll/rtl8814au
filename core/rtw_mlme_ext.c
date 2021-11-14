@@ -85,10 +85,6 @@ struct action_handler OnAction_tbl[] = {
 	{RTW_WLAN_CATEGORY_WNM, "ACTION_WNM", &on_action_wnm},
 #endif
 	{RTW_WLAN_CATEGORY_UNPROTECTED_WNM, "ACTION_UNPROTECTED_WNM", &DoReserved},
-#ifdef CONFIG_RTW_MESH
-	{RTW_WLAN_CATEGORY_MESH, "ACTION_MESH", &on_action_mesh},
-	{RTW_WLAN_CATEGORY_SELF_PROTECTED, "ACTION_SELF_PROTECTED", &on_action_self_protected},
-#endif
 	{RTW_WLAN_CATEGORY_WMM, "ACTION_WMM", &OnAction_wmm},
 	{RTW_WLAN_CATEGORY_VHT, "ACTION_VHT", &OnAction_vht},
 	{RTW_WLAN_CATEGORY_P2P, "ACTION_P2P", &OnAction_p2p},
@@ -1071,9 +1067,6 @@ static void init_mlme_ext_priv_value(_adapter *padapter)
 	#ifdef CONFIG_AP_MODE
 	mlmeext_assign_scan_backop_flags_ap(pmlmeext, SS_BACKOP_EN | SS_BACKOP_PS_ANNC | SS_BACKOP_TX_RESUME);
 	#endif
-	#ifdef CONFIG_RTW_MESH
-	mlmeext_assign_scan_backop_flags_mesh(pmlmeext, /*SS_BACKOP_EN | */SS_BACKOP_PS_ANNC | SS_BACKOP_TX_RESUME);
-	#endif
 	pmlmeext->sitesurvey_res.scan_cnt = 0;
 	pmlmeext->sitesurvey_res.scan_cnt_max = RTW_SCAN_NUM_OF_CH;
 	pmlmeext->sitesurvey_res.backop_ms = RTW_BACK_OP_CH_MS;
@@ -1556,18 +1549,6 @@ _non_rc_device:
 			|| (ielen == 0 && pmlmeinfo->hidden_ssid_mode))
 			goto exit;
 
-		#ifdef CONFIG_RTW_MESH
-		if (MLME_IS_MESH(padapter)) {
-			p = rtw_get_ie(pframe + WLAN_HDR_A3_LEN + _PROBEREQ_IE_OFFSET_, WLAN_EID_MESH_ID, (int *)&ielen,
-					len - WLAN_HDR_A3_LEN - _PROBEREQ_IE_OFFSET_);
-
-			if (!p)
-				goto exit;
-			if (ielen != 0 && _rtw_memcmp((void *)(p + 2), (void *)cur->mesh_id.Ssid, cur->mesh_id.SsidLength) == _FALSE)
-				goto exit;
-		}
-		#endif
-
 _issue_probersp:
 		if (((check_fwstate(pmlmepriv, _FW_LINKED) == _TRUE &&
 		      pmlmepriv->cur_network.join_res == _TRUE)) || check_fwstate(pmlmepriv, WIFI_ADHOC_MASTER_STATE)) {
@@ -1853,11 +1834,6 @@ unsigned int OnAuth(_adapter *padapter, union recv_frame *precv_frame)
 
 	if (!MLME_IS_ASOC(padapter))
 		return _SUCCESS;
-
-#if defined(CONFIG_IOCTL_CFG80211) && defined(CONFIG_RTW_MESH)
-	if (MLME_IS_MESH(padapter))
-		return rtw_mesh_on_auth(padapter, precv_frame);
-#endif
 
 	RTW_INFO("+OnAuth\n");
 
@@ -5114,15 +5090,6 @@ int _issue_probereq(_adapter *padapter, const NDIS_802_11_SSID *pssid, const u8 
 
 	if (ch)
 		pframe = rtw_set_ie(pframe, _DSSET_IE_, 1, &ch, &pattrib->pktlen);
-
-#ifdef CONFIG_RTW_MESH
-	if (MLME_IS_MESH(padapter)) {
-		if (pssid)
-			pframe = rtw_set_ie_mesh_id(pframe, &pattrib->pktlen, pssid->Ssid, pssid->SsidLength);
-		else
-			pframe = rtw_set_ie_mesh_id(pframe, &pattrib->pktlen, NULL, 0);
-	}
-#endif
 
 	if (append_wps) {
 		/* add wps_ie for wps2.0 */
@@ -10457,12 +10424,6 @@ u8 rtw_scan_backop_decision(_adapter *adapter)
 		backop_flags |= mlmeext_scan_backop_flags_ap(mlmeext);
 #endif
 
-#ifdef CONFIG_RTW_MESH
-	if ((MSTATE_MESH_LD_NUM(&mstate) && mlmeext_chk_scan_backop_flags_mesh(mlmeext, SS_BACKOP_EN))
-		|| (MSTATE_MESH_NUM(&mstate) && mlmeext_chk_scan_backop_flags_mesh(mlmeext, SS_BACKOP_EN_NL)))
-		backop_flags |= mlmeext_scan_backop_flags_mesh(mlmeext);
-#endif
-
 	return backop_flags;
 }
 #endif
@@ -10880,11 +10841,6 @@ u8 rtw_ps_annc(_adapter *adapter, bool ps)
 				issue_nulldata(iface, NULL, ps, 3, 500);
 				ps_anc = 1;
 			}
-		#ifdef CONFIG_RTW_MESH
-		} else if (MLME_IS_MESH(iface)) {
-			if (rtw_mesh_ps_annc(iface, ps))
-				ps_anc = 1;
-		#endif
 		}
 	}
 	return ps_anc;
@@ -12080,10 +12036,6 @@ void rtw_join_done_chk_ch(_adapter *adapter, int join_res)
 					mlmeext->cur_bwmode = mlme->ori_bw;
 					mlmeext->cur_channel = u_ch;
 					rtw_adjust_chbw(iface, mlmeext->cur_channel, &mlmeext->cur_bwmode, &mlmeext->cur_ch_offset);
-					#ifdef CONFIG_RTW_MESH
-					if (MLME_IS_MESH(iface))
-						rtw_mesh_adjust_chbw(mlmeext->cur_channel, &mlmeext->cur_bwmode, &mlmeext->cur_ch_offset);
-					#endif
 
 					rtw_chset_sync_chbw(adapter_to_chset(adapter)
 						, &mlmeext->cur_channel, &mlmeext->cur_bwmode, &mlmeext->cur_ch_offset
@@ -12511,13 +12463,6 @@ int rtw_sae_preprocess(_adapter *adapter, const u8 *buf, u32 len, u8 tx)
 		(seq == 1) ? "Commit" : "Confirm");
 
 	ret = _SUCCESS;
-
-#ifdef CONFIG_RTW_MESH
-	if (MLME_IS_MESH(adapter)) {
-		rtw_mesh_sae_check_frames(adapter, buf, len, tx, alg, seq, status);
-		goto exit;
-	}
-#endif
 
 	if (tx && (seq == 2) && (status == 0)) {
 		/* quere commit frame until external auth statue update */

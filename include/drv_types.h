@@ -105,9 +105,6 @@ typedef struct _ADAPTER _adapter, ADAPTER, *PADAPTER;
 #include <rtw_mlme_ext.h>
 #include <rtw_mi.h>
 #include <rtw_ap.h>
-#ifdef CONFIG_RTW_MESH
-#include "../core/mesh/rtw_mesh.h"
-#endif
 #include <rtw_efuse.h>
 #include <rtw_version.h>
 #include <rtw_odm.h>
@@ -442,9 +439,6 @@ struct registry_priv {
 	u8 tdmadig_mode;
 	u8 tdmadig_dynamic;
 #endif/*CONFIG_TDMADIG*/
-#ifdef CONFIG_RTW_MESH
-	u8 peer_alive_based_preq;
-#endif
 };
 
 /* For registry parameters */
@@ -1513,16 +1507,6 @@ struct _ADAPTER {
 #ifdef CONFIG_MCC_MODE
 	struct mcc_adapter_priv mcc_adapterpriv;
 #endif /* CONFIG_MCC_MODE */
-
-#ifdef CONFIG_RTW_MESH
-	struct rtw_mesh_cfg mesh_cfg;
-	struct rtw_mesh_info mesh_info;
-	_timer mesh_path_timer;
-	_timer mesh_path_root_timer;
-	_timer mesh_atlm_param_req_timer; /* airtime link metrics param request timer */
-	_workitem mesh_work;
-	unsigned long wrkq_flags;
-#endif /* CONFIG_RTW_MESH */
 };
 
 #define adapter_to_dvobj(adapter) ((adapter)->dvobj)

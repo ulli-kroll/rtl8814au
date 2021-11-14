@@ -1086,10 +1086,6 @@ u8 session_tracker_del_cmd(_adapter *adapter, struct sta_info *sta, u8 *local_na
 
 u8 set_txq_params_cmd(_adapter *adapter, u32 ac_parm, u8 ac_type);
 
-#if defined(CONFIG_RTW_MESH) && defined(RTW_PER_CMD_SUPPORT_FW)
-u8 rtw_req_per_cmd(_adapter * adapter);
-#endif
-
 #ifdef CONFIG_CTRL_TXSS_BY_TP
 struct txss_cmd_parm {
 	struct sta_info *sta;

@@ -1178,7 +1178,7 @@ static void construct_mic_iv(
 		mic_iv[1] = mpdu[24] & 0x0f;   /* mute bits 7-4   */
 	if (!qc_exists)
 		mic_iv[1] = 0x00;
-#if defined(CONFIG_IEEE80211W) || defined(CONFIG_RTW_MESH)
+#if defined(CONFIG_IEEE80211W)
 	/* 802.11w management frame should set management bit(4) */
 	if (frtype == WIFI_MGT_TYPE)
 		mic_iv[1] |= BIT(4);
@@ -1212,7 +1212,7 @@ static void construct_mic_header1(
 {
 	mic_header1[0] = (u8)((header_length - 2) / 256);
 	mic_header1[1] = (u8)((header_length - 2) % 256);
-#if defined(CONFIG_IEEE80211W) || defined(CONFIG_RTW_MESH)
+#if defined(CONFIG_IEEE80211W)
 	/* 802.11w management frame don't AND subtype bits 4,5,6 of frame control field */
 	if (frtype == WIFI_MGT_TYPE)
 		mic_header1[2] = mpdu[0];
@@ -1313,7 +1313,7 @@ static void construct_ctr_preload(
 		ctr_preload[1] = mpdu[30] & 0x0f;   /* QoC_Control */
 	if (qc_exists && !a4_exists)
 		ctr_preload[1] = mpdu[24] & 0x0f;
-#if defined(CONFIG_IEEE80211W) || defined(CONFIG_RTW_MESH)
+#if defined(CONFIG_IEEE80211W)
 	/* 802.11w management frame should set management bit(4) */
 	if (frtype == WIFI_MGT_TYPE)
 		ctr_preload[1] |= BIT(4);
@@ -1931,9 +1931,6 @@ u32	rtw_aes_decrypt(_adapter *padapter, u8 *precvframe)
 				/* RTW_INFO("rx bc/mc packets, to perform sw rtw_aes_decrypt\n"); */
 				/* prwskey = psecuritypriv->dot118021XGrpKey[psecuritypriv->dot118021XGrpKeyid].skey; */
 				if ((!MLME_IS_MESH(padapter) && psecuritypriv->binstallGrpkey == _FALSE)
-					#ifdef CONFIG_RTW_MESH
-					|| !(stainfo->gtk_bmp | BIT(prxattrib->key_index))
-					#endif
 				) {
 					res = _FAIL;
 
@@ -1966,12 +1963,6 @@ u32	rtw_aes_decrypt(_adapter *padapter, u8 *precvframe)
 				no_gkey_bc_cnt = 0;
 				no_gkey_mc_cnt = 0;
 
-				#ifdef CONFIG_RTW_MESH
-				if (MLME_IS_MESH(padapter)) {
-					/* TODO: multiple GK? */
-					prwskey = &stainfo->gtk.skey[0];
-				} else
-				#endif
 				{
 					prwskey = psecuritypriv->dot118021XGrpKey[prxattrib->key_index].skey;
 					if (psecuritypriv->dot118021XGrpKeyid != prxattrib->key_index) {
@@ -2301,7 +2292,7 @@ static u8 os_strlen(const char *s)
 }
 #endif
 
-#if defined(CONFIG_TDLS) || defined(CONFIG_RTW_MESH_AEK)
+#if defined(CONFIG_TDLS)
 static int os_memcmp(const void *s1, const void *s2, u8 n)
 {
 	const unsigned char *p1 = s1, *p2 = s2;
@@ -2800,231 +2791,6 @@ int omac1_aes_128(const u8 *key, const u8 *data, size_t data_len, u8 *mac)
 {
 	return omac1_aes_128_vector(key, 1, &data, &data_len, mac);
 }
-
-#ifdef CONFIG_RTW_MESH_AEK
-/* for AES-SIV */
-#define os_memset _rtw_memset
-#define os_memcpy _rtw_memcpy
-#define os_malloc rtw_malloc
-#define bin_clear_free(bin, len) \
-	do { \
-		if (bin) { \
-			os_memset(bin, 0, len); \
-			rtw_mfree(bin, len); \
-		} \
-	} while (0)
-
-static const u8 zero[AES_BLOCK_SIZE];
-
-static void dbl(u8 *pad)
-{
-	int i, carry;
-
-	carry = pad[0] & 0x80;
-	for (i = 0; i < AES_BLOCK_SIZE - 1; i++)
-		pad[i] = (pad[i] << 1) | (pad[i + 1] >> 7);
-	pad[AES_BLOCK_SIZE - 1] <<= 1;
-	if (carry)
-		pad[AES_BLOCK_SIZE - 1] ^= 0x87;
-}
-
-static void xor(u8 *a, const u8 *b)
-{
-	int i;
-
-	for (i = 0; i < AES_BLOCK_SIZE; i++)
-		*a++ ^= *b++;
-}
-
-static void xorend(u8 *a, int alen, const u8 *b, int blen)
-{
-	int i;
-
-	if (alen < blen)
-		return;
-
-	for (i = 0; i < blen; i++)
-		a[alen - blen + i] ^= b[i];
-}
-
-static void pad_block(u8 *pad, const u8 *addr, size_t len)
-{
-	os_memset(pad, 0, AES_BLOCK_SIZE);
-	os_memcpy(pad, addr, len);
-
-	if (len < AES_BLOCK_SIZE)
-		pad[len] = 0x80;
-}
-
-static int aes_s2v(const u8 *key, size_t num_elem, const u8 *addr[],
-		   size_t *len, u8 *mac)
-{
-	u8 tmp[AES_BLOCK_SIZE], tmp2[AES_BLOCK_SIZE];
-	u8 *buf = NULL;
-	int ret;
-	size_t i;
-
-	if (!num_elem) {
-		os_memcpy(tmp, zero, sizeof(zero));
-		tmp[AES_BLOCK_SIZE - 1] = 1;
-		return omac1_aes_128(key, tmp, sizeof(tmp), mac);
-	}
-
-	ret = omac1_aes_128(key, zero, sizeof(zero), tmp);
-	if (ret)
-		return ret;
-
-	for (i = 0; i < num_elem - 1; i++) {
-		ret = omac1_aes_128(key, addr[i], len[i], tmp2);
-		if (ret)
-			return ret;
-
-		dbl(tmp);
-		xor(tmp, tmp2);
-	}
-	if (len[i] >= AES_BLOCK_SIZE) {
-		buf = os_malloc(len[i]);
-		if (!buf)
-			return -ENOMEM;
-
-		os_memcpy(buf, addr[i], len[i]);
-		xorend(buf, len[i], tmp, AES_BLOCK_SIZE);
-		ret = omac1_aes_128(key, buf, len[i], mac);
-		bin_clear_free(buf, len[i]);
-		return ret;
-	}
-
-	dbl(tmp);
-	pad_block(tmp2, addr[i], len[i]);
-	xor(tmp, tmp2);
-
-	return omac1_aes_128(key, tmp, sizeof(tmp), mac);
-}
-
-/**
- * aes_128_ctr_encrypt - AES-128 CTR mode encryption
- * @key: Key for encryption (16 bytes)
- * @nonce: Nonce for counter mode (16 bytes)
- * @data: Data to encrypt in-place
- * @data_len: Length of data in bytes
- * Returns: 0 on success, -1 on failure
- */
-int aes_128_ctr_encrypt(const u8 *key, const u8 *nonce,
-			u8 *data, size_t data_len)
-{
-	void *ctx;
-	size_t j, len, left = data_len;
-	int i;
-	u8 *pos = data;
-	u8 counter[AES_BLOCK_SIZE], buf[AES_BLOCK_SIZE];
-
-	ctx = aes_encrypt_init(key, 16);
-	if (ctx == NULL)
-		return -1;
-	os_memcpy(counter, nonce, AES_BLOCK_SIZE);
-
-	while (left > 0) {
-		#if 0
-		aes_encrypt(ctx, counter, buf);
-		#else
-		aes_128_encrypt(ctx, counter, buf);
-		#endif
-
-		len = (left < AES_BLOCK_SIZE) ? left : AES_BLOCK_SIZE;
-		for (j = 0; j < len; j++)
-			pos[j] ^= buf[j];
-		pos += len;
-		left -= len;
-
-		for (i = AES_BLOCK_SIZE - 1; i >= 0; i--) {
-			counter[i]++;
-			if (counter[i])
-				break;
-		}
-	}
-	aes_encrypt_deinit(ctx);
-	return 0;
-}
-
-int aes_siv_encrypt(const u8 *key, const u8 *pw,
-		    size_t pwlen, size_t num_elem,
-		    const u8 *addr[], const size_t *len, u8 *out)
-{
-	const u8 *_addr[6];
-	size_t _len[6];
-	const u8 *k1 = key, *k2 = key + 16;
-	u8 v[AES_BLOCK_SIZE];
-	size_t i;
-	u8 *iv, *crypt_pw;
-
-	if (num_elem > ARRAY_SIZE(_addr) - 1)
-		return -1;
-
-	for (i = 0; i < num_elem; i++) {
-		_addr[i] = addr[i];
-		_len[i] = len[i];
-	}
-	_addr[num_elem] = pw;
-	_len[num_elem] = pwlen;
-
-	if (aes_s2v(k1, num_elem + 1, _addr, _len, v))
-		return -1;
-
-	iv = out;
-	crypt_pw = out + AES_BLOCK_SIZE;
-
-	os_memcpy(iv, v, AES_BLOCK_SIZE);
-	os_memcpy(crypt_pw, pw, pwlen);
-
-	/* zero out 63rd and 31st bits of ctr (from right) */
-	v[8] &= 0x7f;
-	v[12] &= 0x7f;
-	return aes_128_ctr_encrypt(k2, v, crypt_pw, pwlen);
-}
-
-int aes_siv_decrypt(const u8 *key, const u8 *iv_crypt, size_t iv_c_len,
-		    size_t num_elem, const u8 *addr[], const size_t *len,
-		    u8 *out)
-{
-	const u8 *_addr[6];
-	size_t _len[6];
-	const u8 *k1 = key, *k2 = key + 16;
-	size_t crypt_len;
-	size_t i;
-	int ret;
-	u8 iv[AES_BLOCK_SIZE];
-	u8 check[AES_BLOCK_SIZE];
-
-	if (iv_c_len < AES_BLOCK_SIZE || num_elem > ARRAY_SIZE(_addr) - 1)
-		return -1;
-	crypt_len = iv_c_len - AES_BLOCK_SIZE;
-
-	for (i = 0; i < num_elem; i++) {
-		_addr[i] = addr[i];
-		_len[i] = len[i];
-	}
-	_addr[num_elem] = out;
-	_len[num_elem] = crypt_len;
-
-	os_memcpy(iv, iv_crypt, AES_BLOCK_SIZE);
-	os_memcpy(out, iv_crypt + AES_BLOCK_SIZE, crypt_len);
-
-	iv[8] &= 0x7f;
-	iv[12] &= 0x7f;
-
-	ret = aes_128_ctr_encrypt(k2, iv, out, crypt_len);
-	if (ret)
-		return ret;
-
-	ret = aes_s2v(k1, num_elem + 1, _addr, _len, check);
-	if (ret)
-		return ret;
-	if (os_memcmp(check, iv_crypt, AES_BLOCK_SIZE) == 0)
-		return 0;
-
-	return -1;
-}
-#endif /* CONFIG_RTW_MESH_AEK */
 
 /* Restore HW wep key setting according to key_mask */
 void rtw_sec_restore_wep_key(_adapter *adapter)

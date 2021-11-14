@@ -279,11 +279,6 @@ struct	wlan_network *_rtw_alloc_network(struct	mlme_priv *pmlmepriv) /* (_queue 
 	pnetwork->network_type = 0;
 	pnetwork->fixed = _FALSE;
 	pnetwork->last_scanned = rtw_get_current_time();
-#if defined(CONFIG_RTW_MESH) && CONFIG_RTW_MESH_ACNODE_PREVENT
-	pnetwork->acnode_stime = 0;
-	pnetwork->acnode_notify_etime = 0;
-#endif
-
 	pnetwork->aid = 0;
 	pnetwork->join_res = 0;
 
@@ -863,17 +858,9 @@ bool rtw_update_scanned_network(_adapter *adapter, WLAN_BSSID_EX *target)
 			
 #ifdef CONFIG_RSSI_PRIORITY
 		if ((choice == NULL) || (pnetwork->network.PhyInfo.SignalStrength < choice->network.PhyInfo.SignalStrength))
-			#ifdef CONFIG_RTW_MESH
-			if (!MLME_IS_MESH(adapter) || !MLME_IS_ASOC(adapter)
-				|| !rtw_bss_is_same_mbss(&pmlmepriv->cur_network.network, &pnetwork->network))
-			#endif
 				choice = pnetwork;
 #else
 		if (choice == NULL || rtw_time_after(choice->last_scanned, pnetwork->last_scanned))
-			#ifdef CONFIG_RTW_MESH
-			if (!MLME_IS_MESH(adapter) || !MLME_IS_ASOC(adapter)
-				|| !rtw_bss_is_same_mbss(&pmlmepriv->cur_network.network, &pnetwork->network))
-			#endif
 				choice = pnetwork;
 #endif
 		plist = get_next(plist);
@@ -905,11 +892,6 @@ bool rtw_update_scanned_network(_adapter *adapter, WLAN_BSSID_EX *target)
 			/* variable initialize */
 			pnetwork->fixed = _FALSE;
 			pnetwork->last_scanned = rtw_get_current_time();
-			#if defined(CONFIG_RTW_MESH) && CONFIG_RTW_MESH_ACNODE_PREVENT
-			pnetwork->acnode_stime = 0;
-			pnetwork->acnode_notify_etime = 0;
-			#endif
-
 			pnetwork->network_type = 0;
 			pnetwork->aid = 0;
 			pnetwork->join_res = 0;
@@ -942,9 +924,6 @@ bool rtw_update_scanned_network(_adapter *adapter, WLAN_BSSID_EX *target)
 		 * be already expired. In this case we do the same as we found a new
 		 * net and call the new_net handler
 		 */
-		#if defined(CONFIG_RTW_MESH) && CONFIG_RTW_MESH_ACNODE_PREVENT
-		systime last_scanned = pnetwork->last_scanned;
-		#endif
 
 		pnetwork->last_scanned = rtw_get_current_time();
 
@@ -961,34 +940,11 @@ bool rtw_update_scanned_network(_adapter *adapter, WLAN_BSSID_EX *target)
 		else
 			update_ie = _FALSE;
 
-		#if defined(CONFIG_RTW_MESH) && CONFIG_RTW_MESH_ACNODE_PREVENT
-		if (!MLME_IS_MESH(adapter) || !MLME_IS_ASOC(adapter)
-			|| pnetwork->network.Configuration.DSConfig != target->Configuration.DSConfig
-			|| rtw_get_passing_time_ms(last_scanned) > adapter->mesh_cfg.peer_sel_policy.scanr_exp_ms
-			|| !rtw_bss_is_same_mbss(&pnetwork->network, target)
-		) {
-			pnetwork->acnode_stime = 0;
-			pnetwork->acnode_notify_etime = 0;
-		}
-		#endif
 		update_network(&(pnetwork->network), target, adapter, update_ie);
 	}
 
-	#if defined(CONFIG_RTW_MESH) && CONFIG_RTW_MESH_ACNODE_PREVENT
-	if (MLME_IS_MESH(adapter) && MLME_IS_ASOC(adapter))
-		rtw_mesh_update_scanned_acnode_status(adapter, pnetwork);
-	#endif
-
 unlock_scan_queue:
 	_exit_critical_bh(&queue->lock, &irqL);
-
-#ifdef CONFIG_RTW_MESH
-	if (pnetwork && MLME_IS_MESH(adapter)
-		&& check_fwstate(pmlmepriv, WIFI_ASOC_STATE)
-		&& !check_fwstate(pmlmepriv, WIFI_SITE_MONITOR)
-	)
-		rtw_chk_candidate_peer_notify(adapter, pnetwork);
-#endif
 
 	return update_ie;
 }
@@ -1281,25 +1237,6 @@ void rtw_surveydone_event_callback(_adapter	*adapter, u8 *pbuf)
 	rtw_cfg80211_indicate_scan_done_for_buddy(adapter, _FALSE);
 #endif
 
-#ifdef CONFIG_RTW_MESH
-	#if CONFIG_RTW_MESH_OFFCH_CAND
-	if (rtw_mesh_offch_candidate_accepted(adapter)) {
-		u8 ch;
-
-		ch = rtw_mesh_select_operating_ch(adapter);
-		if (ch && pmlmepriv->cur_network.network.Configuration.DSConfig != ch) {
-			u8 ifbmp = rtw_mi_get_ap_mesh_ifbmp(adapter);
-
-			if (ifbmp) {
-				/* switch to selected channel */
-				rtw_change_bss_chbw_cmd(adapter, RTW_CMDF_DIRECTLY, ifbmp, 0, ch, REQ_BW_ORI, REQ_OFFSET_NONE);
-				issue_probereq_ex(adapter, &pmlmepriv->cur_network.network.mesh_id, NULL, 0, 0, 0, 0);
-			} else
-				rtw_warn_on(1);
-		}
-	}
-	#endif
-#endif /* CONFIG_RTW_MESH */
 }
 
 u8 _rtw_sitesurvey_condition_check(const char *caller, _adapter *adapter, bool check_sc_interval)
@@ -2870,11 +2807,6 @@ void rtw_scan_timeout_handler(void *ctx)
 
 void rtw_mlme_reset_auto_scan_int(_adapter *adapter, u8 *reason)
 {
-#if defined(CONFIG_RTW_MESH) && defined(CONFIG_DFS_MASTER)
-#if CONFIG_RTW_MESH_OFFCH_CAND 
-	struct rf_ctl_t *rfctl = adapter_to_rfctl(adapter);
-#endif
-#endif
 	u8 u_ch;
 	u32 interval_ms = 0xffffffff; /* 0xffffffff: special value to make min() works well, also means no auto scan */
 
@@ -2890,20 +2822,6 @@ void rtw_mlme_reset_auto_scan_int(_adapter *adapter, u8 *reason)
 		interval_ms = rtw_min(interval_ms, 60 * 1000);
 		*reason |= RTW_AUTO_SCAN_REASON_2040_BSS;
 	}
-
-#ifdef CONFIG_RTW_MESH
-	#if CONFIG_RTW_MESH_OFFCH_CAND
-	if (adapter->mesh_cfg.peer_sel_policy.offch_find_int_ms
-		&& rtw_mesh_offch_candidate_accepted(adapter)
-		#ifdef CONFIG_DFS_MASTER
-		&& (!rfctl->radar_detect_ch || (IS_CH_WAITING(rfctl) && !IS_UNDER_CAC(rfctl)))
-		#endif
-	) {
-		interval_ms = rtw_min(interval_ms, adapter->mesh_cfg.peer_sel_policy.offch_find_int_ms);
-		*reason |= RTW_AUTO_SCAN_REASON_MESH_OFFCH_CAND;
-	}
-	#endif
-#endif /* CONFIG_RTW_MESH */
 
 	if (interval_ms == 0xffffffff)
 		interval_ms = 0;

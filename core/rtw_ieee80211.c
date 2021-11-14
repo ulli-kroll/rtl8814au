@@ -1437,24 +1437,6 @@ ParseRes rtw_ieee802_11_parse_elems(u8 *start, uint len,
 			elems->rm_en_cap = pos;
 			elems->rm_en_cap_len = elen;
 			break;
-#ifdef CONFIG_RTW_MESH
-		case WLAN_EID_PREQ:
-			elems->preq = pos;
-			elems->preq_len = elen;
-			break;
-		case WLAN_EID_PREP:
-			elems->prep = pos;
-			elems->prep_len = elen;
-			break;
-		case WLAN_EID_PERR:
-			elems->perr = pos;
-			elems->perr_len = elen;
-			break;
-		case WLAN_EID_RANN:
-			elems->rann = pos;
-			elems->rann_len = elen;
-			break;
-#endif
 		default:
 			unknown++;
 			if (!show_errors)

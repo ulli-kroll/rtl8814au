@@ -507,13 +507,6 @@ u8 rtw_set_802_11_infrastructure_mode(_adapter *padapter,
 
 			break;
 
-#ifdef CONFIG_RTW_MESH
-		case Ndis802_11_mesh:
-			set_fwstate(pmlmepriv, WIFI_MESH_STATE);
-			start_ap_mode(padapter);
-			break;
-#endif
-
 		case Ndis802_11AutoUnknown:
 		case Ndis802_11InfrastructureMax:
 			break;
