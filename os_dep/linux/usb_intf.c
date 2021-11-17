@@ -170,18 +170,6 @@ static struct usb_device_id rtw_usb_id_tbl[] = {
 	{USB_DEVICE(0x20f4, 0x804b), .driver_info = RTL8821}, /* TRENDnet  */
 #endif
 
-#ifdef CONFIG_RTL8723B
-	/* === Realtek demoboard === */
-	{USB_DEVICE_AND_INTERFACE_INFO(USB_VENDER_ID_REALTEK, 0xB720, 0xff, 0xff, 0xff), .driver_info = RTL8723B}, /* 8723BU 1*1 */
-	/* {USB_DEVICE(USB_VENDER_ID_REALTEK, 0xB720),.driver_info = RTL8723B},  8723BU */
-#endif
-
-#ifdef CONFIG_RTL8703B
-	/*=== Realtek demoboard ===*/
-	{USB_DEVICE_AND_INTERFACE_INFO(USB_VENDER_ID_REALTEK, 0xB703, 0xff, 0xff, 0xff), .driver_info = RTL8703B}, /* 8723CU 1*1 */
-	/* {USB_DEVICE(USB_VENDER_ID_REALTEK, 0xB703), .driver_info = RTL723C}, */ /* 8723CU 1*1 */
-#endif /* CONFIG_RTL8703B */
-
 #ifdef CONFIG_RTL8814A
 
 	{USB_DEVICE(USB_VENDER_ID_REALTEK, 0x8813), .driver_info = RTL8814A},
@@ -206,11 +194,6 @@ static struct usb_device_id rtw_usb_id_tbl[] = {
 	{USB_DEVICE_AND_INTERFACE_INFO(0x13b1, 0x0043, 0xff, 0xff, 0xff), .driver_info = RTL8822B}, /* Alpha - Alpha*/
 #endif /* CONFIG_RTL8822B */
 
-#ifdef CONFIG_RTL8723D
-	/*=== Realtek demoboard ===*/
-	{USB_DEVICE_AND_INTERFACE_INFO(USB_VENDER_ID_REALTEK, 0xD723, 0xff, 0xff, 0xff), .driver_info = RTL8723D}, /* 8723DU 1*1 */
-#endif
-
 #ifdef CONFIG_RTL8821C
 	/*=== Realtek demoboard ===*/
 	{USB_DEVICE_AND_INTERFACE_INFO(USB_VENDER_ID_REALTEK, 0xb82b, 0xff, 0xff, 0xff), .driver_info = RTL8821C}, /* 8821CU */
@@ -222,11 +205,6 @@ static struct usb_device_id rtw_usb_id_tbl[] = {
 	{USB_DEVICE_AND_INTERFACE_INFO(USB_VENDER_ID_REALTEK, 0xC811, 0xff, 0xff, 0xff), .driver_info = RTL8821C}, /* 8811CU */
 	{USB_DEVICE_AND_INTERFACE_INFO(USB_VENDER_ID_REALTEK, 0x8811, 0xff, 0xff, 0xff), .driver_info = RTL8821C}, /* 8811CU */	
 	/*=== Customer ID ===*/
-#endif
-
-#ifdef CONFIG_RTL8710B
-	/*=== Realtek dongle ===*/
-	{USB_DEVICE_AND_INTERFACE_INFO(USB_VENDER_ID_REALTEK, 0xB711, 0xff, 0xff, 0xff), .driver_info = RTL8710B}, /* 8710B = 8188GU 1*1 */
 #endif
 
 #ifdef CONFIG_RTL8822C
@@ -375,11 +353,6 @@ static void rtw_decide_chip_type_by_usb_info(struct dvobj_priv *pdvobjpriv, cons
 		rtl8812au_set_hw_type(pdvobjpriv);
 #endif
 
-#ifdef CONFIG_RTL8723B
-	if (pdvobjpriv->chip_type == RTL8723B)
-		rtl8723bu_set_hw_type(pdvobjpriv);
-#endif
-
 #ifdef CONFIG_RTL8814A
 	if (pdvobjpriv->chip_type == RTL8814A)
 		rtl8814au_set_hw_type(pdvobjpriv);
@@ -390,30 +363,15 @@ static void rtw_decide_chip_type_by_usb_info(struct dvobj_priv *pdvobjpriv, cons
 		rtl8188gtvu_set_hw_type(pdvobjpriv);
 #endif
 
-#ifdef CONFIG_RTL8703B
-	if (pdvobjpriv->chip_type == RTL8703B)
-		rtl8703bu_set_hw_type(pdvobjpriv);
-#endif /* CONFIG_RTL8703B */
-
 #ifdef CONFIG_RTL8822B
 	if (pdvobjpriv->chip_type == RTL8822B)
 		rtl8822bu_set_hw_type(pdvobjpriv);
 #endif /* CONFIG_RTL8822B */
 
-#ifdef CONFIG_RTL8723D
-	if (pdvobjpriv->chip_type == RTL8723D)
-		rtl8723du_set_hw_type(pdvobjpriv);
-#endif /* CONFIG_RTL8723D */
-
 #ifdef CONFIG_RTL8821C
 	if (pdvobjpriv->chip_type == RTL8821C)
 		rtl8821cu_set_hw_type(pdvobjpriv);
 #endif /* CONFIG_RTL8821C */
-
-#ifdef CONFIG_RTL8710B
-	if (pdvobjpriv->chip_type == RTL8710B)
-		rtl8710bu_set_hw_type(pdvobjpriv);
-#endif /* CONFIG_RTL8710B */
 
 #ifdef CONFIG_RTL8822C
 	if (pdvobjpriv->chip_type == RTL8822C)
@@ -629,10 +587,6 @@ u8 rtw_set_hal_ops(_adapter *padapter)
 		rtl8812au_set_hal_ops(padapter);
 #endif
 
-#ifdef CONFIG_RTL8723B
-	if (rtw_get_chip_type(padapter) == RTL8723B)
-		rtl8723bu_set_hal_ops(padapter);
-#endif
 #ifdef CONFIG_RTL8814A
 	if (rtw_get_chip_type(padapter) == RTL8814A)
 		rtl8814au_set_hal_ops(padapter);
@@ -643,21 +597,10 @@ u8 rtw_set_hal_ops(_adapter *padapter)
 		rtl8188gtvu_set_hal_ops(padapter);
 #endif
 
-#ifdef CONFIG_RTL8703B
-	if (rtw_get_chip_type(padapter) == RTL8703B)
-		rtl8703bu_set_hal_ops(padapter);
-#endif /* CONFIG_RTL8703B */
-
 #ifdef CONFIG_RTL8822B
 	if (rtw_get_chip_type(padapter) == RTL8822B)
 		rtl8822bu_set_hal_ops(padapter);
 #endif /* CONFIG_RTL8822B */
-
-#ifdef CONFIG_RTL8723D
-	if (rtw_get_chip_type(padapter) == RTL8723D)
-		rtl8723du_set_hal_ops(padapter);
-#endif /* CONFIG_RTL8723D */
-
 
 #ifdef CONFIG_RTL8821C
 	if (rtw_get_chip_type(padapter) == RTL8821C) {
@@ -665,12 +608,6 @@ u8 rtw_set_hal_ops(_adapter *padapter)
 			return _FAIL;
 	}
 #endif
-
-#ifdef CONFIG_RTL8710B
-	if (rtw_get_chip_type(padapter) == RTL8710B)
-		rtl8710bu_set_hal_ops(padapter);
-#endif /* CONFIG_RTL8710B */
-
 
 #ifdef CONFIG_RTL8822C
 	if (rtw_get_chip_type(padapter) == RTL8822C)

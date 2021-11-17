@@ -360,9 +360,6 @@ struct hal_ops {
 	int	(*Efuse_PgPacketWrite)(_adapter *padapter, u8 offset, u8 word_en, u8 *data, BOOLEAN bPseudoTest);
 	u8(*Efuse_WordEnableDataWrite)(_adapter *padapter, u16 efuse_addr, u8 word_en, u8 *data, BOOLEAN bPseudoTest);
 	BOOLEAN(*Efuse_PgPacketWrite_BT)(_adapter *padapter, u8 offset, u8 word_en, u8 *data, BOOLEAN bPseudoTest);
-#if defined(CONFIG_RTL8710B)
-	BOOLEAN(*efuse_indirect_read4)(_adapter *padapter, u16 regaddr, u8 *value);
-#endif
 
 #ifdef DBG_CONFIG_ERROR_DETECT
 	void (*sreset_init_value)(_adapter *padapter);

@@ -2269,11 +2269,6 @@ void rtw_stassoc_event_callback(_adapter *adapter, u8 *pbuf)
 
 	mlmeext_sta_add_event_callback(adapter, psta);
 
-#ifdef CONFIG_RTL8711
-	/* submit SetStaKey_cmd to tell fw, fw will allocate an CAM entry for this sta	 */
-	rtw_setstakey_cmd(adapter, psta, GROUP_KEY, _TRUE);
-#endif
-
 exit:
 #ifdef CONFIG_RTS_FULL_BW
 	rtw_set_rts_bw(adapter);

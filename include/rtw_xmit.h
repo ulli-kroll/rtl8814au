@@ -56,8 +56,6 @@
 
 #ifdef CONFIG_RTL8812A
 	#define MAX_CMDBUF_SZ	(512 * 18)
-#elif defined(CONFIG_RTL8723D) && defined(CONFIG_LPS_POFF)
-	#define MAX_CMDBUF_SZ	(128*70) /*(8960)*/
 #else
 	#define MAX_CMDBUF_SZ	(5120)	/* (4096) */
 #endif
@@ -143,10 +141,8 @@
 #endif
 
 #if defined(CONFIG_RTL8812A) || defined(CONFIG_RTL8821A) ||\
-	defined(CONFIG_RTL8723B) || \
-	defined(CONFIG_RTL8814A) || defined(CONFIG_RTL8703B) ||\
-	defined(CONFIG_RTL8188GTV) || defined(CONFIG_RTL8723D) ||\
-	defined(CONFIG_RTL8710B)
+	defined(CONFIG_RTL8814A) ||\
+	defined(CONFIG_RTL8188GTV)
 	#define TXDESC_SIZE 40
 #elif defined(CONFIG_RTL8822B) || defined(CONFIG_RTL8822C)
 	#define TXDESC_SIZE 48		/* HALMAC_TX_DESC_SIZE_8822B */
@@ -179,8 +175,8 @@ enum TXDESC_SC {
 	SC_DUPLICATE = 0x03
 };
 
-#if defined(CONFIG_RTL8812A) || defined(CONFIG_RTL8821A) || defined(CONFIG_RTL8723B) \
-	|| defined(CONFIG_RTL8188GTV) || defined(CONFIG_RTL8723D)
+#if defined(CONFIG_RTL8812A) || defined(CONFIG_RTL8821A) \
+	|| defined(CONFIG_RTL8188GTV)
 	#define TXDESC_40_BYTES
 #endif
 

@@ -303,12 +303,6 @@ u8 usb_read8(struct intf_hdl *pintfhdl, u32 addr)
 	wvalue = (u16)(addr & 0x0000ffff);
 	len = 1;
 	
-/* WLANON PAGE0_REG needs to add an offset 0x8000 */
-#if defined(CONFIG_RTL8710B)
-	if(wvalue >= 0x0000 && wvalue < 0x0100)
-		wvalue |= 0x8000;
-#endif
-
 	usbctrl_vendorreq(pintfhdl, request, wvalue, index,
 			  &data, len, requesttype);
 
@@ -333,12 +327,6 @@ u16 usb_read16(struct intf_hdl *pintfhdl, u32 addr)
 	wvalue = (u16)(addr & 0x0000ffff);
 	len = 2;
 	
-/* WLANON PAGE0_REG needs to add an offset 0x8000 */
-#if defined(CONFIG_RTL8710B)
-	if(wvalue >= 0x0000 && wvalue < 0x0100)
-		wvalue |= 0x8000;
-#endif
-
 	usbctrl_vendorreq(pintfhdl, request, wvalue, index,
 			  &data, len, requesttype);
 
@@ -364,12 +352,6 @@ u32 usb_read32(struct intf_hdl *pintfhdl, u32 addr)
 	wvalue = (u16)(addr & 0x0000ffff);
 	len = 4;
 	
-/* WLANON PAGE0_REG needs to add an offset 0x8000 */
-#if defined(CONFIG_RTL8710B)
-	if(wvalue >= 0x0000 && wvalue < 0x0100)
-		wvalue |= 0x8000;
-#endif
-
 	usbctrl_vendorreq(pintfhdl, request, wvalue, index,
 			  &data, len, requesttype);
 
@@ -396,12 +378,6 @@ int usb_write8(struct intf_hdl *pintfhdl, u32 addr, u8 val)
 	len = 1;
 	data = val;
 	
-/* WLANON PAGE0_REG needs to add an offset 0x8000 */
-#if defined(CONFIG_RTL8710B)
-	if(wvalue >= 0x0000 && wvalue < 0x0100)
-		wvalue |= 0x8000;
-#endif
-
 	ret = usbctrl_vendorreq(pintfhdl, request, wvalue, index,
 				&data, len, requesttype);
 
@@ -427,12 +403,6 @@ int usb_write16(struct intf_hdl *pintfhdl, u32 addr, u16 val)
 	wvalue = (u16)(addr & 0x0000ffff);
 	len = 2;
 	data = val;
-
-/* WLANON PAGE0_REG needs to add an offset 0x8000 */
-#if defined(CONFIG_RTL8710B)
-	if(wvalue >= 0x0000 && wvalue < 0x0100)
-		wvalue |= 0x8000;
-#endif
 
 	ret = usbctrl_vendorreq(pintfhdl, request, wvalue, index,
 				&data, len, requesttype);
@@ -460,12 +430,6 @@ int usb_write32(struct intf_hdl *pintfhdl, u32 addr, u32 val)
 	wvalue = (u16)(addr & 0x0000ffff);
 	len = 4;
 	data = val;
-
-/* WLANON PAGE0_REG needs to add an offset 0x8000 */
-#if defined(CONFIG_RTL8710B)
-	if(wvalue >= 0x0000 && wvalue < 0x0100)
-		wvalue |= 0x8000;
-#endif
 
 	ret = usbctrl_vendorreq(pintfhdl, request, wvalue, index,
 				&data, len, requesttype);

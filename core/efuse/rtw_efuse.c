@@ -118,14 +118,6 @@ BOOLEAN efuse_IsMasked(PADAPTER pAdapter, u16 Offset)
 	if (IS_HARDWARE_TYPE_8821(pAdapter))
 		return (IS_MASKED(8821A, _MUSB, Offset)) ? TRUE : FALSE;
 #endif
-#if defined(CONFIG_RTL8723B)
-	if (IS_HARDWARE_TYPE_8723B(pAdapter))
-		return (IS_MASKED(8723B, _MUSB, Offset)) ? TRUE : FALSE;
-#endif
-#if defined(CONFIG_RTL8703B)
-	if (IS_HARDWARE_TYPE_8703B(pAdapter))
-		return (IS_MASKED(8703B, _MUSB, Offset)) ? TRUE : FALSE;
-#endif
 #if defined(CONFIG_RTL8814A)
 	if (IS_HARDWARE_TYPE_8814A(pAdapter))
 		return (IS_MASKED(8814A, _MUSB, Offset)) ? TRUE : FALSE;
@@ -137,14 +129,6 @@ BOOLEAN efuse_IsMasked(PADAPTER pAdapter, u16 Offset)
 #if defined(CONFIG_RTL8822B)
 	if (IS_HARDWARE_TYPE_8822B(pAdapter))
 		return (IS_MASKED(8822B, _MUSB, Offset)) ? TRUE : FALSE;
-#endif
-#if defined(CONFIG_RTL8723D)
-	if (IS_HARDWARE_TYPE_8723D(pAdapter))
-		return (IS_MASKED(8723D, _MUSB, Offset)) ? TRUE : FALSE;
-#endif
-#if defined(CONFIG_RTL8710B)
-	if (IS_HARDWARE_TYPE_8710B(pAdapter))
-		return (IS_MASKED(8710B, _MUSB, Offset)) ? TRUE : FALSE;
 #endif
 #if defined(CONFIG_RTL8821C)
 	if (IS_HARDWARE_TYPE_8821CU(pAdapter))
@@ -176,14 +160,6 @@ void rtw_efuse_mask_array(PADAPTER pAdapter, u8 *pArray)
 #if defined(CONFIG_RTL8821A)
 	if (IS_HARDWARE_TYPE_8821(pAdapter))
 		GET_MASK_ARRAY(8821A, _MUSB, pArray);
-#endif
-#if defined(CONFIG_RTL8723B)
-	if (IS_HARDWARE_TYPE_8723B(pAdapter))
-		GET_MASK_ARRAY(8723B, _MUSB, pArray);
-#endif
-#if defined(CONFIG_RTL8703B)
-	if (IS_HARDWARE_TYPE_8703B(pAdapter))
-		GET_MASK_ARRAY(8703B, _MUSB, pArray);
 #endif
 #if defined(CONFIG_RTL8188GTV)
 	if (IS_HARDWARE_TYPE_8188GTV(pAdapter))
@@ -225,14 +201,6 @@ u16 rtw_get_efuse_mask_arraylen(PADAPTER pAdapter)
 #if defined(CONFIG_RTL8821A)
 	if (IS_HARDWARE_TYPE_8821(pAdapter))
 		return GET_MASK_ARRAY_LEN(8821A, _MUSB);
-#endif
-#if defined(CONFIG_RTL8723B)
-	if (IS_HARDWARE_TYPE_8723B(pAdapter))
-		return GET_MASK_ARRAY_LEN(8723B, _MUSB);
-#endif
-#if defined(CONFIG_RTL8703B)
-	if (IS_HARDWARE_TYPE_8703B(pAdapter))
-		return GET_MASK_ARRAY_LEN(8703B, _MUSB);
 #endif
 #if defined(CONFIG_RTL8188GTV)
 	if (IS_HARDWARE_TYPE_8188GTV(pAdapter))
@@ -1891,14 +1859,6 @@ efuse_OneByteRead(
 		return bResult;
 	}
 
-#ifdef CONFIG_RTL8710B
-	/* <20171208, Peter>, Dont do the following write16(0x34) */
-	if (IS_HARDWARE_TYPE_8710B(pAdapter)) {
-		bResult = pAdapter->hal_func.efuse_indirect_read4(pAdapter, addr, data);
-		return bResult;
-	}
-#endif
-
 	if (IS_HARDWARE_TYPE_8723B(pAdapter) ||
 	    (IS_HARDWARE_TYPE_8192E(pAdapter) && (!IS_A_CUT(pHalData->version_id))) ||
 	    (IS_VENDOR_8188E_I_CUT_SERIES(pAdapter)) || (IS_CHIP_VENDOR_SMIC(pHalData->version_id))
@@ -2313,16 +2273,6 @@ u8 rtw_efuse_map_write(PADAPTER padapter, u16 addr, u16 cnts, u8 *data)
 			if (efuse[addr + idx] != map[addr + idx]) {
 				word_en &= ~BIT(i >> 1);
 				newdata[i] = efuse[addr + idx];
-#ifdef CONFIG_RTL8723B
-				if (addr + idx == 0x8) {
-					if (IS_C_CUT(pHalData->version_id) || IS_B_CUT(pHalData->version_id)) {
-						if (pHalData->adjuseVoltageVal == 6) {
-							newdata[i] = map[addr + idx];
-							RTW_INFO(" %s ,\n adjuseVoltageVal = %d ,newdata[%d] = %x\n", __func__, pHalData->adjuseVoltageVal, i, newdata[i]);
-						}
-					}
-				}
-#endif
 			}
 		}
 

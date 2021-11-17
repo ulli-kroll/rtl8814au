@@ -102,28 +102,16 @@ typedef enum _RX_AGG_MODE {
 #if defined(CONFIG_RTL8812A) || defined(CONFIG_RTL8821A) || defined(CONFIG_RTL8814A)
 	#define EFUSE_MAP_SIZE	512
 #endif
-#ifdef CONFIG_RTL8723B
-	#define EFUSE_MAP_SIZE	512
-#endif
 #ifdef CONFIG_RTL8814A
-	#define EFUSE_MAP_SIZE	512
-#endif
-#ifdef CONFIG_RTL8703B
-	#define EFUSE_MAP_SIZE	512
-#endif
-#ifdef CONFIG_RTL8723D
 	#define EFUSE_MAP_SIZE	512
 #endif
 #ifdef CONFIG_RTL8188GTV
 	#define EFUSE_MAP_SIZE	512
 #endif
-#ifdef CONFIG_RTL8710B
-	#define EFUSE_MAP_SIZE	512
-#endif
 
 #if defined(CONFIG_RTL8814A) || defined(CONFIG_RTL8822B) || defined(CONFIG_RTL8821C) || defined(CONFIG_RTL8814B)
 	#define EFUSE_MAX_SIZE	1024
-#elif defined(CONFIG_RTL8188GTV) || defined(CONFIG_RTL8703B) || defined(CONFIG_RTL8710B)
+#elif defined(CONFIG_RTL8188GTV)
 	#define EFUSE_MAX_SIZE	256
 #else
 	#define EFUSE_MAX_SIZE	512
@@ -142,13 +130,8 @@ typedef enum _RX_AGG_MODE {
 #define Mac_DropPacket		0xA0000000
 
 #ifdef CONFIG_RF_POWER_TRIM
-#if defined(CONFIG_RTL8723B)
-	#define REG_RF_BB_GAIN_OFFSET	0x7f
-	#define RF_GAIN_OFFSET_MASK		0xfffff
-#else
 	#define REG_RF_BB_GAIN_OFFSET	0x55
 	#define RF_GAIN_OFFSET_MASK		0xfffff
-#endif /* CONFIG_RTL8723B */
 #endif /*CONFIG_RF_POWER_TRIM*/
 
 /* For store initial value of BB register */
@@ -441,11 +424,6 @@ typedef struct hal_com_data {
 #ifdef CONFIG_RTL8814A
 	u32	BackUp_BB_REG_4_2nd_CCA[3];
 #endif
-#if defined(CONFIG_RTL8723B) || defined(CONFIG_RTL8703B) || \
-	defined(CONFIG_RTL8723D)
-	u8	adjuseVoltageVal;
-	u8	need_restore;
-#endif
 	u8	EfuseUsedPercentage;
 	u16	EfuseUsedBytes;
 	/*u8		EfuseMap[2][HWSET_MAX_SIZE_JAGUAR];*/
@@ -618,12 +596,11 @@ typedef struct hal_com_data {
 #endif /* #ifdef DBG_CONFIG_ERROR_DETECT */
 
 
-#if defined(CONFIG_RTL8723B) || defined(CONFIG_RTL8703B) \
-	|| defined(CONFIG_RTL8188GTV) || defined(CONFIG_RTL8723D)
+#if defined(CONFIG_RTL8188GTV)
 	/* Interrupt relatd register information. */
 	u32			SysIntrStatus;
 	u32			SysIntrMask;
-#endif /*endif CONFIG_RTL8723B	*/
+#endif /*endif CONFIG_RTL8188GTV	*/
 
 #ifdef CONFIG_BACKGROUND_NOISE_MONITOR
 	struct noise_monitor nm;

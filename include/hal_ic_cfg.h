@@ -77,30 +77,6 @@
 	#define CONFIG_RTS_FULL_BW
 #endif
 
-#ifdef CONFIG_RTL8723B
-	#undef RTL8723B_SUPPORT
-	#define RTL8723B_SUPPORT				1
-	#ifndef CONFIG_FW_C2H_PKT
-		#define CONFIG_FW_C2H_PKT
-	#endif
-	#define CONFIG_RTS_FULL_BW
-#endif
-
-#ifdef CONFIG_RTL8723D
-	#undef RTL8723D_SUPPORT
-	#define RTL8723D_SUPPORT				1
-	#ifndef CONFIG_FW_C2H_PKT
-		#define CONFIG_FW_C2H_PKT
-	#endif
-	#ifndef CONFIG_RTW_MAC_HIDDEN_RPT
-		#define CONFIG_RTW_MAC_HIDDEN_RPT
-	#endif
-	#ifndef CONFIG_RTW_CUSTOMER_STR
-		#define CONFIG_RTW_CUSTOMER_STR
-	#endif
-	#define CONFIG_RTS_FULL_BW
-#endif
-
 #ifdef CONFIG_RTL8814A
 	#undef RTL8814A_SUPPORT
 	#define RTL8814A_SUPPORT				1
@@ -111,18 +87,6 @@
 	#ifdef CONFIG_BEAMFORMING
 		#define BEAMFORMING_SUPPORT		1	/*for phydm beamforming*/
 		#define SUPPORT_MU_BF				0
-	#endif
-	#define CONFIG_RTS_FULL_BW
-#endif
-
-#ifdef CONFIG_RTL8703B
-	#undef RTL8703B_SUPPORT
-	#define RTL8703B_SUPPORT				1
-	#ifndef CONFIG_FW_C2H_PKT
-		#define CONFIG_FW_C2H_PKT
-	#endif
-	#ifndef CONFIG_RTW_MAC_HIDDEN_RPT
-		#define CONFIG_RTW_MAC_HIDDEN_RPT
 	#endif
 	#define CONFIG_RTS_FULL_BW
 #endif
@@ -322,15 +286,6 @@
 		/* #define CONFIG_LPS_ACK */	/* Supported after FW v25 */
 	#endif
 #endif /*CONFIG_RTL8821C*/
-
-#ifdef CONFIG_RTL8710B
-	#undef RTL8710B_SUPPORT
-	#define RTL8710B_SUPPORT				1
-	#ifndef CONFIG_FW_C2H_PKT
-		#define CONFIG_FW_C2H_PKT
-	#endif
-	#define CONFIG_RTS_FULL_BW
-#endif
 
 #ifdef CONFIG_RTL8814B
 	#undef RTL8814B_SUPPORT

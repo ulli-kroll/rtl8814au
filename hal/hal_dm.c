@@ -185,16 +185,6 @@ void rtw_phydm_fill_desc_dpt(void *dm, u8 *desc, u8 dpt_lv)
 	switch (rtw_get_chip_type(adapter)) {
 /*
 
-	#ifdef CONFIG_RTL8723B
-	case RTL8723B :
-		break;
-	#endif
-
-	#ifdef CONFIG_RTL8703B
-	case RTL8703B :
-		break;
-	#endif
-
 	#ifdef CONFIG_RTL8812A
 	case RTL8812 :
 		break;
@@ -420,10 +410,6 @@ void Init_ODM_ComInfo(_adapter *adapter)
 	odm_cmn_info_hook(pDM_Odm, ODM_CMNINFO_TX_TP, &(dvobj->traffic_stat.cur_tx_tp));
 	odm_cmn_info_hook(pDM_Odm, ODM_CMNINFO_RX_TP, &(dvobj->traffic_stat.cur_rx_tp));
 	odm_cmn_info_hook(pDM_Odm, ODM_CMNINFO_ANT_TEST, &(pHalData->antenna_test));
-#ifdef CONFIG_RTL8723B
-	odm_cmn_info_hook(pDM_Odm, ODM_CMNINFO_IS1ANTENNA, &pHalData->EEPROMBluetoothAntNum);
-	odm_cmn_info_hook(pDM_Odm, ODM_CMNINFO_RFDEFAULTPATH, &pHalData->ant_path);
-#endif /*CONFIG_RTL8723B*/
 #ifdef CONFIG_USB_HCI
 	odm_cmn_info_hook(pDM_Odm, ODM_CMNINFO_HUBUSBMODE, &(dvobj->usb_speed));
 #endif

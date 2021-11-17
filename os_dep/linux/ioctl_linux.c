@@ -6042,25 +6042,9 @@ static int rtw_mp_efuse_get(struct net_device *dev,
 		/*		RTW_INFO("}\n"); */
 	} else if (strcmp(tmp[0], "vidpid") == 0) {
 
-#ifdef CONFIG_RTL8723B
-		addr = EEPROM_VID_8723BU;
-#endif /* CONFIG_RTL8723B */
-
 #ifdef CONFIG_RTL8188GTV
 		addr = EEPROM_VID_8188GTVU;
 #endif
-
-#ifdef CONFIG_RTL8703B
-#ifdef CONFIG_USB_HCI
-		addr = EEPROM_VID_8703BU;
-#endif
-#endif /* CONFIG_RTL8703B */
-
-#ifdef CONFIG_RTL8723D
-#ifdef CONFIG_USB_HCI
-		addr = EEPROM_VID_8723DU;
-#endif /* CONFIG_USB_HCI */
-#endif /* CONFIG_RTL8723D */
 
 		cnts = 4;
 
@@ -6595,12 +6579,6 @@ static int rtw_priv_get(struct net_device *dev,
 	if (subcmd < MP_NULL) {
 	} else {
 			switch (subcmd) {
-#if defined(CONFIG_RTL8723B)
-			case MP_SetBT:
-				RTW_INFO("set MP_SetBT\n");
-				rtw_mp_SetBT(dev, info, wdata, extra);
-				break;
-#endif
 #ifdef CONFIG_SDIO_INDIRECT_ACCESS
 			case MP_SD_IREAD:
 				rtw_mp_sd_iread(dev, info, wrqu, extra);
@@ -6639,32 +6617,6 @@ static int rtw_tdls_get(struct net_device *dev,
 }
 
 #ifdef CONFIG_MAC_LOOPBACK_DRIVER
-
-#if defined(CONFIG_RTL8723B)
-extern void rtl8723b_cal_txdesc_chksum(struct tx_desc *ptxdesc);
-#define cal_txdesc_chksum rtl8723b_cal_txdesc_chksum
-extern void rtl8723b_fill_default_txdesc(struct xmit_frame *pxmitframe, u8 *pbuf);
-#define fill_default_txdesc rtl8723b_fill_default_txdesc
-#endif /* CONFIG_RTL8723B */
-
-#if defined(CONFIG_RTL8703B)
-/* extern void rtl8703b_cal_txdesc_chksum(struct tx_desc *ptxdesc); */
-#define cal_txdesc_chksum rtl8703b_cal_txdesc_chksum
-/* extern void rtl8703b_fill_default_txdesc(struct xmit_frame *pxmitframe, u8 *pbuf); */
-#define fill_default_txdesc rtl8703b_fill_default_txdesc
-#endif /* CONFIG_RTL8703B */
-
-#if defined(CONFIG_RTL8723D)
-/* extern void rtl8723d_cal_txdesc_chksum(struct tx_desc *ptxdesc); */
-#define cal_txdesc_chksum rtl8723d_cal_txdesc_chksum
-/* extern void rtl8723d_fill_default_txdesc(struct xmit_frame *pxmitframe, u8 *pbuf); */
-#define fill_default_txdesc rtl8723d_fill_default_txdesc
-#endif /* CONFIG_RTL8723D */
-
-#if defined(CONFIG_RTL8710B)
-#define cal_txdesc_chksum rtl8710b_cal_txdesc_chksum
-#define fill_default_txdesc rtl8710b_fill_default_txdesc
-#endif /* CONFIG_RTL8710B */
 
 static s32 initLoopback(PADAPTER padapter)
 {
@@ -7460,10 +7412,6 @@ static const struct iw_priv_args rtw_private_args[] = {
 	{ SIOCIWFIRSTPRIV + 0x0F, IW_PRIV_TYPE_CHAR | 1024, IW_PRIV_TYPE_CHAR | IW_PRIV_SIZE_MASK , ""},/* get
  * --- sub-ioctls definitions --- */
 
-#if defined(CONFIG_RTL8723B)
-	{ MP_SetBT, IW_PRIV_TYPE_CHAR | 1024, IW_PRIV_TYPE_CHAR | IW_PRIV_SIZE_MASK, "mp_setbt" },
-	{ MP_DISABLE_BT_COEXIST, IW_PRIV_TYPE_CHAR | 1024, 0, "mp_disa_btcoex"},
-#endif
 #ifdef CONFIG_SDIO_INDIRECT_ACCESS
 	{ MP_SD_IREAD, IW_PRIV_TYPE_CHAR | 1024, IW_PRIV_TYPE_CHAR | IW_PRIV_SIZE_MASK, "sd_iread" },
 	{ MP_SD_IWRITE, IW_PRIV_TYPE_CHAR | 1024, IW_PRIV_TYPE_CHAR | IW_PRIV_SIZE_MASK, "sd_iwrite" },

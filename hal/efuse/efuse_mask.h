@@ -23,20 +23,8 @@
 		#include "rtl8812a/HalEfuseMask8821A_USB.h"
 	#endif
 
-	#if defined(CONFIG_RTL8723B)
-		#include "rtl8723b/HalEfuseMask8723B_USB.h"
-	#endif
-
 	#if defined(CONFIG_RTL8814A)
 		#include "rtl8814a/HalEfuseMask8814A_USB.h"
-	#endif
-
-	#if defined(CONFIG_RTL8703B)
-		#include "rtl8703b/HalEfuseMask8703B_USB.h"
-	#endif
-
-	#if defined(CONFIG_RTL8723D)
-		#include "rtl8723d/HalEfuseMask8723D_USB.h"
 	#endif
 
 	#if defined(CONFIG_RTL8188GTV)
@@ -51,10 +39,6 @@
 		#include "rtl8821c/HalEfuseMask8821C_USB.h"
 	#endif
 	
-	#if defined(CONFIG_RTL8710B)
-		#include "rtl8710b/HalEfuseMask8710B_USB.h"
-	#endif
-	
 	#if defined(CONFIG_RTL8822C)
 		#include "rtl8822c/HalEfuseMask8822C_USB.h"
 	#endif
@@ -64,20 +48,8 @@
 #endif /*CONFIG_USB_HCI*/
 
 #ifdef CONFIG_SDIO_HCI
-	#if defined(CONFIG_RTL8723B)
-		#include "rtl8723b/HalEfuseMask8723B_SDIO.h"
-	#endif
-
-	#if defined(CONFIG_RTL8703B)
-		#include "rtl8703b/HalEfuseMask8703B_SDIO.h"
-	#endif
-
 	#if defined(CONFIG_RTL8188GTV)
 		#include "rtl8188gtv/HalEfuseMask8188GTV_SDIO.h"
-	#endif
-
-	#if defined(CONFIG_RTL8723D)
-		#include "rtl8723d/HalEfuseMask8723D_SDIO.h"
 	#endif
 
 	#if defined(CONFIG_RTL8821A)
