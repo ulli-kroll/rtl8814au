@@ -31,9 +31,6 @@ int usbctrl_vendorreq(struct intf_hdl *pintfhdl, u8 request, u16 value, u16 inde
 
 	unsigned int pipe;
 	int status = 0;
-#ifdef CONFIG_USB_VENDOR_REQ_BUFFER_DYNAMIC_ALLOCATE
-	u32 tmp_buflen = 0;
-#endif
 	u8 reqtype;
 	u8 *pIo_buf;
 	int vendorreq_times = 0;
@@ -45,13 +42,9 @@ int usbctrl_vendorreq(struct intf_hdl *pintfhdl, u8 request, u16 value, u16 inde
 	u8 current_reg_sec = REG_LOCAL_SEC;
 #endif
 
-#ifdef CONFIG_USB_VENDOR_REQ_BUFFER_DYNAMIC_ALLOCATE
-	u8 *tmp_buf;
-#else /* use stack memory */
 	#ifndef CONFIG_USB_VENDOR_REQ_BUFFER_PREALLOC
 	u8 tmp_buf[MAX_USB_IO_CTL_SIZE];
 	#endif
-#endif
 
 	/* RTW_INFO("%s %s:%d\n",__FUNCTION__, current->comm, current->pid); */
 
@@ -75,12 +68,7 @@ int usbctrl_vendorreq(struct intf_hdl *pintfhdl, u8 request, u16 value, u16 inde
 #ifdef CONFIG_USB_VENDOR_REQ_BUFFER_PREALLOC
 	pIo_buf = pdvobjpriv->usb_vendor_req_buf;
 #else
-	#ifdef CONFIG_USB_VENDOR_REQ_BUFFER_DYNAMIC_ALLOCATE
-	tmp_buf = rtw_malloc((u32) len + ALIGNMENT_UNIT);
-	tmp_buflen = (u32)len + ALIGNMENT_UNIT;
-	#else /* use stack memory */
 	tmp_buflen = MAX_USB_IO_CTL_SIZE;
-	#endif
 
 	/* Added by Albert 2010/02/09 */
 	/* For mstar platform, mstar suggests the address for USB IO should be 16 bytes alignment. */
@@ -198,11 +186,6 @@ int usbctrl_vendorreq(struct intf_hdl *pintfhdl, u8 request, u16 value, u16 inde
 			RTW_INFO("reg 0x%x, usb %s %u fail, status:%d\n", t_reg, "write" , t_len, status);
 
 	}
-#endif
-
-	/* release IO memory used by vendorreq */
-#ifdef CONFIG_USB_VENDOR_REQ_BUFFER_DYNAMIC_ALLOCATE
-	rtw_mfree(tmp_buf, tmp_buflen);
 #endif
 
 release_mutex:
