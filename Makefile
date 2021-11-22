@@ -137,7 +137,6 @@ _HAL_INTFS_FILES +=	hal/rtl8814a/rtl8814a_hal_init.o \
 			hal/rtl8814a/rtl8814a_dm.o \
 			hal/rtl8814a/rtl8814a_rxdesc.o \
 			hal/rtl8814a/rtl8814a_cmd.o \
-			hal/rtl8814a/hal8814a_fw.o
 
 
 _HAL_INTFS_FILES +=	\

@@ -16,7 +16,6 @@
 
 /* #include <drv_types.h> */
 #include <rtl8814a_hal.h>
-#include "hal8814a_fw.h"
 #include <linux/firmware.h>
 /* -------------------------------------------------------------------------
  *
