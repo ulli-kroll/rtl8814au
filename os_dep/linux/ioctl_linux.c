@@ -6042,10 +6042,6 @@ static int rtw_mp_efuse_get(struct net_device *dev,
 		/*		RTW_INFO("}\n"); */
 	} else if (strcmp(tmp[0], "vidpid") == 0) {
 
-#ifdef CONFIG_RTL8188GTV
-		addr = EEPROM_VID_8188GTVU;
-#endif
-
 		cnts = 4;
 
 		EFUSE_GetEfuseDefinition(padapter, EFUSE_WIFI, TYPE_EFUSE_MAP_LEN, (void *)&max_available_len, _FALSE);

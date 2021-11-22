@@ -307,8 +307,7 @@
 	#error "CONFIG_IFACE_NUMBER cound not be 0 !!"
 #endif
 
-#if defined(CONFIG_RTL8188GTV) || \
-defined(CONFIG_RTL8812A) || defined(CONFIG_RTL8821A)
+#if defined(CONFIG_RTL8812A) || defined(CONFIG_RTL8821A)
 #define CONFIG_HWMPCAP_GEN1
 #elif defined(CONFIG_RTL8822B) || defined(CONFIG_RTL8821C) || defined(CONFIG_RTL8822C) /*|| defined(CONFIG_RTL8814A)*/
 #define CONFIG_HWMPCAP_GEN2

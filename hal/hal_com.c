@@ -1668,19 +1668,6 @@ int c2h_mac_hidden_rpt_2_hdl(_adapter *adapter, u8 *data, u8 len)
 			RTW_PRINT("%s: 0x%02X\n", __func__, *(data + i));
 	}
 
-	#if defined(CONFIG_RTL8188GTV)
-	if (IS_8188F(hal_data->version_id) || IS_8188GTV(hal_data->version_id)) {
-		#define GET_C2H_MAC_HIDDEN_RPT_IRV(_data)	LE_BITS_TO_1BYTE(((u8 *)(_data)) + 0, 0, 4)
-		u8 irv = GET_C2H_MAC_HIDDEN_RPT_IRV(data);
-
-		if (DBG_C2H_MAC_HIDDEN_RPT_HANDLE)
-			RTW_PRINT("irv:0x%x\n", irv);
-
-		if(irv != 0xf)
-			hal_data->version_id.CUTVersion = irv;
-	}
-	#endif
-
 	ret = _SUCCESS;
 
 exit:
@@ -6468,8 +6455,7 @@ u64 rtw_hal_get_tsftr_by_port(_adapter *adapter, u8 port)
 		break;
 	}
 #endif
-#if defined(CONFIG_RTL8188GTV) \
-		|| defined(CONFIG_RTL8812A) || defined(CONFIG_RTL8821A)
+#if defined(CONFIG_RTL8812A) || defined(CONFIG_RTL8821A)
 	case RTL8188E:
 	case RTL8188F:
 	case RTL8188GTV:
@@ -7713,14 +7699,6 @@ int hal_efuse_macaddr_offset(_adapter *adapter)
 	interface_type = rtw_get_intf_type(adapter);
 
 	switch (rtw_get_chip_type(adapter)) {
-#ifdef CONFIG_RTL8188GTV
-	case RTL8188GTV:
-		if (interface_type == RTW_USB)
-			addr_offset = EEPROM_MAC_ADDR_8188GTVU;
-		else if (interface_type == RTW_SDIO)
-			addr_offset = EEPROM_MAC_ADDR_8188GTVS;
-		break;
-#endif
 #ifdef CONFIG_RTL8812A
 	case RTL8812:
 		if (interface_type == RTW_USB)
@@ -8574,11 +8552,6 @@ int hal_spec_init(_adapter *adapter)
 	interface_type = rtw_get_intf_type(adapter);
 
 	switch (rtw_get_chip_type(adapter)) {
-#ifdef CONFIG_RTL8188GTV
-	case RTL8188GTV:
-		init_hal_spec_8188gtv(adapter);
-		break;
-#endif
 #ifdef CONFIG_RTL8812A
 	case RTL8812:
 		init_hal_spec_8812a(adapter);

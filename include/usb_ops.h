@@ -42,10 +42,6 @@ void rtl8812au_set_hw_type(struct dvobj_priv *pdvobj);
 void rtl8814au_set_hw_type(struct dvobj_priv *pdvobj);
 #endif /* CONFIG_RTL8814 */
 
-#ifdef CONFIG_RTL8188GTV
-void rtl8188gtvu_set_hw_type(struct dvobj_priv *pdvobj);
-#endif
-
 void usb_set_intf_ops(_adapter *padapter, struct _io_ops *pops);
 
 enum RTW_USB_SPEED {

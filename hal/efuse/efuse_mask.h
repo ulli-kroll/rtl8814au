@@ -27,10 +27,6 @@
 		#include "rtl8814a/HalEfuseMask8814A_USB.h"
 	#endif
 
-	#if defined(CONFIG_RTL8188GTV)
-		#include "rtl8188gtv/HalEfuseMask8188GTV_USB.h"
-	#endif
-
 	#if defined(CONFIG_RTL8822B)
 		#include "rtl8822b/HalEfuseMask8822B_USB.h"
 	#endif
@@ -48,10 +44,6 @@
 #endif /*CONFIG_USB_HCI*/
 
 #ifdef CONFIG_SDIO_HCI
-	#if defined(CONFIG_RTL8188GTV)
-		#include "rtl8188gtv/HalEfuseMask8188GTV_SDIO.h"
-	#endif
-
 	#if defined(CONFIG_RTL8821A)
 		#include "rtl8812a/HalEfuseMask8821A_SDIO.h"
 	#endif

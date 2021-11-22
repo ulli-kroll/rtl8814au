@@ -105,14 +105,9 @@ typedef enum _RX_AGG_MODE {
 #ifdef CONFIG_RTL8814A
 	#define EFUSE_MAP_SIZE	512
 #endif
-#ifdef CONFIG_RTL8188GTV
-	#define EFUSE_MAP_SIZE	512
-#endif
 
 #if defined(CONFIG_RTL8814A) || defined(CONFIG_RTL8822B) || defined(CONFIG_RTL8821C) || defined(CONFIG_RTL8814B)
 	#define EFUSE_MAX_SIZE	1024
-#elif defined(CONFIG_RTL8188GTV)
-	#define EFUSE_MAX_SIZE	256
 #else
 	#define EFUSE_MAX_SIZE	512
 #endif
@@ -595,12 +590,6 @@ typedef struct hal_com_data {
 	struct sreset_priv srestpriv;
 #endif /* #ifdef DBG_CONFIG_ERROR_DETECT */
 
-
-#if defined(CONFIG_RTL8188GTV)
-	/* Interrupt relatd register information. */
-	u32			SysIntrStatus;
-	u32			SysIntrMask;
-#endif /*endif CONFIG_RTL8188GTV	*/
 
 #ifdef CONFIG_BACKGROUND_NOISE_MONITOR
 	struct noise_monitor nm;

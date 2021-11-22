@@ -31,8 +31,4 @@ void rtl8812au_set_hal_ops(_adapter *padapter);
 void rtl8814au_set_hal_ops(_adapter *padapter);
 #endif /* CONFIG_RTL8814A */
 
-#ifdef CONFIG_RTL8188GTV
-void rtl8188gtvu_set_hal_ops(_adapter *padapter);
-#endif
-
 #endif /* __USB_HAL_H__ */

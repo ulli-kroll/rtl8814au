@@ -122,10 +122,6 @@ BOOLEAN efuse_IsMasked(PADAPTER pAdapter, u16 Offset)
 	if (IS_HARDWARE_TYPE_8814A(pAdapter))
 		return (IS_MASKED(8814A, _MUSB, Offset)) ? TRUE : FALSE;
 #endif
-#if defined(CONFIG_RTL8188GTV)
-	if (IS_HARDWARE_TYPE_8188GTV(pAdapter))
-		return (IS_MASKED(8188GTV, _MUSB, Offset)) ? TRUE : FALSE;
-#endif
 #if defined(CONFIG_RTL8822B)
 	if (IS_HARDWARE_TYPE_8822B(pAdapter))
 		return (IS_MASKED(8822B, _MUSB, Offset)) ? TRUE : FALSE;
@@ -160,10 +156,6 @@ void rtw_efuse_mask_array(PADAPTER pAdapter, u8 *pArray)
 #if defined(CONFIG_RTL8821A)
 	if (IS_HARDWARE_TYPE_8821(pAdapter))
 		GET_MASK_ARRAY(8821A, _MUSB, pArray);
-#endif
-#if defined(CONFIG_RTL8188GTV)
-	if (IS_HARDWARE_TYPE_8188GTV(pAdapter))
-		GET_MASK_ARRAY(8188GTV, _MUSB, pArray);
 #endif
 #if defined(CONFIG_RTL8814A)
 	if (IS_HARDWARE_TYPE_8814A(pAdapter))
@@ -201,10 +193,6 @@ u16 rtw_get_efuse_mask_arraylen(PADAPTER pAdapter)
 #if defined(CONFIG_RTL8821A)
 	if (IS_HARDWARE_TYPE_8821(pAdapter))
 		return GET_MASK_ARRAY_LEN(8821A, _MUSB);
-#endif
-#if defined(CONFIG_RTL8188GTV)
-	if (IS_HARDWARE_TYPE_8188GTV(pAdapter))
-		return GET_MASK_ARRAY_LEN(8188GTV, _MUSB);
 #endif
 #if defined(CONFIG_RTL8814A)
 	if (IS_HARDWARE_TYPE_8814A(pAdapter))
