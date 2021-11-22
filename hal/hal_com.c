@@ -6634,13 +6634,6 @@ void rtw_var_set_basic_rate(PADAPTER padapter, u8 *val) {
 	}
 		ioted = BrateCfg;
 
-#ifdef CONFIG_NARROWBAND_SUPPORTING
-	if ((padapter->registrypriv.rtw_nb_config == RTW_NB_CONFIG_WIDTH_10)
-		|| (padapter->registrypriv.rtw_nb_config == RTW_NB_CONFIG_WIDTH_5)) {
-		BrateCfg &= ~RRSR_CCK_RATES;
-		BrateCfg |= RRSR_6M;
-	}
-#endif
 	pHalData->BasicRateSet = BrateCfg;
 
 	RTW_INFO("HW_VAR_BASIC_RATE: %#x->%#x->%#x\n", input_b, masked, ioted);

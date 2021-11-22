@@ -95,14 +95,6 @@ typedef enum _BAND_TYPE {
 	BAND_MAX = 3,
 } BAND_TYPE, *PBAND_TYPE;
 
-#ifdef CONFIG_NARROWBAND_SUPPORTING
-enum nb_config {
-	RTW_NB_CONFIG_NONE		= 0,
-	RTW_NB_CONFIG_WIDTH_5	= 5,
-	RTW_NB_CONFIG_WIDTH_10	= 6,
-};
-#endif
-
 extern const char *const _band_str[];
 #define band_str(band) (((band) >= BAND_MAX) ? _band_str[BAND_MAX] : _band_str[(band)])
 

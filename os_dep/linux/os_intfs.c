@@ -72,12 +72,6 @@ int rtw_scan_mode = 1;/* active, passive */
 	int rtw_lps_chk_by_tp = 0;
 #endif /* CONFIG_POWER_SAVING */
 
-#ifdef CONFIG_NARROWBAND_SUPPORTING
-int rtw_nb_config = CONFIG_NB_VALUE;
-module_param(rtw_nb_config, int, 0644);
-MODULE_PARM_DESC(rtw_nb_config, "5M/10M/Normal bandwidth configuration");
-#endif
-
 module_param(rtw_ips_mode, int, 0644);
 MODULE_PARM_DESC(rtw_ips_mode, "The default IPS mode");
 
@@ -950,10 +944,6 @@ uint loadparam(_adapter *padapter)
 	registry_par->ssid.SsidLength = 3;
 
 	registry_par->channel = (u8)rtw_channel;
-#ifdef CONFIG_NARROWBAND_SUPPORTING
-	if (rtw_nb_config != RTW_NB_CONFIG_NONE)
-		rtw_wireless_mode &= ~WIRELESS_11B;
-#endif
 	registry_par->wireless_mode = (u8)rtw_wireless_mode;
 
 	if (IsSupported24G(registry_par->wireless_mode) && (!is_supported_5g(registry_par->wireless_mode))
@@ -1022,10 +1012,6 @@ uint loadparam(_adapter *padapter)
 #ifdef CONFIG_80211N_HT
 	registry_par->ht_enable = (u8)rtw_ht_enable;
 	if (registry_par->ht_enable && is_supported_ht(registry_par->wireless_mode)) {
-#ifdef CONFIG_NARROWBAND_SUPPORTING
-	if (rtw_nb_config != RTW_NB_CONFIG_NONE)
-		rtw_bw_mode = 0;
-#endif
 		registry_par->bw_mode = (u8)rtw_bw_mode;
 		registry_par->ampdu_enable = (u8)rtw_ampdu_enable;
 		registry_par->rx_stbc = (u8)rtw_rx_stbc;
@@ -1051,9 +1037,6 @@ uint loadparam(_adapter *padapter)
 #endif
 #ifdef DBG_LA_MODE
 	registry_par->la_mode_en = (u8)rtw_la_mode_en;
-#endif
-#ifdef CONFIG_NARROWBAND_SUPPORTING
-	registry_par->rtw_nb_config = (u8)rtw_nb_config;
 #endif
 
 #ifdef CONFIG_80211AC_VHT
