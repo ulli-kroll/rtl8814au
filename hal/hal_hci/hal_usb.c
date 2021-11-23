@@ -226,66 +226,6 @@ void usb_c2h_hisr_hdl(_adapter *adapter, u8 *buf)
 }
 #endif
 
-#ifdef CONFIG_USB_SUPPORT_ASYNC_VDN_REQ
-int usb_write_async(struct usb_device *udev, u32 addr, void *pdata, u16 len)
-{
-	u8 request;
-	u8 requesttype;
-	u16 wvalue;
-	u16 index;
-	int ret;
-
-	requesttype = VENDOR_WRITE;/* write_out */
-	request = REALTEK_USB_VENQT_CMD_REQ;
-	index = REALTEK_USB_VENQT_CMD_IDX;/* n/a */
-
-	wvalue = (u16)(addr & 0x0000ffff);
-
-	ret = _usbctrl_vendorreq_async_write(udev, request, wvalue, index, pdata, len, requesttype);
-
-	return ret;
-}
-
-int usb_async_write8(struct intf_hdl *pintfhdl, u32 addr, u8 val)
-{
-	u8 data;
-	int ret;
-	struct dvobj_priv  *pdvobjpriv = (struct dvobj_priv *)pintfhdl->pintf_dev;
-	struct usb_device *udev = pdvobjpriv->pusbdev;
-
-	data = val;
-	ret = usb_write_async(udev, addr, &data, 1);
-
-	return ret;
-}
-
-int usb_async_write16(struct intf_hdl *pintfhdl, u32 addr, u16 val)
-{
-	u16 data;
-	int ret;
-	struct dvobj_priv  *pdvobjpriv = (struct dvobj_priv *)pintfhdl->pintf_dev;
-	struct usb_device *udev = pdvobjpriv->pusbdev;
-
-	data = val;
-	ret = usb_write_async(udev, addr, &data, 2);
-
-	return ret;
-}
-
-int usb_async_write32(struct intf_hdl *pintfhdl, u32 addr, u32 val)
-{
-	u32 data;
-	int ret;
-	struct dvobj_priv  *pdvobjpriv = (struct dvobj_priv *)pintfhdl->pintf_dev;
-	struct usb_device *udev = pdvobjpriv->pusbdev;
-
-	data = val;
-	ret = usb_write_async(udev, addr, &data, 4);
-
-	return ret;
-}
-#endif /* CONFIG_USB_SUPPORT_ASYNC_VDN_REQ */
-
 u8 usb_read8(struct intf_hdl *pintfhdl, u32 addr)
 {
 	u8 request;
@@ -479,11 +419,6 @@ void usb_set_intf_ops(_adapter *padapter, struct _io_ops *pops)
 	pops->_write32 = &usb_write32;
 	pops->_writeN = &usb_writeN;
 
-#ifdef CONFIG_USB_SUPPORT_ASYNC_VDN_REQ
-	pops->_write8_async = &usb_async_write8;
-	pops->_write16_async = &usb_async_write16;
-	pops->_write32_async = &usb_async_write32;
-#endif
 	pops->_write_mem = &usb_write_mem;
 	pops->_write_port = &usb_write_port;
 
