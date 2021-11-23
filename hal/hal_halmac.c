@@ -629,21 +629,6 @@ static void _read_register(struct dvobj_priv *d, u32 addr, u32 cnt, u8 *buf)
 #endif
 }
 
-void rtw_halmac_read_mem(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *pmem)
-{
-	struct dvobj_priv *d;
-
-
-	if (pmem == NULL) {
-		RTW_ERR("pmem is NULL\n");
-		return;
-	}
-
-	d = pintfhdl->pintf_dev;
-
-	_read_register(d, addr, cnt, pmem);
-}
-
 #ifdef CONFIG_SDIO_INDIRECT_ACCESS
 u8 rtw_halmac_iread8(struct intf_hdl *pintfhdl, u32 addr)
 {

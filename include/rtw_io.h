@@ -100,7 +100,6 @@ struct _io_ops {
 	int (*_write16_async)(struct intf_hdl *pintfhdl, u32 addr, u16 val);
 	int (*_write32_async)(struct intf_hdl *pintfhdl, u32 addr, u32 val);
 
-	void (*_read_mem)(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *pmem);
 	void (*_write_mem)(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *pmem);
 
 	void (*_sync_irp_protocol_rw)(struct io_queue *pio_q);
@@ -294,7 +293,6 @@ extern void _rtw_attrib_write(_adapter *adapter, u32 addr, u32 cnt, u8 *pmem);
 extern u8 _rtw_read8(_adapter *adapter, u32 addr);
 extern u16 _rtw_read16(_adapter *adapter, u32 addr);
 extern u32 _rtw_read32(_adapter *adapter, u32 addr);
-extern void _rtw_read_mem(_adapter *adapter, u32 addr, u32 cnt, u8 *pmem);
 extern void _rtw_read_port(_adapter *adapter, u32 addr, u32 cnt, u8 *pmem);
 extern void _rtw_read_port_cancel(_adapter *adapter);
 
@@ -334,7 +332,6 @@ extern int dbg_rtw_writeN(_adapter *adapter, u32 addr , u32 length , u8 *data, c
 #define rtw_read8(adapter, addr) dbg_rtw_read8((adapter), (addr), __FUNCTION__, __LINE__)
 #define rtw_read16(adapter, addr) dbg_rtw_read16((adapter), (addr), __FUNCTION__, __LINE__)
 #define rtw_read32(adapter, addr) dbg_rtw_read32((adapter), (addr), __FUNCTION__, __LINE__)
-#define rtw_read_mem(adapter, addr, cnt, mem) _rtw_read_mem((adapter), (addr), (cnt), (mem))
 #define rtw_read_port(adapter, addr, cnt, mem) _rtw_read_port((adapter), (addr), (cnt), (mem))
 #define rtw_read_port_cancel(adapter) _rtw_read_port_cancel((adapter))
 
@@ -356,7 +353,6 @@ extern int dbg_rtw_writeN(_adapter *adapter, u32 addr , u32 length , u8 *data, c
 #define rtw_read8(adapter, addr) _rtw_read8((adapter), (addr))
 #define rtw_read16(adapter, addr) _rtw_read16((adapter), (addr))
 #define rtw_read32(adapter, addr) _rtw_read32((adapter), (addr))
-#define rtw_read_mem(adapter, addr, cnt, mem) _rtw_read_mem((adapter), (addr), (cnt), (mem))
 #define rtw_read_port(adapter, addr, cnt, mem) _rtw_read_port((adapter), (addr), (cnt), (mem))
 #define rtw_read_port_cancel(adapter) _rtw_read_port_cancel((adapter))
 
@@ -394,7 +390,6 @@ extern uint async_read16(_adapter *adapter, u32 addr,  u8 *pbuff,
 extern uint async_read32(_adapter *adapter, u32 addr,  u8 *pbuff,
 	void (*_async_io_callback)(_adapter *padater, struct io_req *pio_req, u8 *cnxt), u8 *cnxt);
 
-extern void async_read_mem(_adapter *adapter, u32 addr, u32 cnt, u8 *pmem);
 extern void async_read_port(_adapter *adapter, u32 addr, u32 cnt, u8 *pmem);
 
 extern void async_write8(_adapter *adapter, u32 addr, u8 val,

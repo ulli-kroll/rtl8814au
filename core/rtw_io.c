@@ -196,25 +196,6 @@ int _rtw_write32_async(_adapter *adapter, u32 addr, u32 val)
 	return RTW_STATUS_CODE(ret);
 }
 
-void _rtw_read_mem(_adapter *adapter, u32 addr, u32 cnt, u8 *pmem)
-{
-	void (*_read_mem)(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *pmem);
-	/* struct	io_queue  	*pio_queue = (struct io_queue *)adapter->pio_queue; */
-	struct io_priv *pio_priv = &adapter->iopriv;
-	struct	intf_hdl		*pintfhdl = &(pio_priv->intf);
-
-
-	if (RTW_CANNOT_RUN(adapter)) {
-		return;
-	}
-
-	_read_mem = pintfhdl->io_ops._read_mem;
-
-	_read_mem(pintfhdl, addr, cnt, pmem);
-
-
-}
-
 void _rtw_write_mem(_adapter *adapter, u32 addr, u32 cnt, u8 *pmem)
 {
 	void (*_write_mem)(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *pmem);
