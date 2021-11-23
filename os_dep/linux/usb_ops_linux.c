@@ -310,12 +310,6 @@ static u32 usb_bulkout_zero(struct intf_hdl *pintfhdl, u32 addr)
 }
 #endif
 
-void usb_write_mem(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *wmem)
-{
-
-}
-
-
 void usb_read_port_cancel(struct intf_hdl *pintfhdl)
 {
 	int i;

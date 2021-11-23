@@ -392,7 +392,6 @@ void usb_set_intf_ops(_adapter *padapter, struct _io_ops *pops)
 	pops->_write32 = &usb_write32;
 	pops->_writeN = &usb_writeN;
 
-	pops->_write_mem = &usb_write_mem;
 	pops->_write_port = &usb_write_port;
 
 	pops->_read_port_cancel = &usb_read_port_cancel;

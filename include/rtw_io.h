@@ -100,8 +100,6 @@ struct _io_ops {
 	int (*_write16_async)(struct intf_hdl *pintfhdl, u32 addr, u16 val);
 	int (*_write32_async)(struct intf_hdl *pintfhdl, u32 addr, u32 val);
 
-	void (*_write_mem)(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *pmem);
-
 	void (*_sync_irp_protocol_rw)(struct io_queue *pio_q);
 
 	u32(*_read_interrupt)(struct intf_hdl *pintfhdl, u32 addr);
@@ -306,7 +304,6 @@ extern int _rtw_write8_async(_adapter *adapter, u32 addr, u8 val);
 extern int _rtw_write16_async(_adapter *adapter, u32 addr, u16 val);
 extern int _rtw_write32_async(_adapter *adapter, u32 addr, u32 val);
 
-extern void _rtw_write_mem(_adapter *adapter, u32 addr, u32 cnt, u8 *pmem);
 extern u32 _rtw_write_port(_adapter *adapter, u32 addr, u32 cnt, u8 *pmem);
 u32 _rtw_write_port_and_wait(_adapter *adapter, u32 addr, u32 cnt, u8 *pmem, int timeout_ms);
 extern void _rtw_write_port_cancel(_adapter *adapter);
@@ -344,7 +341,6 @@ extern int dbg_rtw_writeN(_adapter *adapter, u32 addr , u32 length , u8 *data, c
 #define rtw_write16_async(adapter, addr, val) _rtw_write16_async((adapter), (addr), (val))
 #define rtw_write32_async(adapter, addr, val) _rtw_write32_async((adapter), (addr), (val))
 
-#define rtw_write_mem(adapter, addr, cnt, mem) _rtw_write_mem((adapter), addr, cnt, mem)
 #define rtw_write_port(adapter, addr, cnt, mem) _rtw_write_port(adapter, addr, cnt, mem)
 #define rtw_write_port_and_wait(adapter, addr, cnt, mem, timeout_ms) _rtw_write_port_and_wait((adapter), (addr), (cnt), (mem), (timeout_ms))
 #define rtw_write_port_cancel(adapter) _rtw_write_port_cancel(adapter)
@@ -365,7 +361,6 @@ extern int dbg_rtw_writeN(_adapter *adapter, u32 addr , u32 length , u8 *data, c
 #define rtw_write16_async(adapter, addr, val) _rtw_write16_async((adapter), (addr), (val))
 #define rtw_write32_async(adapter, addr, val) _rtw_write32_async((adapter), (addr), (val))
 
-#define rtw_write_mem(adapter, addr, cnt, mem) _rtw_write_mem((adapter), (addr), (cnt), (mem))
 #define rtw_write_port(adapter, addr, cnt, mem) _rtw_write_port((adapter), (addr), (cnt), (mem))
 #define rtw_write_port_and_wait(adapter, addr, cnt, mem, timeout_ms) _rtw_write_port_and_wait((adapter), (addr), (cnt), (mem), (timeout_ms))
 #define rtw_write_port_cancel(adapter) _rtw_write_port_cancel((adapter))
@@ -399,7 +394,6 @@ extern void async_write16(_adapter *adapter, u32 addr, u16 val,
 extern void async_write32(_adapter *adapter, u32 addr, u32 val,
 	void (*_async_io_callback)(_adapter *padater, struct io_req *pio_req, u8 *cnxt), u8 *cnxt);
 
-extern void async_write_mem(_adapter *adapter, u32 addr, u32 cnt, u8 *pmem);
 extern void async_write_port(_adapter *adapter, u32 addr, u32 cnt, u8 *pmem);
 
 
