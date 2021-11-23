@@ -1009,11 +1009,6 @@ struct dvobj_priv {
 
 	_mutex ioctrl_mutex;
 
-#ifdef CONFIG_RTW_CUSTOMER_STR
-	_mutex customer_str_mutex;
-	struct submit_ctx *customer_str_sctx;
-	u8 customer_str[RTW_CUSTOMER_STR_LEN];
-#endif
 
 	_mutex setch_mutex;
 	_mutex setbw_mutex;

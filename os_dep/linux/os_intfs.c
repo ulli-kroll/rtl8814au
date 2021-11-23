@@ -2122,10 +2122,6 @@ struct dvobj_priv *devobj_init(void)
 	_rtw_mutex_init(&pdvobj->setbw_mutex);
 	_rtw_mutex_init(&pdvobj->rf_read_reg_mutex);
 	_rtw_mutex_init(&pdvobj->ioctrl_mutex);
-#ifdef CONFIG_RTW_CUSTOMER_STR
-	_rtw_mutex_init(&pdvobj->customer_str_mutex);
-	_rtw_memset(pdvobj->customer_str, 0xFF, RTW_CUSTOMER_STR_LEN);
-#endif
 #ifdef CONFIG_PROTSEL_PORT
 	_rtw_mutex_init(&pdvobj->protsel_port.mutex);
 #endif
@@ -2208,9 +2204,6 @@ void devobj_deinit(struct dvobj_priv *pdvobj)
 	_rtw_mutex_free(&pdvobj->hw_init_mutex);
 	_rtw_mutex_free(&pdvobj->h2c_fwcmd_mutex);
 
-#ifdef CONFIG_RTW_CUSTOMER_STR
-	_rtw_mutex_free(&pdvobj->customer_str_mutex);
-#endif
 #ifdef CONFIG_PROTSEL_PORT
 	_rtw_mutex_free(&pdvobj->protsel_port.mutex);
 #endif

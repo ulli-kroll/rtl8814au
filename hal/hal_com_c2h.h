@@ -108,16 +108,6 @@ int hal_read_mac_hidden_rpt(_adapter *adapter);
 #define DEFEATURE_DBG_LEN 1
 int c2h_defeature_dbg_hdl(_adapter *adapter, u8 *data, u8 len);
 
-#ifdef CONFIG_RTW_CUSTOMER_STR
-/* C2H_CUSTOMER_STR_RPT, 0x24 */
-#define CUSTOMER_STR_RPT_LEN 8
-int c2h_customer_str_rpt_hdl(_adapter *adapter, u8 *data, u8 len);
-
-/* C2H_CUSTOMER_STR_RPT_2, 0x25 */
-#define CUSTOMER_STR_RPT_2_LEN 8
-int c2h_customer_str_rpt_2_hdl(_adapter *adapter, u8 *data, u8 len);
-#endif /* CONFIG_RTW_CUSTOMER_STR */
-
 #ifdef RTW_PER_CMD_SUPPORT_FW
 /* C2H_PER_RATE_RPT, 0x2c */
 int c2h_per_rate_rpt_hdl(_adapter *adapter, u8 *data, u8 len);
