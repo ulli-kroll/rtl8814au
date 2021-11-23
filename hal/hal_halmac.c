@@ -629,48 +629,6 @@ static void _read_register(struct dvobj_priv *d, u32 addr, u32 cnt, u8 *buf)
 #endif
 }
 
-#ifdef CONFIG_SDIO_INDIRECT_ACCESS
-u8 rtw_halmac_iread8(struct intf_hdl *pintfhdl, u32 addr)
-{
-	struct halmac_adapter *mac;
-	struct halmac_api *api;
-
-	/* WARNING: pintf_dev should not be null! */
-	mac = dvobj_to_halmac(pintfhdl->pintf_dev);
-	api = HALMAC_GET_API(mac);
-
-	/*return api->halmac_reg_read_indirect_8(mac, addr);*/
-	return api->halmac_reg_read_8(mac, addr);
-}
-
-u16 rtw_halmac_iread16(struct intf_hdl *pintfhdl, u32 addr)
-{
-	struct halmac_adapter *mac;
-	struct halmac_api *api;
-	u16 val16 = 0;
-
-	/* WARNING: pintf_dev should not be null! */
-	mac = dvobj_to_halmac(pintfhdl->pintf_dev);
-	api = HALMAC_GET_API(mac);
-
-	/*return api->halmac_reg_read_indirect_16(mac, addr);*/
-	return api->halmac_reg_read_16(mac, addr);
-}
-
-u32 rtw_halmac_iread32(struct intf_hdl *pintfhdl, u32 addr)
-{
-	struct halmac_adapter *mac;
-	struct halmac_api *api;
-
-
-	/* WARNING: pintf_dev should not be null! */
-	mac = dvobj_to_halmac(pintfhdl->pintf_dev);
-	api = HALMAC_GET_API(mac);
-
-	return api->halmac_reg_read_indirect_32(mac, addr);
-}
-#endif /* CONFIG_SDIO_INDIRECT_ACCESS */
-
 int rtw_halmac_write8(struct intf_hdl *pintfhdl, u32 addr, u8 value)
 {
 	struct halmac_adapter *mac;

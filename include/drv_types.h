@@ -1018,9 +1018,6 @@ struct dvobj_priv {
 	_mutex setch_mutex;
 	_mutex setbw_mutex;
 	_mutex rf_read_reg_mutex;
-#ifdef CONFIG_SDIO_INDIRECT_ACCESS
-	_mutex sd_indirect_access_mutex;
-#endif
 
 #ifdef CONFIG_SYSON_INDIRECT_ACCESS
 	_mutex syson_indirect_access_mutex;	/* System On Reg R/W */

@@ -1770,19 +1770,6 @@ Current IOREG MAP
 #define SDIO_TX_FREE_PG_QUEUE			4	/* The number of Tx FIFO free page */
 #define SDIO_TX_FIFO_PAGE_SZ			128
 
-/* indirect access */
-#ifdef CONFIG_SDIO_INDIRECT_ACCESS
-#define SDIO_REG_INDIRECT_REG_CFG		0x40
-#define SDIO_REG_INDIRECT_REG_DATA	0x44
-#define SET_INDIRECT_REG_ADDR(_cmd, _addr)	SET_BITS_TO_LE_2BYTE(((u8 *)(_cmd)) + 0, 0, 16, (_addr))
-#define SET_INDIRECT_REG_SIZE_1BYTE(_cmd)		SET_BITS_TO_LE_1BYTE(((u8 *)(_cmd)) + 2, 0, 2, 0)
-#define SET_INDIRECT_REG_SIZE_2BYTE(_cmd)		SET_BITS_TO_LE_1BYTE(((u8 *)(_cmd)) + 2, 0, 2, 1)
-#define SET_INDIRECT_REG_SIZE_4BYTE(_cmd)		SET_BITS_TO_LE_1BYTE(((u8 *)(_cmd)) + 2, 0, 2, 2)
-#define SET_INDIRECT_REG_WRITE(_cmd)			SET_BITS_TO_LE_1BYTE(((u8 *)(_cmd)) + 2, 2, 1, 1)
-#define SET_INDIRECT_REG_READ(_cmd)			SET_BITS_TO_LE_1BYTE(((u8 *)(_cmd)) + 2, 3, 1, 1)
-#define GET_INDIRECT_REG_RDY(_cmd)			LE_BITS_TO_1BYTE(((u8 *)(_cmd)) + 2, 4, 1)
-#endif/*CONFIG_SDIO_INDIRECT_ACCESS*/
-
 #ifdef CONFIG_SDIO_HCI
 	#define MAX_TX_AGG_PACKET_NUMBER	0x8
 #else

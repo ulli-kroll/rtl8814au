@@ -103,11 +103,6 @@ extern struct halmac_platform_api rtw_halmac_platform_api;
 u8 rtw_halmac_read8(struct intf_hdl *, u32 addr);
 u16 rtw_halmac_read16(struct intf_hdl *, u32 addr);
 u32 rtw_halmac_read32(struct intf_hdl *, u32 addr);
-#ifdef CONFIG_SDIO_INDIRECT_ACCESS
-u8 rtw_halmac_iread8(struct intf_hdl *pintfhdl, u32 addr);
-u16 rtw_halmac_iread16(struct intf_hdl *pintfhdl, u32 addr);
-u32 rtw_halmac_iread32(struct intf_hdl *pintfhdl, u32 addr);
-#endif /* CONFIG_SDIO_INDIRECT_ACCESS */
 int rtw_halmac_write8(struct intf_hdl *, u32 addr, u8 value);
 int rtw_halmac_write16(struct intf_hdl *, u32 addr, u16 value);
 int rtw_halmac_write32(struct intf_hdl *, u32 addr, u32 value);

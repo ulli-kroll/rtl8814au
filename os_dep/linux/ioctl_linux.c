@@ -4216,61 +4216,6 @@ static int rtw_dbg_port(struct net_device *dev,
 #endif
 
 
-#if defined(CONFIG_SDIO_HCI) && defined(CONFIG_SDIO_INDIRECT_ACCESS) && defined(DBG_SDIO_INDIRECT_ACCESS)
-		case 0x1f:
-			{
-				int i, j = 0, test_cnts = 0;
-				static u8 test_code = 0x5A;
-				static u32 data_misatch_cnt = 0, d_acc_err_cnt = 0;
-
-				u32 d_data, i_data;
-				u32 imr;
-
-				test_cnts = extra_arg;
-				for (i = 0; i < test_cnts; i++) {
-					if (RTW_CANNOT_IO(padapter))
-						break;
-
-					rtw_write8(padapter, 0x07, test_code);
-
-					d_data = rtw_read32(padapter, 0x04);
-					imr =  rtw_read32(padapter, 0x10250014);
-					rtw_write32(padapter, 0x10250014, 0);
-					rtw_msleep_os(50);
-
-					i_data = rtw_sd_iread32(padapter, 0x04);
-
-					rtw_write32(padapter, 0x10250014, imr);
-
-					if (d_data != i_data) {
-						data_misatch_cnt++;
-						RTW_ERR("d_data :0x%08x, i_data : 0x%08x\n", d_data, i_data);
-					}
-
-					if (test_code != (i_data >> 24)) {
-						d_acc_err_cnt++;
-						rtw_write8(padapter, 0x07, 0xAA);
-						RTW_ERR("test_code :0x%02x, i_data : 0x%08x\n", test_code, i_data);
-					}
-					if ((j++) == 100) {
-						rtw_msleep_os(2000);
-						RTW_INFO(" Indirect access testing..........%d/%d\n", i, test_cnts);
-						j = 0;
-					}
-
-					test_code = ~test_code;
-					rtw_msleep_os(50);
-				}
-				RTW_INFO("========Indirect access test=========\n");
-				RTW_INFO(" test_cnts = %d\n", test_cnts);
-				RTW_INFO(" direct & indirect read32 data missatch cnts = %d\n", data_misatch_cnt);
-				RTW_INFO(" indirect rdata is not equal to wdata cnts = %d\n", d_acc_err_cnt);
-				RTW_INFO("========Indirect access test=========\n\n");
-				data_misatch_cnt = d_acc_err_cnt = 0;
-
-			}
-			break;
-#endif
 		case 0x20:
 			{
 				if (arg == 0xAA) {
@@ -6371,141 +6316,6 @@ exit:
 	return err;
 }
 
-
-#ifdef CONFIG_SDIO_INDIRECT_ACCESS
-#define DBG_MP_SDIO_INDIRECT_ACCESS 1
-static int rtw_mp_sd_iread(struct net_device *dev
-			   , struct iw_request_info *info
-			   , struct iw_point *wrqu
-			   , char *extra)
-{
-	char input[16];
-	u8 width;
-	unsigned long addr;
-	u32 ret = 0;
-	PADAPTER padapter = rtw_netdev_priv(dev);
-
-	if (wrqu->length > 16) {
-		RTW_INFO(FUNC_ADPT_FMT" wrqu->length:%d\n", FUNC_ADPT_ARG(padapter), wrqu->length);
-		ret = -EINVAL;
-		goto exit;
-	}
-
-	if (copy_from_user(input, wrqu->pointer, wrqu->length)) {
-		RTW_INFO(FUNC_ADPT_FMT" copy_from_user fail\n", FUNC_ADPT_ARG(padapter));
-		ret = -EFAULT;
-		goto exit;
-	}
-
-	_rtw_memset(extra, 0, wrqu->length);
-
-	if (sscanf(input, "%hhu,%lx", &width, &addr) != 2) {
-		RTW_INFO(FUNC_ADPT_FMT" sscanf fail\n", FUNC_ADPT_ARG(padapter));
-		ret = -EINVAL;
-		goto exit;
-	}
-
-	if (addr > 0x3FFF) {
-		RTW_INFO(FUNC_ADPT_FMT" addr:0x%lx\n", FUNC_ADPT_ARG(padapter), addr);
-		ret = -EINVAL;
-		goto exit;
-	}
-
-	if (DBG_MP_SDIO_INDIRECT_ACCESS)
-		RTW_INFO(FUNC_ADPT_FMT" width:%u, addr:0x%lx\n", FUNC_ADPT_ARG(padapter), width, addr);
-
-	switch (width) {
-	case 1:
-		sprintf(extra, "0x%02x", rtw_sd_iread8(padapter, addr));
-		wrqu->length = strlen(extra);
-		break;
-	case 2:
-		sprintf(extra, "0x%04x", rtw_sd_iread16(padapter, addr));
-		wrqu->length = strlen(extra);
-		break;
-	case 4:
-		sprintf(extra, "0x%08x", rtw_sd_iread32(padapter, addr));
-		wrqu->length = strlen(extra);
-		break;
-	default:
-		wrqu->length = 0;
-		ret = -EINVAL;
-		break;
-	}
-
-exit:
-	return ret;
-}
-
-static int rtw_mp_sd_iwrite(struct net_device *dev
-			    , struct iw_request_info *info
-			    , struct iw_point *wrqu
-			    , char *extra)
-{
-	char width;
-	unsigned long addr, data;
-	int ret = 0;
-	PADAPTER padapter = rtw_netdev_priv(dev);
-	char input[32];
-
-	if (wrqu->length > 32) {
-		RTW_INFO(FUNC_ADPT_FMT" wrqu->length:%d\n", FUNC_ADPT_ARG(padapter), wrqu->length);
-		ret = -EINVAL;
-		goto exit;
-	}
-
-	if (copy_from_user(input, wrqu->pointer, wrqu->length)) {
-		RTW_INFO(FUNC_ADPT_FMT" copy_from_user fail\n", FUNC_ADPT_ARG(padapter));
-		ret = -EFAULT;
-		goto exit;
-	}
-
-	_rtw_memset(extra, 0, wrqu->length);
-
-	if (sscanf(input, "%hhu,%lx,%lx", &width, &addr, &data) != 3) {
-		RTW_INFO(FUNC_ADPT_FMT" sscanf fail\n", FUNC_ADPT_ARG(padapter));
-		ret = -EINVAL;
-		goto exit;
-	}
-
-	if (addr > 0x3FFF) {
-		RTW_INFO(FUNC_ADPT_FMT" addr:0x%lx\n", FUNC_ADPT_ARG(padapter), addr);
-		ret = -EINVAL;
-		goto exit;
-	}
-
-	if (DBG_MP_SDIO_INDIRECT_ACCESS)
-		RTW_INFO(FUNC_ADPT_FMT" width:%u, addr:0x%lx, data:0x%lx\n", FUNC_ADPT_ARG(padapter), width, addr, data);
-
-	switch (width) {
-	case 1:
-		if (data > 0xFF) {
-			ret = -EINVAL;
-			break;
-		}
-		rtw_sd_iwrite8(padapter, addr, data);
-		break;
-	case 2:
-		if (data > 0xFFFF) {
-			ret = -EINVAL;
-			break;
-		}
-		rtw_sd_iwrite16(padapter, addr, data);
-		break;
-	case 4:
-		rtw_sd_iwrite32(padapter, addr, data);
-		break;
-	default:
-		wrqu->length = 0;
-		ret = -EINVAL;
-		break;
-	}
-
-exit:
-	return ret;
-}
-#endif /* CONFIG_SDIO_INDIRECT_ACCESS */
-
 static int rtw_priv_set(struct net_device *dev,
 			struct iw_request_info *info,
 			union iwreq_data *wdata, char *extra)
@@ -6575,14 +6385,6 @@ static int rtw_priv_get(struct net_device *dev,
 	if (subcmd < MP_NULL) {
 	} else {
 			switch (subcmd) {
-#ifdef CONFIG_SDIO_INDIRECT_ACCESS
-			case MP_SD_IREAD:
-				rtw_mp_sd_iread(dev, info, wrqu, extra);
-				break;
-			case MP_SD_IWRITE:
-				rtw_mp_sd_iwrite(dev, info, wrqu, extra);
-				break;
-#endif
 			default:
 				return -EIO;
 			}
@@ -7408,10 +7210,6 @@ static const struct iw_priv_args rtw_private_args[] = {
 	{ SIOCIWFIRSTPRIV + 0x0F, IW_PRIV_TYPE_CHAR | 1024, IW_PRIV_TYPE_CHAR | IW_PRIV_SIZE_MASK , ""},/* get
  * --- sub-ioctls definitions --- */
 
-#ifdef CONFIG_SDIO_INDIRECT_ACCESS
-	{ MP_SD_IREAD, IW_PRIV_TYPE_CHAR | 1024, IW_PRIV_TYPE_CHAR | IW_PRIV_SIZE_MASK, "sd_iread" },
-	{ MP_SD_IWRITE, IW_PRIV_TYPE_CHAR | 1024, IW_PRIV_TYPE_CHAR | IW_PRIV_SIZE_MASK, "sd_iwrite" },
-#endif
 };
 
 

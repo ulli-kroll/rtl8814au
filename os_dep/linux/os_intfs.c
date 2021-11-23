@@ -2122,9 +2122,6 @@ struct dvobj_priv *devobj_init(void)
 	_rtw_mutex_init(&pdvobj->setbw_mutex);
 	_rtw_mutex_init(&pdvobj->rf_read_reg_mutex);
 	_rtw_mutex_init(&pdvobj->ioctrl_mutex);
-#ifdef CONFIG_SDIO_INDIRECT_ACCESS
-	_rtw_mutex_init(&pdvobj->sd_indirect_access_mutex);
-#endif
 #ifdef CONFIG_SYSON_INDIRECT_ACCESS
 	_rtw_mutex_init(&pdvobj->syson_indirect_access_mutex);
 #endif
@@ -2231,9 +2228,6 @@ void devobj_deinit(struct dvobj_priv *pdvobj)
 	_rtw_mutex_free(&pdvobj->setbw_mutex);
 	_rtw_mutex_free(&pdvobj->rf_read_reg_mutex);
 	_rtw_mutex_free(&pdvobj->ioctrl_mutex);
-#ifdef CONFIG_SDIO_INDIRECT_ACCESS
-	_rtw_mutex_free(&pdvobj->sd_indirect_access_mutex);
-#endif
 #ifdef CONFIG_SYSON_INDIRECT_ACCESS
 	_rtw_mutex_free(&pdvobj->syson_indirect_access_mutex);
 #endif
