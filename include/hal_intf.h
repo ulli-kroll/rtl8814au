@@ -341,10 +341,6 @@ struct hal_ops {
 	void	(*write_bbreg)(_adapter *padapter, u32 RegAddr, u32 BitMask, u32 Data);
 	u32 (*read_rfreg)(_adapter *padapter, enum rf_path eRFPath, u32 RegAddr, u32 BitMask);
 	void	(*write_rfreg)(_adapter *padapter, enum rf_path eRFPath, u32 RegAddr, u32 BitMask, u32 Data);
-#ifdef CONFIG_SYSON_INDIRECT_ACCESS
-	u32 (*read_syson_reg)(_adapter *padapter, u32 RegAddr, u32 BitMask);
-	void (*write_syson_reg)(_adapter *padapter, u32 RegAddr, u32 BitMask, u32 Data);
-#endif
 	void (*read_wmmedca_reg)(_adapter *padapter, u16 *vo_params, u16 *vi_params, u16 *be_params, u16 *bk_params);
 	
 #ifdef CONFIG_HOSTAPD_MLME
@@ -714,13 +710,6 @@ void	rtw_hal_write_rfreg(_adapter *padapter, enum rf_path eRFPath, u32 RegAddr, 
 #define phy_set_bb_reg(Adapter, RegAddr, BitMask, Data) rtw_hal_write_bbreg((Adapter), (RegAddr), (BitMask), (Data))
 #define phy_query_rf_reg(Adapter, eRFPath, RegAddr, BitMask) rtw_hal_read_rfreg((Adapter), (eRFPath), (RegAddr), (BitMask))
 #define phy_set_rf_reg(Adapter, eRFPath, RegAddr, BitMask, Data) rtw_hal_write_rfreg((Adapter), (eRFPath), (RegAddr), (BitMask), (Data))
-
-#ifdef CONFIG_SYSON_INDIRECT_ACCESS
-u32 rtw_hal_read_syson_reg(PADAPTER padapter, u32 RegAddr, u32 BitMask);
-void rtw_hal_write_syson_reg(_adapter *padapter, u32 RegAddr, u32 BitMask, u32 Data);
-#define hal_query_syson_reg(Adapter, RegAddr, BitMask) rtw_hal_read_syson_reg((Adapter), (RegAddr), (BitMask))
-#define hal_set_syson_reg(Adapter, RegAddr, BitMask, Data) rtw_hal_write_syson_reg((Adapter), (RegAddr), (BitMask), (Data))
-#endif
 
 #define phy_set_mac_reg	phy_set_bb_reg
 #define phy_query_mac_reg phy_query_bb_reg

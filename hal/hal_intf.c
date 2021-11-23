@@ -854,23 +854,6 @@ void rtw_hal_write_rfreg(_adapter *padapter, enum rf_path eRFPath, u32 RegAddr, 
 	}
 }
 
-#ifdef CONFIG_SYSON_INDIRECT_ACCESS
-u32 rtw_hal_read_syson_reg(PADAPTER padapter, u32 RegAddr, u32 BitMask)
-{
-	u32 data = 0;
-	if (padapter->hal_func.read_syson_reg)
-		data = padapter->hal_func.read_syson_reg(padapter, RegAddr, BitMask);
-
-	return data;
-}
-
-void rtw_hal_write_syson_reg(_adapter *padapter, u32 RegAddr, u32 BitMask, u32 Data)
-{
-	if (padapter->hal_func.write_syson_reg)
-		padapter->hal_func.write_syson_reg(padapter, RegAddr, BitMask, Data);
-}
-#endif
-
 void	rtw_hal_set_chnl_bw(_adapter *padapter, u8 channel, enum channel_width Bandwidth, u8 Offset40, u8 Offset80)
 {
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(padapter);

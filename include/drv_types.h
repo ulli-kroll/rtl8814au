@@ -1019,10 +1019,6 @@ struct dvobj_priv {
 	_mutex setbw_mutex;
 	_mutex rf_read_reg_mutex;
 
-#ifdef CONFIG_SYSON_INDIRECT_ACCESS
-	_mutex syson_indirect_access_mutex;	/* System On Reg R/W */
-#endif
-
 	unsigned char	oper_channel; /* saved channel info when call set_channel_bw */
 	unsigned char	oper_bwmode;
 	unsigned char	oper_ch_offset;/* PRIME_CHNL_OFFSET */
