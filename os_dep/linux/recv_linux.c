@@ -675,26 +675,3 @@ _recv_indicatepkt_drop:
 	return _FAIL;
 }
 
-void rtw_os_read_port(_adapter *padapter, struct recv_buf *precvbuf)
-{
-#ifdef CONFIG_USB_HCI
-	struct recv_priv *precvpriv = &padapter->recvpriv;
-
-	precvbuf->ref_cnt--;
-
-	/* free skb in recv_buf */
-	rtw_skb_free(precvbuf->pskb);
-
-	precvbuf->pskb = NULL;
-
-	if (precvbuf->irp_pending == _FALSE)
-		rtw_read_port(padapter, precvpriv->ff_hwaddr, 0, (unsigned char *)precvbuf);
-
-
-#endif
-#if defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
-	precvbuf->pskb = NULL;
-#endif
-
-}
-

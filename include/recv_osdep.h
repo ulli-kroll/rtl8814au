@@ -51,8 +51,6 @@ int rtw_os_recvbuf_resource_free(_adapter *padapter, struct recv_buf *precvbuf);
 _pkt *rtw_os_alloc_msdu_pkt(union recv_frame *prframe, const u8 *da, const u8 *sa, u8 *msdu ,u16 msdu_len);
 void rtw_os_recv_indicate_pkt(_adapter *padapter, _pkt *pkt, union recv_frame *rframe);
 
-void rtw_os_read_port(_adapter *padapter, struct recv_buf *precvbuf);
-
 #ifdef PLATFORM_LINUX
 #ifdef CONFIG_RTW_NAPI
 #include <linux/netdevice.h>	/* struct napi_struct */
