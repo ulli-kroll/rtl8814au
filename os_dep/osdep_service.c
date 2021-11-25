@@ -731,41 +731,6 @@ inline void dbg_rtw_skb_queue_purge(struct sk_buff_head *list, enum mstat_f flag
 		dbg_rtw_skb_free(skb, flags, func, line);
 }
 
-#ifdef CONFIG_USB_HCI
-inline void *dbg_rtw_usb_buffer_alloc(struct usb_device *dev, size_t size, dma_addr_t *dma, const enum mstat_f flags, const char *func, int line)
-{
-	void *p;
-
-	if (match_mstat_sniff_rules(flags, size))
-		RTW_INFO("DBG_MEM_ALLOC %s:%d %s(%zu)\n", func, line, __FUNCTION__, size);
-
-	p = _rtw_usb_buffer_alloc(dev, size, dma);
-
-	rtw_mstat_update(
-		flags
-		, p ? MSTAT_ALLOC_SUCCESS : MSTAT_ALLOC_FAIL
-		, size
-	);
-
-	return p;
-}
-
-inline void dbg_rtw_usb_buffer_free(struct usb_device *dev, size_t size, void *addr, dma_addr_t dma, const enum mstat_f flags, const char *func, int line)
-{
-
-	if (match_mstat_sniff_rules(flags, size))
-		RTW_INFO("DBG_MEM_ALLOC %s:%d %s(%zu)\n", func, line, __FUNCTION__, size);
-
-	_rtw_usb_buffer_free(dev, size, addr, dma);
-
-	rtw_mstat_update(
-		flags
-		, MSTAT_FREE
-		, size
-	);
-}
-#endif /* CONFIG_USB_HCI */
-
 #endif /* defined(DBG_MEM_ALLOC) */
 
 void *rtw_malloc2d(int h, int w, size_t size)
