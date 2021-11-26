@@ -123,10 +123,6 @@ void dump_drv_cfg(void *sel)
 	RTW_PRINT_SEL(sel, "CONFIG_RTW_NETIF_SG\n");
 #endif
 
-#ifdef CONFIG_RTW_WIFI_HAL
-	RTW_PRINT_SEL(sel, "CONFIG_RTW_WIFI_HAL\n");
-#endif
-
 #ifdef CONFIG_RTW_TPT_MODE
 	RTW_PRINT_SEL(sel, "CONFIG_RTW_TPT_MODE\n");
 #endif 

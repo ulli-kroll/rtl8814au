@@ -10615,12 +10615,6 @@ static u8 sitesurvey_pick_ch_behavior(_adapter *padapter, u8 *ch, RT_SCAN_TYPE *
 		if (!(backop_flags && ss->scan_cnt >= ss->scan_cnt_max))
 		#endif
 		{
-			#ifdef CONFIG_RTW_WIFI_HAL
-			if (adapter_to_dvobj(padapter)->nodfs) {
-				while ( ss->channel_idx < ss->ch_num && rtw_is_dfs_ch(ss->ch[ss->channel_idx].hw_value))
-					ss->channel_idx++;
-			} else
-			#endif
 			if (ss->channel_idx != 0 && ss->dfs_ch_ssid_scan == 0
 				&& pmlmeext->sitesurvey_res.ssid_num
 				&& rtw_is_dfs_ch(ss->ch[ss->channel_idx - 1].hw_value)

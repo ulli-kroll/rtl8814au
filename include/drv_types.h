@@ -1105,10 +1105,6 @@ struct dvobj_priv {
 	struct dft_info dft;
 #endif
 
-#ifdef CONFIG_RTW_WIFI_HAL
-	u32 nodfs;
-#endif
-
 	/*-------- below is for SDIO INTERFACE --------*/
 
 #ifdef INTF_DATA
