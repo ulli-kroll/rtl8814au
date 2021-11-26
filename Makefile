@@ -48,7 +48,6 @@ CONFIG_SIGNAL_SCALE_MAPPING = n
 CONFIG_80211W = y
 CONFIG_REDUCE_TX_CPU_LOADING = n
 CONFIG_WIFI_MONITOR = n
-CONFIG_MCC_MODE = n
 CONFIG_RTW_NAPI = y
 CONFIG_RTW_GRO = n
 CONFIG_RTW_NETIF_SG = y
@@ -107,7 +106,6 @@ _HAL_INTFS_FILES :=	hal/hal_intf.o \
 			hal/hal_phy.o \
 			hal/hal_dm.o \
 			hal/hal_dm_acs.o \
-			hal/hal_mcc.o \
 			hal/hal_hci/hal_usb.o \
 			hal/led/hal_led.o \
 			hal/led/hal_usb_led.o
@@ -269,10 +267,6 @@ endif
 
 ifeq ($(CONFIG_WIFI_MONITOR), y)
 EXTRA_CFLAGS += -DCONFIG_WIFI_MONITOR
-endif
-
-ifeq ($(CONFIG_MCC_MODE), y)
-EXTRA_CFLAGS += -DCONFIG_MCC_MODE
 endif
 
 ifeq ($(CONFIG_RTW_NAPI), y)

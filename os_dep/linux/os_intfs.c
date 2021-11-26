@@ -732,38 +732,6 @@ static int netdev_close(struct net_device *pnetdev);
 extern int rtw_sdio_set_power(int on);
 #endif /* CONFIG_PLATFORM_INTEL_BYT */
 
-#ifdef CONFIG_MCC_MODE
-/* enable MCC mode or not */
-int rtw_en_mcc = 1;
-/* can referece following value before insmod driver */
-int rtw_mcc_ap_bw20_target_tx_tp = MCC_AP_BW20_TARGET_TX_TP;
-int rtw_mcc_ap_bw40_target_tx_tp = MCC_AP_BW40_TARGET_TX_TP;
-int rtw_mcc_ap_bw80_target_tx_tp = MCC_AP_BW80_TARGET_TX_TP;
-int rtw_mcc_sta_bw20_target_tx_tp = MCC_STA_BW20_TARGET_TX_TP;
-int rtw_mcc_sta_bw40_target_tx_tp = MCC_STA_BW40_TARGET_TX_TP;
-int rtw_mcc_sta_bw80_target_tx_tp = MCC_STA_BW80_TARGET_TX_TP;
-int rtw_mcc_single_tx_cri = MCC_SINGLE_TX_CRITERIA;
-int rtw_mcc_policy_table_idx = 0;
-int rtw_mcc_duration = 0;
-int rtw_mcc_enable_runtime_duration = 1;
-#ifdef CONFIG_MCC_PHYDM_OFFLOAD
-int rtw_mcc_phydm_offload = 1;
-#else
-int rtw_mcc_phydm_offload = 0;
-#endif
-module_param(rtw_en_mcc, int, 0644);
-module_param(rtw_mcc_single_tx_cri, int, 0644);
-module_param(rtw_mcc_ap_bw20_target_tx_tp, int, 0644);
-module_param(rtw_mcc_ap_bw40_target_tx_tp, int, 0644);
-module_param(rtw_mcc_ap_bw80_target_tx_tp, int, 0644);
-module_param(rtw_mcc_sta_bw20_target_tx_tp, int, 0644);
-module_param(rtw_mcc_sta_bw40_target_tx_tp, int, 0644);
-module_param(rtw_mcc_sta_bw80_target_tx_tp, int, 0644);
-module_param(rtw_mcc_policy_table_idx, int, 0644);
-module_param(rtw_mcc_duration, int, 0644);
-module_param(rtw_mcc_phydm_offload, int, 0644);
-#endif /*CONFIG_MCC_MODE */
-
 #ifdef CONFIG_RTW_NAPI
 /*following setting should define NAPI in Makefile
 enable napi only = 1, disable napi = 0*/
@@ -1158,21 +1126,6 @@ uint loadparam(_adapter *padapter)
 #ifdef CONFIG_DFS_MASTER
 	registry_par->dfs_region_domain = (u8)rtw_dfs_region_domain;
 #endif
-
-#ifdef CONFIG_MCC_MODE
-	registry_par->en_mcc = (u8)rtw_en_mcc;
-	registry_par->rtw_mcc_ap_bw20_target_tx_tp = (u32)rtw_mcc_ap_bw20_target_tx_tp;
-	registry_par->rtw_mcc_ap_bw40_target_tx_tp = (u32)rtw_mcc_ap_bw40_target_tx_tp;
-	registry_par->rtw_mcc_ap_bw80_target_tx_tp = (u32)rtw_mcc_ap_bw80_target_tx_tp;
-	registry_par->rtw_mcc_sta_bw20_target_tx_tp = (u32)rtw_mcc_sta_bw20_target_tx_tp;
-	registry_par->rtw_mcc_sta_bw40_target_tx_tp = (u32)rtw_mcc_sta_bw40_target_tx_tp;
-	registry_par->rtw_mcc_sta_bw80_target_tx_tp = (u32)rtw_mcc_sta_bw80_target_tx_tp;
-	registry_par->rtw_mcc_single_tx_cri = (u32)rtw_mcc_single_tx_cri;
-	registry_par->rtw_mcc_policy_table_idx = rtw_mcc_policy_table_idx;
-	registry_par->rtw_mcc_duration = (u8)rtw_mcc_duration;
-	registry_par->rtw_mcc_enable_runtime_duration = rtw_mcc_enable_runtime_duration;
-	registry_par->rtw_mcc_phydm_offload = rtw_mcc_phydm_offload;
-#endif /*CONFIG_MCC_MODE */
 
 #ifdef CONFIG_SUPPORT_TRX_SHARED
 	registry_par->trx_share_mode = rtw_trx_share_mode;
@@ -2023,11 +1976,6 @@ u8 rtw_init_default_value(_adapter *padapter)
 	/* hal_priv */
 	rtw_hal_def_value_init(padapter);
 
-#ifdef CONFIG_MCC_MODE
-	/* MCC parameter */
-	rtw_hal_mcc_parameter_init(padapter);
-#endif /* CONFIG_MCC_MODE */
-
 	/* misc. */
 	RTW_ENABLE_FUNC(padapter, DF_RX_BIT);
 	RTW_ENABLE_FUNC(padapter, DF_TX_BIT);
@@ -2138,13 +2086,6 @@ struct dvobj_priv *devobj_init(void)
 	rtw_init_timer(&(pdvobj->dynamic_chk_timer), NULL, rtw_dynamic_check_timer_handlder, pdvobj);
 	rtw_init_timer(&(pdvobj->periodic_tsf_update_end_timer), NULL, rtw_hal_periodic_tsf_update_end_timer_hdl, pdvobj);
 
-#ifdef CONFIG_MCC_MODE
-	_rtw_mutex_init(&(pdvobj->mcc_objpriv.mcc_mutex));
-	_rtw_mutex_init(&(pdvobj->mcc_objpriv.mcc_tsf_req_mutex));
-	_rtw_mutex_init(&(pdvobj->mcc_objpriv.mcc_dbg_reg_mutex));
-	_rtw_spinlock_init(&pdvobj->mcc_objpriv.mcc_lock);
-#endif /* CONFIG_MCC_MODE */
-
 #ifdef CONFIG_RTW_NAPI_DYNAMIC
 	pdvobj->en_napi_dynamic = 0;
 #endif /* CONFIG_RTW_NAPI_DYNAMIC */
@@ -2170,13 +2111,6 @@ void devobj_deinit(struct dvobj_priv *pdvobj)
 #if defined(CONFIG_IOCTL_CFG80211)
 	rtw_cfg80211_dev_res_free(pdvobj);
 #endif
-
-#ifdef CONFIG_MCC_MODE
-	_rtw_mutex_free(&(pdvobj->mcc_objpriv.mcc_mutex));
-	_rtw_mutex_free(&(pdvobj->mcc_objpriv.mcc_tsf_req_mutex));
-	_rtw_mutex_free(&(pdvobj->mcc_objpriv.mcc_dbg_reg_mutex));
-	_rtw_spinlock_free(&pdvobj->mcc_objpriv.mcc_lock);
-#endif /* CONFIG_MCC_MODE */
 
 	_rtw_mutex_free(&pdvobj->hw_init_mutex);
 	_rtw_mutex_free(&pdvobj->h2c_fwcmd_mutex);

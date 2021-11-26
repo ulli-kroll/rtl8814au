@@ -329,9 +329,4 @@ void phydm_set_ofdm_agc_tab(void *dm_void, u8 tab_sel);
 void phydm_dig_debug(void *dm_void, char input[][16], u32 *_used, char *output,
 		     u32 *_out_len);
 
-#ifdef CONFIG_MCC_DM
-void phydm_mcc_igi_cal(void *dm_void);
-#endif
-
-
 #endif

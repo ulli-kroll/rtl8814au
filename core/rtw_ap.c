@@ -364,14 +364,6 @@ void	expire_timeout_chk(_adapter *padapter)
 	char chk_alive_list[NUM_STA];
 	int i;
 
-#ifdef CONFIG_MCC_MODE
-	/*	then driver may check fail due to not recv client's frame under sitesurvey,
-	 *	don't expire timeout chk under MCC under sitesurvey */
-
-	if (rtw_hal_mcc_link_status_chk(padapter, __func__) == _FALSE)
-		return;
-#endif
-
 	_enter_critical_bh(&pstapriv->auth_list_lock, &irqL);
 
 	phead = &pstapriv->auth_list;
@@ -597,14 +589,6 @@ void	expire_timeout_chk(_adapter *padapter)
 
 		#ifdef CONFIG_ACTIVE_KEEP_ALIVE_CHECK
 		if (pmlmeext->active_keep_alive_check) {
-			#ifdef CONFIG_MCC_MODE
-			if (MCC_EN(padapter)) {
-				/* driver doesn't switch channel under MCC */
-				if (rtw_hal_check_mcc_status(padapter, MCC_STATUS_DOING_MCC))
-					switch_channel_by_drv = _FALSE;
-			}
-			#endif
-
 			if (!rtw_mi_get_ch_setting_union(padapter, &union_ch, &union_bw, &union_offset)
 				|| pmlmeext->cur_channel != union_ch)
 				switch_channel_by_drv = _FALSE;
@@ -1674,26 +1658,6 @@ chbw_decision:
 	rtw_dfs_rd_en_decision(padapter, mlme_act, parm->excl_ifbmp);
 #endif
 
-#ifdef CONFIG_MCC_MODE
-	if (MCC_EN(padapter)) {
-		/* 
-		* due to check under rtw_ap_chbw_decision
-		* if under MCC mode, means req channel setting is the same as current channel setting
-		* if not under MCC mode, mean req channel setting is not the same as current channel setting
-		*/
-		if (rtw_hal_check_mcc_status(padapter, MCC_STATUS_DOING_MCC)) {
-				RTW_INFO(FUNC_ADPT_FMT": req channel setting is the same as current channel setting, go to update BCN\n"
-				, FUNC_ADPT_ARG(padapter));
-
-				goto update_beacon;
-
-		}
-	}
-
-	/* issue null data to AP for all interface connecting to AP before switch channel setting for softap */
-	rtw_hal_mcc_issue_null_data(padapter, chbw_allow, 1);
-#endif /* CONFIG_MCC_MODE */
-
 	if (!IS_CH_WAITING(adapter_to_rfctl(padapter))) {
 		doiqk = _TRUE;
 		rtw_hal_set_hwreg(padapter , HW_VAR_DO_IQK , &doiqk);
@@ -1706,11 +1670,6 @@ chbw_decision:
 
 	doiqk = _FALSE;
 	rtw_hal_set_hwreg(padapter , HW_VAR_DO_IQK , &doiqk);
-
-#ifdef CONFIG_MCC_MODE
-	/* after set_channel_bwmode for backup IQK */
-	rtw_hal_set_mcc_setting_start_bss_network(padapter, chbw_allow);
-#endif
 
 #if defined(CONFIG_IOCTL_CFG80211) && (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 5, 0))
 	for (i = 0; i < pdvobj->iface_nums; i++) {
@@ -1737,10 +1696,6 @@ chbw_decision:
 		RTW_INFO(FUNC_ADPT_FMT" done\n", FUNC_ADPT_ARG(padapter));
 		dump_adapters_status(RTW_DBGDUMP , adapter_to_dvobj(padapter));
 	}
-
-#ifdef CONFIG_MCC_MODE
-update_beacon:
-#endif
 
 	for (i = 0; i < pdvobj->iface_nums; i++) {
 		struct mlme_priv *mlme;
@@ -4454,35 +4409,6 @@ u8 rtw_ap_chbw_decision(_adapter *adapter, u8 ifbmp, u8 excl_ifbmp
 		RTW_INFO("%s others union:%u,%u,%u\n", __func__, u_ch, u_bw, u_offset);
 	}
 
-#ifdef CONFIG_MCC_MODE
-	if (MCC_EN(adapter) && req_ch == 0) {
-		if (rtw_hal_check_mcc_status(adapter, MCC_STATUS_DOING_MCC)) {
-			u8 if_id = adapter->iface_id;
-
-			mlmeext = &(adapter->mlmeextpriv);
-
-			/* check channel settings are the same */
-			if (cur_ie_ch[if_id] == mlmeext->cur_channel
-				&& cur_ie_bw[if_id] == mlmeext->cur_bwmode
-				&& cur_ie_offset[if_id] == mlmeext->cur_ch_offset) {
-
-				RTW_INFO(FUNC_ADPT_FMT"req ch settings are the same as current ch setting, go to exit\n"
-					, FUNC_ADPT_ARG(adapter));
-
-				*chbw_allow = _FALSE;
-				goto exit;
-			} else {
-				RTW_INFO(FUNC_ADPT_FMT"request channel settings are not the same as current channel setting(%d,%d,%d,%d,%d,%d), restart MCC\n"
-					, FUNC_ADPT_ARG(adapter)
-					, cur_ie_ch[if_id], cur_ie_bw[if_id], cur_ie_offset[if_id]
-					, mlmeext->cur_channel, mlmeext->cur_bwmode, mlmeext->cur_ch_offset);
-
-				rtw_hal_set_mcc_setting_disconnect(adapter);
-			}
-		}	
-	}
-#endif /* CONFIG_MCC_MODE */
-
 	if (MSTATE_STA_LG_NUM(&mstate_others) && !MSTATE_STA_LD_NUM(&mstate_others)) {
 		/* has linking STA but no linked STA */
 
@@ -4502,20 +4428,6 @@ u8 rtw_ap_chbw_decision(_adapter *adapter, u8 ifbmp, u8 excl_ifbmp
 				/* channel bw offset can be allowed, not need MCC */
 				*chbw_allow = _TRUE;
 			} else {
-				#ifdef CONFIG_MCC_MODE
-				if (MCC_EN(iface)) {
-					mlmeext = &(iface->mlmeextpriv);
-					mlmeext->cur_channel = *ch = dec_ch[i];
-					mlmeext->cur_bwmode = *bw = dec_bw[i];
-					mlmeext->cur_ch_offset = *offset = dec_offset[i];
-
-					/* channel bw offset can not be allowed, need MCC */
-					*chbw_allow = _FALSE;
-					RTW_INFO(FUNC_ADPT_FMT" enable mcc: %u,%u,%u\n", FUNC_ADPT_ARG(iface)
-						 , *ch, *bw, *offset);
-					goto exit;
-				}
-				#endif /* CONFIG_MCC_MODE */
 
 				/* set this for possible ch change when join down*/
 				set_fwstate(&iface->mlmepriv, WIFI_OP_CH_SWITCHING);
@@ -4533,24 +4445,6 @@ u8 rtw_ap_chbw_decision(_adapter *adapter, u8 ifbmp, u8 excl_ifbmp
 			iface = dvobj->padapters[i];
 
 			rtw_adjust_chbw(iface, u_ch, &dec_bw[i], &dec_offset[i]);
-
-			#ifdef CONFIG_MCC_MODE
-			if (MCC_EN(iface)) {
-				if (!rtw_is_chbw_grouped(u_ch, u_bw, u_offset, dec_ch[i], dec_bw[i], dec_offset[i])) {
-					mlmeext = &(iface->mlmeextpriv);
-					mlmeext->cur_channel = *ch = dec_ch[i] = cur_ie_ch[i];
-					mlmeext->cur_bwmode = *bw = dec_bw[i] = cur_ie_bw[i];
-					mlmeext->cur_ch_offset = *offset = dec_offset[i] = cur_ie_offset[i];
-					/* channel bw offset can not be allowed, need MCC */
-					*chbw_allow = _FALSE;
-					RTW_INFO(FUNC_ADPT_FMT" enable mcc: %u,%u,%u\n", FUNC_ADPT_ARG(iface)
-						 , *ch, *bw, *offset);
-					goto exit;
-				} else
-					/* channel bw offset can be allowed, not need MCC */
-					*chbw_allow = _TRUE;
-			}
-			#endif /* CONFIG_MCC_MODE */
 
 			if (req_ch == 0 && dec_bw[i] > u_bw
 				&& rtw_is_dfs_chbw(u_ch, u_bw, u_offset)

@@ -3667,27 +3667,7 @@ static void do_queue_select(_adapter	*padapter, struct pkt_attrib *pattrib)
 
 	qsel = pattrib->priority;
 
-#ifdef CONFIG_MCC_MODE
-	if (MCC_EN(padapter)) {
-		/* Under MCC */
-		if (rtw_hal_check_mcc_status(padapter, MCC_STATUS_NEED_MCC)) {
-			if (padapter->mcc_adapterpriv.role == MCC_ROLE_GO
-			    || padapter->mcc_adapterpriv.role == MCC_ROLE_AP) {
-				pattrib->qsel = QSLT_VO; /* AP interface VO queue */
-				pattrib->priority  = QSLT_VO;
-			} else {
-				pattrib->qsel = QSLT_BE; /* STA interface BE queue */
-				pattrib->priority  = QSLT_BE;
-			}
-		} else
-			/* Not Under MCC */
-			pattrib->qsel = qsel;
-	} else
-		/* Not enable MCC */
-		pattrib->qsel = qsel;
-#else /* !CONFIG_MCC_MODE */
 	pattrib->qsel = qsel;
-#endif /* CONFIG_MCC_MODE */
 
 	/* high priority packet */
 	if (pattrib->hipriority_pkt) {
@@ -3922,11 +3902,6 @@ s32 rtw_xmit_posthandle(_adapter *padapter, struct xmit_frame *pxmitframe, _pkt 
 	s32 res;
 
 	res = update_attrib(padapter, pkt, &pxmitframe->attrib);
-
-#ifdef CONFIG_MCC_MODE
-	/* record data kernel TX to driver to check MCC concurrent TX */
-	rtw_hal_mcc_calc_tx_bytes_from_kernel(padapter, pxmitframe->attrib.pktlen);
-#endif /* CONFIG_MCC_MODE */
 
 #ifdef CONFIG_WAPI_SUPPORT
 	if (pxmitframe->attrib.ether_type != 0x88B4) {
@@ -4831,17 +4806,6 @@ bool rtw_xmit_ac_blocked(_adapter *adapter)
 			goto exit;
 		}
 	}
-
-#ifdef CONFIG_MCC_MODE
-	if (MCC_EN(adapter)) {
-		if (rtw_hal_check_mcc_status(adapter, MCC_STATUS_DOING_MCC)) {
-			if (MCC_STOP(adapter)) {
-				blocked = _TRUE;
-				goto exit;
-			}
-		}
-	}
-#endif /*  CONFIG_MCC_MODE */
 
 exit:
 	return blocked;

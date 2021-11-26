@@ -1654,9 +1654,6 @@ void odm_dm_init(struct dm_struct *dm)
 #ifdef PHYDM_LNA_SAT_CHK_SUPPORT
 	phydm_lna_sat_check_init(dm);
 #endif
-#ifdef CONFIG_MCC_DM
-	phydm_mcc_init(dm);
-#endif
 
 #ifdef PHYDM_CCK_RX_PATHDIV_SUPPORT
 	phydm_cck_rx_pathdiv_init(dm);
@@ -2227,10 +2224,6 @@ void phydm_watchdog(struct dm_struct *dm)
 
 #ifdef PHYDM_LNA_SAT_CHK_SUPPORT
 	phydm_lna_sat_chk_watchdog(dm);
-#endif
-
-#ifdef CONFIG_MCC_DM
-	phydm_mcc_switch(dm);
 #endif
 
 #ifdef CONFIG_MU_RSOML

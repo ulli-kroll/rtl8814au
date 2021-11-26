@@ -1062,12 +1062,6 @@ s32 c2h_handler(_adapter *adapter, u8 id, u8 seq, u8 plen, u8 *payload)
 		break;
 #endif
 
-#ifdef CONFIG_MCC_MODE
-	case C2H_MCC:
-		rtw_hal_mcc_c2h_handler(adapter, plen, payload);
-		break;
-#endif
-
 #ifdef CONFIG_RTW_MAC_HIDDEN_RPT
 	case C2H_MAC_HIDDEN_RPT:
 		c2h_mac_hidden_rpt_hdl(adapter, payload, plen);

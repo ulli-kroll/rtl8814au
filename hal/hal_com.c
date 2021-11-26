@@ -5033,9 +5033,6 @@ static void _rtw_hal_set_fw_rsvd_page(_adapter *adapter, bool finished, u8 *page
 	struct sreset_priv *psrtpriv;
 #endif /* DBG_CONFIG_ERROR_DETECT */
 
-#ifdef CONFIG_MCC_MODE
-	u8 dl_mcc_page = _FAIL;
-#endif /* CONFIG_MCC_MODE */
 	u8 nr_assoc_if;
 
 	_adapter *sta_iface = NULL;
@@ -5165,17 +5162,6 @@ static void _rtw_hal_set_fw_rsvd_page(_adapter *adapter, bool finished, u8 *page
 		RSVD_PAGE_CFG("PSPoll", CurtPktPageNum, TotalPageNum, TotalPacketLen);
 	}
 
-#ifdef CONFIG_MCC_MODE
-	/*======== MCC * n page ======== */
-	if (MCC_EN(adapter)) {/*Normal mode*/
-		dl_mcc_page = rtw_hal_dl_mcc_fw_rsvd_page(adapter, ReservedPagePacket,
-				&BufIndex, TxDescLen, PageSize, &TotalPageNum, &RsvdPageLoc, page_num);
-	} else {
-		dl_mcc_page = _FAIL;
-	}
-
-	if (dl_mcc_page == _FAIL)
-#endif /* CONFIG_MCC_MODE */
 	{	/*======== null data * 1 page ======== */
 		if (MLME_IS_STA(sta_iface) || (nr_assoc_if == 0)) {
 			RsvdPageLoc.LocNullData = TotalPageNum;

@@ -3187,10 +3187,6 @@ void rtw_dynamic_chk_wk_hdl(_adapter *padapter)
 	rtw_ps_processor(padapter);
 #endif
 
-#ifdef CONFIG_MCC_MODE
-	rtw_hal_mcc_sw_status_check(padapter);
-#endif /* CONFIG_MCC_MODE */
-
 	rtw_hal_periodic_tsf_update_chk(padapter);
 }
 
@@ -4762,11 +4758,6 @@ u8 rtw_drvextra_cmd_hdl(_adapter *padapter, unsigned char *pbuf)
 		ret = rtw_mgnt_tx_handler(padapter, pdrvextra_cmd->pbuf);
 		break;
 #endif /* CONFIG_IOCTL_CFG80211 */
-#ifdef CONFIG_MCC_MODE
-	case MCC_CMD_WK_CID:
-		ret = rtw_mcc_cmd_hdl(padapter, pdrvextra_cmd->type, pdrvextra_cmd->pbuf);
-		break;
-#endif /* CONFIG_MCC_MODE */
 #ifdef CONFIG_SUPPORT_STATIC_SMPS
 	case SSMPS_WK_CID :
 		rtw_ssmps_wk_hdl(padapter, (struct ssmps_cmd_parm *)pdrvextra_cmd->pbuf);

@@ -185,9 +185,6 @@
 #endif
 
 #if (RTL8822B_SUPPORT || RTL8822C_SUPPORT)
-	#ifdef CONFIG_MCC_MODE
-	#define	CONFIG_MCC_DM
-	#endif
 #endif
 
 #if (RTL8822B_SUPPORT)

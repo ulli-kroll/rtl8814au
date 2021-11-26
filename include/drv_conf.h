@@ -18,17 +18,6 @@
 #include "hal_ic_cfg.h"
 
 #define CONFIG_RSSI_PRIORITY
-#if defined(CONFIG_MCC_MODE)
-
-	#error "Enable CONCURRENT_MODE before enable MCC MODE\n"
-
-#endif
-
-#if defined(CONFIG_MCC_MODE) && defined(CONFIG_TDLS)
-
-	#error "Disable TDLS before enable MCC MODE\n"
-
-#endif
 
 #if defined(CONFIG_RTW_80211R) && !defined(CONFIG_LAYER2_ROAMING)
 

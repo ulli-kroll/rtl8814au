@@ -1487,17 +1487,6 @@ static u8 _rtw_phydm_rfk_condition_check(_adapter *adapter, u8 is_scaning, u8 if
 	return rfk_allowed;
 	#endif
 
-	#ifdef CONFIG_MCC_MODE
-	/*not in MCC State*/
-	if (MCC_EN(adapter) && 
-		rtw_hal_check_mcc_status(adapter, MCC_STATUS_DOING_MCC)) {
-		rfk_allowed = _FALSE;
-		if (0)
-			RTW_INFO("[RFK-CHK] RF-K not allowed due to doing MCC\n");
-		return rfk_allowed;
-	}
-	#endif
-
 	#if defined(CONFIG_TDLS) && defined(CONFIG_TDLS_CH_SW)
 
 	#endif

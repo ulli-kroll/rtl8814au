@@ -130,11 +130,6 @@
 
 	#define CONFIG_ADVANCE_OTA
 
-	#ifdef CONFIG_MCC_MODE
-		#define CONFIG_MCC_MODE_V2
-		#define CONFIG_MCC_PHYDM_OFFLOAD
-	#endif /* CONFIG_MCC_MODE */
-
 	#if defined(CONFIG_TDLS) && defined(CONFIG_TDLS_CH_SW)
 		#define CONFIG_TDLS_CH_SW_V2
 	#endif
@@ -185,10 +180,6 @@
 		/* #define RTW_IQK_FW_OFFLOAD */
 	#endif /* RTW_IQK_FW_OFFLOAD */
 	#define CONFIG_ADVANCE_OTA
-
-	#ifdef CONFIG_MCC_MODE
-		#define CONFIG_MCC_MODE_V2
-	#endif /* CONFIG_MCC_MODE */
 
 	#if defined(CONFIG_TDLS) && defined(CONFIG_TDLS_CH_SW)
 		#define CONFIG_TDLS_CH_SW_V2
@@ -289,11 +280,6 @@
 	#define CONFIG_TCP_CSUM_OFFLOAD_RX
 
 	#define CONFIG_ADVANCE_OTA
-
-	#ifdef CONFIG_MCC_MODE
-		#define CONFIG_MCC_MODE_V2
-		#define CONFIG_MCC_PHYDM_OFFLOAD
-	#endif /* CONFIG_MCC_MODE */
 
 	#if defined(CONFIG_TDLS) && defined(CONFIG_TDLS_CH_SW)
 		#define CONFIG_TDLS_CH_SW_V2

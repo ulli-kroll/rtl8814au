@@ -717,25 +717,6 @@ struct drp_rtl8822b_struct {
 };
 #endif
 
-#ifdef CONFIG_MCC_DM
-#define MCC_DM_REG_NUM	32
-struct _phydm_mcc_dm_ {
-	u8		mcc_pre_status;
-	u8		mcc_reg_id[MCC_DM_REG_NUM];
-	u16		mcc_dm_reg[MCC_DM_REG_NUM];
-	u8		mcc_dm_val[MCC_DM_REG_NUM][2];
-	/*mcc DIG*/
-	u8		mcc_rssi[2];
-	/*u8		mcc_igi[2];*/
-
-	/* need to be config by driver*/
-	u8		mcc_status;
-	u8		sta_macid[2][NUM_STA];
-	u16		mcc_rf_ch[2];
-
-};
-#endif
-
 #if (RTL8822C_SUPPORT || RTL8812F_SUPPORT || RTL8197G_SUPPORT)
 struct phydm_physts {
 	u8			cck_gi_u_bnd;
@@ -1217,10 +1198,6 @@ struct dm_struct {
 	struct phydm_dig_struct		dm_dig_table;
 #ifdef PHYDM_LNA_SAT_CHK_SUPPORT
 	struct phydm_lna_sat_t		dm_lna_sat_info;
-#endif
-
-#ifdef CONFIG_MCC_DM
-	struct _phydm_mcc_dm_ mcc_dm;
 #endif
 
 #ifdef PHYDM_SUPPORT_CCKPD

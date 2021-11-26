@@ -2171,10 +2171,6 @@ void rtw_stassoc_event_callback(_adapter *adapter, u8 *pbuf)
 
 			rtw_sta_media_status_rpt(adapter, psta, 1);
 
-#ifdef CONFIG_MCC_MODE
-			rtw_hal_mcc_update_macid_bitmap(adapter, psta->cmn.mac_id, _TRUE);
-#endif /* CONFIG_MCC_MODE */
-
 #ifndef CONFIG_AUTO_AP_MODE
 			ap_sta_info_defer_update(adapter, psta);
 
@@ -2527,10 +2523,6 @@ void rtw_stadel_event_callback(_adapter *adapter, u8 *pbuf)
 
 	RTW_INFO("%s(mac_id=%d)=" MAC_FMT "\n", __func__, pstadel->mac_id, MAC_ARG(pstadel->macaddr));
 	rtw_sta_mstatus_disc_rpt(adapter, pstadel->mac_id);
-
-#ifdef CONFIG_MCC_MODE
-	rtw_hal_mcc_update_macid_bitmap(adapter, pstadel->mac_id, _FALSE);
-#endif /* CONFIG_MCC_MODE */
 
 	psta = rtw_get_stainfo(&adapter->stapriv, pstadel->macaddr);
 
