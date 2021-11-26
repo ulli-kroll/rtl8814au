@@ -3115,19 +3115,6 @@ static u32 _get_macaddr_reg(enum _hw_port hwport)
 {
 	u32 reg_macaddr = REG_MACID;
 
-	#ifdef CONFIG_CONCURRENT_MODE
-	if (hwport == HW_PORT1)
-		reg_macaddr = REG_MACID1;
-	#if defined(CONFIG_RTL8814A)
-	else if (hwport == HW_PORT2)
-		reg_macaddr = REG_MACID2;
-	else if (hwport == HW_PORT3)
-		reg_macaddr = REG_MACID3;
-	else if (hwport == HW_PORT4)
-		reg_macaddr = REG_MACID4;
-	#endif /*CONFIG_RTL8814A*/
-	#endif /*CONFIG_CONCURRENT_MODE*/
-
 	return reg_macaddr;
 }
 #endif /*!RTW_HALMAC*/
@@ -3186,19 +3173,6 @@ static void rtw_hal_get_macaddr_port(_adapter *adapter, u8 *mac_addr)
 static u32 _get_bssid_reg(enum _hw_port hw_port)
 {
 	u32 reg_bssid = REG_BSSID;
-
-	#ifdef CONFIG_CONCURRENT_MODE
-	if (hw_port == HW_PORT1)
-		reg_bssid = REG_BSSID1;
-	#if defined(CONFIG_RTL8814A)
-	else if (hw_port == HW_PORT2)
-		reg_bssid = REG_BSSID2;
-	else if (hw_port == HW_PORT3)
-		reg_bssid = REG_BSSID3;
-	else if (hw_port == HW_PORT4)
-		reg_bssid = REG_BSSID4;
-	#endif /*CONFIG_RTL8814A*/
-	#endif /*CONFIG_CONCURRENT_MODE*/
 
 	return reg_bssid;
 }
@@ -3827,201 +3801,6 @@ void rtw_hal_update_tx_aclt(_adapter *adapter)
 
 void hw_var_port_switch(_adapter *adapter)
 {
-#ifdef CONFIG_CONCURRENT_MODE
-#ifdef CONFIG_RUNTIME_PORT_SWITCH
-	/*
-	0x102: MSR
-	0x550: REG_BCN_CTRL
-	0x551: REG_BCN_CTRL_1
-	0x55A: REG_ATIMWND
-	0x560: REG_TSFTR
-	0x568: REG_TSFTR1
-	0x570: REG_ATIMWND_1
-	0x610: REG_MACID
-	0x618: REG_BSSID
-	0x700: REG_MACID1
-	0x708: REG_BSSID1
-	*/
-
-	int i;
-	u8 msr;
-	u8 bcn_ctrl;
-	u8 bcn_ctrl_1;
-	u8 atimwnd[2];
-	u8 atimwnd_1[2];
-	u8 tsftr[8];
-	u8 tsftr_1[8];
-	u8 macid[6];
-	u8 bssid[6];
-	u8 macid_1[6];
-	u8 bssid_1[6];
-
-	u8 hw_port;
-	struct dvobj_priv *dvobj = adapter_to_dvobj(adapter);
-	_adapter *iface = NULL;
-
-	msr = rtw_read8(adapter, MSR);
-	bcn_ctrl = rtw_read8(adapter, REG_BCN_CTRL);
-	bcn_ctrl_1 = rtw_read8(adapter, REG_BCN_CTRL_1);
-
-	for (i = 0; i < 2; i++)
-		atimwnd[i] = rtw_read8(adapter, REG_ATIMWND + i);
-	for (i = 0; i < 2; i++)
-		atimwnd_1[i] = rtw_read8(adapter, REG_ATIMWND_1 + i);
-
-	for (i = 0; i < 8; i++)
-		tsftr[i] = rtw_read8(adapter, REG_TSFTR + i);
-	for (i = 0; i < 8; i++)
-		tsftr_1[i] = rtw_read8(adapter, REG_TSFTR1 + i);
-
-	for (i = 0; i < 6; i++)
-		macid[i] = rtw_read8(adapter, REG_MACID + i);
-
-	for (i = 0; i < 6; i++)
-		bssid[i] = rtw_read8(adapter, REG_BSSID + i);
-
-	for (i = 0; i < 6; i++)
-		macid_1[i] = rtw_read8(adapter, REG_MACID1 + i);
-
-	for (i = 0; i < 6; i++)
-		bssid_1[i] = rtw_read8(adapter, REG_BSSID1 + i);
-
-#ifdef DBG_RUNTIME_PORT_SWITCH
-	RTW_INFO(FUNC_ADPT_FMT" before switch\n"
-		 "msr:0x%02x\n"
-		 "bcn_ctrl:0x%02x\n"
-		 "bcn_ctrl_1:0x%02x\n"
-		 "atimwnd:0x%04x\n"
-		 "atimwnd_1:0x%04x\n"
-		 "tsftr:%llu\n"
-		 "tsftr1:%llu\n"
-		 "macid:"MAC_FMT"\n"
-		 "bssid:"MAC_FMT"\n"
-		 "macid_1:"MAC_FMT"\n"
-		 "bssid_1:"MAC_FMT"\n"
-		 , FUNC_ADPT_ARG(adapter)
-		 , msr
-		 , bcn_ctrl
-		 , bcn_ctrl_1
-		 , *((u16 *)atimwnd)
-		 , *((u16 *)atimwnd_1)
-		 , *((u64 *)tsftr)
-		 , *((u64 *)tsftr_1)
-		 , MAC_ARG(macid)
-		 , MAC_ARG(bssid)
-		 , MAC_ARG(macid_1)
-		 , MAC_ARG(bssid_1)
-		);
-#endif /* DBG_RUNTIME_PORT_SWITCH */
-
-	/* disable bcn function, disable update TSF */
-	rtw_write8(adapter, REG_BCN_CTRL, (bcn_ctrl & (~EN_BCN_FUNCTION)) | DIS_TSF_UDT);
-	rtw_write8(adapter, REG_BCN_CTRL_1, (bcn_ctrl_1 & (~EN_BCN_FUNCTION)) | DIS_TSF_UDT);
-
-	/* switch msr */
-	msr = (msr & 0xf0) | ((msr & 0x03) << 2) | ((msr & 0x0c) >> 2);
-	rtw_write8(adapter, MSR, msr);
-
-	/* write port0 */
-	rtw_write8(adapter, REG_BCN_CTRL, bcn_ctrl_1 & ~EN_BCN_FUNCTION);
-	for (i = 0; i < 2; i++)
-		rtw_write8(adapter, REG_ATIMWND + i, atimwnd_1[i]);
-	for (i = 0; i < 8; i++)
-		rtw_write8(adapter, REG_TSFTR + i, tsftr_1[i]);
-	for (i = 0; i < 6; i++)
-		rtw_write8(adapter, REG_MACID + i, macid_1[i]);
-	for (i = 0; i < 6; i++)
-		rtw_write8(adapter, REG_BSSID + i, bssid_1[i]);
-
-	/* write port1 */
-	rtw_write8(adapter, REG_BCN_CTRL_1, bcn_ctrl & ~EN_BCN_FUNCTION);
-	for (i = 0; i < 2; i++)
-		rtw_write8(adapter, REG_ATIMWND_1 + i, atimwnd[i]);
-	for (i = 0; i < 8; i++)
-		rtw_write8(adapter, REG_TSFTR1 + i, tsftr[i]);
-	for (i = 0; i < 6; i++)
-		rtw_write8(adapter, REG_MACID1 + i, macid[i]);
-	for (i = 0; i < 6; i++)
-		rtw_write8(adapter, REG_BSSID1 + i, bssid[i]);
-
-	/* write bcn ctl */
-	rtw_write8(adapter, REG_BCN_CTRL, bcn_ctrl_1);
-	rtw_write8(adapter, REG_BCN_CTRL_1, bcn_ctrl);
-
-	if (adapter->iface_id == IFACE_ID0)
-		iface = dvobj->padapters[IFACE_ID1];
-	else if (adapter->iface_id == IFACE_ID1)
-		iface = dvobj->padapters[IFACE_ID0];
-
-
-	if (adapter->hw_port == HW_PORT0) {
-		adapter->hw_port = HW_PORT1;
-		iface->hw_port = HW_PORT0;
-		RTW_PRINT("port switch - port0("ADPT_FMT"), port1("ADPT_FMT")\n",
-			  ADPT_ARG(iface), ADPT_ARG(adapter));
-	} else {
-		adapter->hw_port = HW_PORT0;
-		iface->hw_port = HW_PORT1;
-		RTW_PRINT("port switch - port0("ADPT_FMT"), port1("ADPT_FMT")\n",
-			  ADPT_ARG(adapter), ADPT_ARG(iface));
-	}
-
-#ifdef DBG_RUNTIME_PORT_SWITCH
-	msr = rtw_read8(adapter, MSR);
-	bcn_ctrl = rtw_read8(adapter, REG_BCN_CTRL);
-	bcn_ctrl_1 = rtw_read8(adapter, REG_BCN_CTRL_1);
-
-	for (i = 0; i < 2; i++)
-		atimwnd[i] = rtw_read8(adapter, REG_ATIMWND + i);
-	for (i = 0; i < 2; i++)
-		atimwnd_1[i] = rtw_read8(adapter, REG_ATIMWND_1 + i);
-
-	for (i = 0; i < 8; i++)
-		tsftr[i] = rtw_read8(adapter, REG_TSFTR + i);
-	for (i = 0; i < 8; i++)
-		tsftr_1[i] = rtw_read8(adapter, REG_TSFTR1 + i);
-
-	for (i = 0; i < 6; i++)
-		macid[i] = rtw_read8(adapter, REG_MACID + i);
-
-	for (i = 0; i < 6; i++)
-		bssid[i] = rtw_read8(adapter, REG_BSSID + i);
-
-	for (i = 0; i < 6; i++)
-		macid_1[i] = rtw_read8(adapter, REG_MACID1 + i);
-
-	for (i = 0; i < 6; i++)
-		bssid_1[i] = rtw_read8(adapter, REG_BSSID1 + i);
-
-	RTW_INFO(FUNC_ADPT_FMT" after switch\n"
-		 "msr:0x%02x\n"
-		 "bcn_ctrl:0x%02x\n"
-		 "bcn_ctrl_1:0x%02x\n"
-		 "atimwnd:%u\n"
-		 "atimwnd_1:%u\n"
-		 "tsftr:%llu\n"
-		 "tsftr1:%llu\n"
-		 "macid:"MAC_FMT"\n"
-		 "bssid:"MAC_FMT"\n"
-		 "macid_1:"MAC_FMT"\n"
-		 "bssid_1:"MAC_FMT"\n"
-		 , FUNC_ADPT_ARG(adapter)
-		 , msr
-		 , bcn_ctrl
-		 , bcn_ctrl_1
-		 , *((u16 *)atimwnd)
-		 , *((u16 *)atimwnd_1)
-		 , *((u64 *)tsftr)
-		 , *((u64 *)tsftr_1)
-		 , MAC_ARG(macid)
-		 , MAC_ARG(bssid)
-		 , MAC_ARG(macid_1)
-		 , MAC_ARG(bssid_1)
-		);
-#endif /* DBG_RUNTIME_PORT_SWITCH */
-
-#endif /* CONFIG_RUNTIME_PORT_SWITCH */
-#endif /* CONFIG_CONCURRENT_MODE */
 }
 
 const char *const _h2c_msr_role_str[] = {
@@ -5194,26 +4973,6 @@ static u8 _rtw_mi_assoc_if_num(_adapter *adapter)
 		DEV_AP_STARTING_NUM(adapter_to_dvobj(adapter)));
 	return mi_iface_num;
 }
-#ifdef CONFIG_CONCURRENT_MODE
-static _adapter *_rtw_search_sta_iface(_adapter *adapter)
-{
-	struct dvobj_priv *dvobj = adapter_to_dvobj(adapter);
-	_adapter *iface = NULL;
-	_adapter *sta_iface = NULL;
-	int i;
-
-	for (i = 0; i < dvobj->iface_nums; i++) {
-		iface = dvobj->padapters[i];
-		if (check_fwstate(&iface->mlmepriv, WIFI_STATION_STATE) == _TRUE) {
-			if (check_fwstate(&iface->mlmepriv, _FW_LINKED) == _TRUE) {
-				sta_iface = iface;
-				break;
-			}
-		}
-	}
-	return sta_iface;
-}
-#endif/*CONFIG_CONCURRENT_MODE*/
 
 #ifdef CONFIG_CUSTOMER01_SMART_ANTENNA
 void rtw_hal_set_pathb_phase(_adapter *adapter, u8 phase_idx)
@@ -5368,10 +5127,6 @@ static void _rtw_hal_set_fw_rsvd_page(_adapter *adapter, bool finished, u8 *page
 
 	/*======== probe response content ========*/
 	if (pwrctl->wowlan_ap_mode == _TRUE) {/*WOW mode*/
-		#ifdef CONFIG_CONCURRENT_MODE
-		if (nr_assoc_if >= 2)
-			RTW_ERR("Not support > 2 net-interface in WOW\n");
-		#endif
 		/* (4) probe response*/
 		RsvdPageLoc.LocProbeRsp = TotalPageNum;
 		rtw_hal_construct_ProbeRsp(
@@ -5392,12 +5147,6 @@ static void _rtw_hal_set_fw_rsvd_page(_adapter *adapter, bool finished, u8 *page
 
 	/*======== ps-poll content * 1 page ========*/
 	sta_iface = adapter;
-	#ifdef CONFIG_CONCURRENT_MODE
-	if (!MLME_IS_STA(sta_iface) && DEV_STA_LD_NUM(adapter_to_dvobj(sta_iface))) {
-		sta_iface = _rtw_search_sta_iface(adapter);
-		RTW_INFO("get ("ADPT_FMT") to create PS-Poll/Null/QosNull\n", ADPT_ARG(sta_iface));
-	}
-	#endif
 
 	if (MLME_IS_STA(sta_iface) || (nr_assoc_if == 0)) {
 		RsvdPageLoc.LocPsPoll = TotalPageNum;
@@ -5603,11 +5352,6 @@ static void hw_var_set_bcn_func(_adapter *adapter, u8 enable)
 {
 	u32 bcn_ctrl_reg;
 
-#ifdef CONFIG_CONCURRENT_MODE
-	if (adapter->hw_port == HW_PORT1)
-		bcn_ctrl_reg = REG_BCN_CTRL_1;
-	else
-#endif
 		bcn_ctrl_reg = REG_BCN_CTRL;
 
 	if (enable)
@@ -5630,30 +5374,8 @@ static void hw_var_set_mlme_disconnect(_adapter *adapter)
 	u8 val8;
 
 	/* reject all data frames */
-#ifdef CONFIG_CONCURRENT_MODE
-	if (rtw_mi_check_status(adapter, MI_LINKED) == _FALSE)
-#endif
 		rtw_write16(adapter, REG_RXFLTMAP2, 0x0000);
 
-#ifdef CONFIG_CONCURRENT_MODE
-	if (adapter->hw_port == HW_PORT1) {
-		/* reset TSF1 */
-		rtw_write8(adapter, REG_DUAL_TSF_RST, BIT(1));
-
-		/* disable update TSF1 */
-		rtw_iface_disable_tsf_update(adapter);
-
-		if (!IS_HARDWARE_TYPE_8723D(adapter)
-			&& !IS_HARDWARE_TYPE_8192F(adapter)
-			&& !IS_HARDWARE_TYPE_8710B(adapter)
-		) {
-			/* disable Port1's beacon function */
-			val8 = rtw_read8(adapter, REG_BCN_CTRL_1);
-			val8 &= ~EN_BCN_FUNCTION;
-			rtw_write8(adapter, REG_BCN_CTRL_1, val8);
-		}
-	} else
-#endif
 	{
 		/* reset TSF */
 		rtw_write8(adapter, REG_DUAL_TSF_RST, BIT(0));
@@ -5750,55 +5472,6 @@ static void hw_var_set_mlme_join(_adapter *adapter, u8 type)
 	HAL_DATA_TYPE *hal_data = GET_HAL_DATA(adapter);
 	struct mlme_priv *pmlmepriv = &adapter->mlmepriv;
 
-#ifdef CONFIG_CONCURRENT_MODE
-	if (type == 0) {
-		/* prepare to join */
-		if (rtw_mi_get_ap_num(adapter) || rtw_mi_get_mesh_num(adapter))
-			StopTxBeacon(adapter);
-
-		/* enable to rx data frame.Accept all data frame */
-		rtw_write16(adapter, REG_RXFLTMAP2, 0xFFFF);
-
-		if (check_fwstate(pmlmepriv, WIFI_STATION_STATE) == _TRUE)
-			RetryLimit = (hal_data->CustomerID == RT_CID_CCX) ? RL_VAL_AP : RL_VAL_STA;
-		else /* Ad-hoc Mode */
-			RetryLimit = RL_VAL_AP;
-
-		rtw_iface_enable_tsf_update(adapter);
-
-	} else if (type == 1) {
-		/* joinbss_event call back when join res < 0 */
-		if (rtw_mi_check_status(adapter, MI_LINKED) == _FALSE)
-			rtw_write16(adapter, REG_RXFLTMAP2, 0x00);
-
-		rtw_iface_disable_tsf_update(adapter);
-
-		if (rtw_mi_get_ap_num(adapter) || rtw_mi_get_mesh_num(adapter)) {
-			ResumeTxBeacon(adapter);
-
-			/* reset TSF 1/2 after ResumeTxBeacon */
-			rtw_write8(adapter, REG_DUAL_TSF_RST, BIT(1) | BIT(0));
-		}
-
-	} else if (type == 2) {
-		/* sta add event call back */
-		if (check_fwstate(pmlmepriv, WIFI_ADHOC_STATE | WIFI_ADHOC_MASTER_STATE)) {
-			/* fixed beacon issue for 8191su........... */
-			rtw_write8(adapter, 0x542 , 0x02);
-			RetryLimit = RL_VAL_AP;
-		}
-
-		if (rtw_mi_get_ap_num(adapter) || rtw_mi_get_mesh_num(adapter)) {
-			ResumeTxBeacon(adapter);
-
-			/* reset TSF 1/2 after ResumeTxBeacon */
-			rtw_write8(adapter, REG_DUAL_TSF_RST, BIT(1) | BIT(0));
-		}
-	}
-
-	val16 = BIT_SRL(RetryLimit) | BIT_LRL(RetryLimit);
-	rtw_write16(adapter, REG_RETRY_LIMIT, val16);
-#else /* !CONFIG_CONCURRENT_MODE */
 	if (type == 0) { /* prepare to join */
 		/* enable to rx data frame.Accept all data frame */
 		rtw_write16(adapter, REG_RXFLTMAP2, 0xFFFF);
@@ -5822,7 +5495,6 @@ static void hw_var_set_mlme_join(_adapter *adapter, u8 type)
 
 	val16 = BIT_SRL(RetryLimit) | BIT_LRL(RetryLimit);
 	rtw_write16(adapter, REG_RETRY_LIMIT, val16);
-#endif /* !CONFIG_CONCURRENT_MODE */
 }
 #endif
 
@@ -5871,237 +5543,10 @@ int rtw_hal_reset_tsf(_adapter *adapter, u8 reset_port)
 
 #ifndef CONFIG_HAS_HW_VAR_CORRECT_TSF
 #ifdef CONFIG_HW_P0_TSF_SYNC
-#ifdef CONFIG_CONCURRENT_MODE
-static void hw_port0_tsf_sync_sel(_adapter *adapter, u8 benable, u8 hw_port, u16 tr_offset)
-{
-	u8 val8;
-	u8 client_id = 0;
-	struct dvobj_priv *dvobj = adapter_to_dvobj(adapter);
-
-#ifdef CONFIG_MCC_MODE
-	if (MCC_EN(adapter) && (rtw_hal_check_mcc_status(adapter, MCC_STATUS_DOING_MCC))) {
-		RTW_INFO("[MCC] do not set HW TSF sync\n");
-		return;
-	}
-#endif
-	/* check if port0 is already synced */
-	if (benable && dvobj->p0_tsf.sync_port != MAX_HW_PORT && dvobj->p0_tsf.sync_port == hw_port) {
-		RTW_WARN(FUNC_ADPT_FMT ": port0 already enable TSF sync(%d)\n",
-			FUNC_ADPT_ARG(adapter), dvobj->p0_tsf.sync_port);
-		return;
-	}
-
-	/* check if port0 already disable sync */
-	if (!benable && dvobj->p0_tsf.sync_port == MAX_HW_PORT) {
-		RTW_WARN(FUNC_ADPT_FMT ": port0 already disable TSF sync\n", FUNC_ADPT_ARG(adapter));
-		return;
-	}
-
-	/* check if port0 sync to port0 */
-	if (benable && hw_port == HW_PORT0) {
-		RTW_ERR(FUNC_ADPT_FMT ": hw_port is port0 under enable\n", FUNC_ADPT_ARG(adapter));
-		rtw_warn_on(1);
-		return;
-	}
-
-	/*0x5B4 [6:4] :SYNC_CLI_SEL - The selector for the CLINT port of sync tsft source for port 0*/
-	/*	Bit[5:4] : 0 for clint0, 1 for clint1, 2 for clint2, 3 for clint3.
-		Bit6 : 1= enable sync to port 0. 0=disable sync to port 0.*/
-
-	val8 = rtw_read8(adapter, REG_TIMER0_SRC_SEL);
-
-	if (benable) {
-		/*Disable Port0's beacon function*/
-		rtw_write8(adapter, REG_BCN_CTRL, rtw_read8(adapter, REG_BCN_CTRL) & ~BIT_EN_BCN_FUNCTION);
-
-		/*Reg 0x518[15:0]: TSFTR_SYN_OFFSET*/
-		if (tr_offset)
-			rtw_write16(adapter, REG_TSFTR_SYN_OFFSET, tr_offset);
-
-		/*reg 0x577[6]=1*/	/*auto sync by tbtt*/
-		rtw_write8(adapter, REG_MISC_CTRL, rtw_read8(adapter, REG_MISC_CTRL) | BIT_AUTO_SYNC_BY_TBTT);
-
-		if (HW_PORT1 == hw_port)
-			client_id = 0;
-		else if (HW_PORT2 == hw_port)
-			client_id = 1;
-		else if (HW_PORT3 == hw_port)
-			client_id = 2;
-		else if (HW_PORT4 == hw_port)
-			client_id = 3;
-
-		val8 &= 0x8F;
-		val8 |= (BIT(6) | (client_id << 4));
-
-		dvobj->p0_tsf.sync_port = hw_port;
-		dvobj->p0_tsf.offset = tr_offset;
-		rtw_write8(adapter, REG_TIMER0_SRC_SEL, val8);
-
-		/*Enable Port0's beacon function*/
-		rtw_write8(adapter, REG_BCN_CTRL, rtw_read8(adapter, REG_BCN_CTRL)  | BIT_EN_BCN_FUNCTION);
-		RTW_INFO("%s Port_%d TSF sync to P0, timer offset :%d\n", __func__, hw_port, tr_offset);
-	} else {
-		val8 &= ~BIT(6);
-
-		dvobj->p0_tsf.sync_port = MAX_HW_PORT;
-		dvobj->p0_tsf.offset = 0;
-		rtw_write8(adapter, REG_TIMER0_SRC_SEL, val8);
-		RTW_INFO("%s P0 TSF sync disable\n", __func__);
-	}
-}
-static _adapter * _search_ld_sta(_adapter *adapter, u8 include_self)
-{
-	struct dvobj_priv *dvobj = adapter_to_dvobj(adapter);
-	u8 i;
-	_adapter *iface = NULL;
-
-	if (rtw_mi_get_assoced_sta_num(adapter) == 0) {
-		RTW_ERR("STA_LD_NUM == 0\n");
-		rtw_warn_on(1);
-	}
-
-	for (i = 0; i < dvobj->iface_nums; i++) {
-		iface = dvobj->padapters[i];
-		if (!iface)
-			continue;
-		if (include_self == _FALSE && adapter == iface)
-			continue;
-		if (is_client_associated_to_ap(iface))
-			break;
-	}
-	if (iface)
-		RTW_INFO("search STA iface -"ADPT_FMT"\n", ADPT_ARG(iface));
-	return iface;
-}
-#endif /*CONFIG_CONCURRENT_MODE*/
 /*Correct port0's TSF*/
 /*#define DBG_P0_TSF_SYNC*/
 void hw_var_set_correct_tsf(PADAPTER adapter, u8 mlme_state)
 {
-#ifdef CONFIG_CONCURRENT_MODE
-	struct dvobj_priv *dvobj = adapter_to_dvobj(adapter);
-	struct mlme_ext_priv *pmlmeext = &adapter->mlmeextpriv;
-	_adapter *sta_if = NULL;
-	u8 hw_port;
-
-	RTW_INFO(FUNC_ADPT_FMT "\n", FUNC_ADPT_ARG(adapter));
-	#ifdef DBG_P0_TSF_SYNC
-	RTW_INFO("[TSF_SYNC] AP_NUM = %d\n", rtw_mi_get_ap_num(adapter));
-	RTW_INFO("[TSF_SYNC] MESH_NUM = %d\n", rtw_mi_get_mesh_num(adapter));
-	RTW_INFO("[TSF_SYNC] LD_STA_NUM = %d\n", rtw_mi_get_assoced_sta_num(adapter));
-	if (dvobj->p0_tsf.sync_port == MAX_HW_PORT)
-		RTW_INFO("[TSF_SYNC] org p0 sync port = N/A\n");
-	else
-		RTW_INFO("[TSF_SYNC] org p0 sync port = %d\n", dvobj->p0_tsf.sync_port);
-	RTW_INFO("[TSF_SYNC] timer offset = %d\n", dvobj->p0_tsf.offset);
-	#endif
-	switch (mlme_state) {
-		case MLME_STA_CONNECTED :
-			{
-				hw_port = rtw_hal_get_port(adapter);
-
-				if (!MLME_IS_STA(adapter)) {
-					RTW_ERR("STA CON state,but iface("ADPT_FMT") is not STA\n", ADPT_ARG(adapter));
-					rtw_warn_on(1);
-				}
-
-				if ((dvobj->p0_tsf.sync_port != MAX_HW_PORT) && (hw_port == HW_PORT0)) {
-					RTW_ERR(ADPT_FMT" is STA with P0 connected => DIS P0_TSF_SYNC\n", ADPT_ARG(adapter));
-					rtw_warn_on(1);
-					hw_port0_tsf_sync_sel(adapter, _FALSE, 0, 0);
-				}
-
-				if ((dvobj->p0_tsf.sync_port == MAX_HW_PORT) &&
-					(rtw_mi_get_ap_num(adapter) || rtw_mi_get_mesh_num(adapter))) {
-					hw_port0_tsf_sync_sel(adapter, _TRUE, hw_port, 50);/*timer offset 50ms*/
-					#ifdef DBG_P0_TSF_SYNC
-					RTW_INFO("[TSF_SYNC] STA_LINKED => EN P0_TSF_SYNC\n");
-					#endif
-				}
-			}
-			break;
-		case MLME_STA_DISCONNECTED :
-			{
-				hw_port = rtw_hal_get_port(adapter);
-
-				if (!MLME_IS_STA(adapter)) {
-					RTW_ERR("STA DIS_CON state,but iface("ADPT_FMT") is not STA\n", ADPT_ARG(adapter));
-					rtw_warn_on(1);
-				}
-
-				if (dvobj->p0_tsf.sync_port == hw_port) {
-					if (rtw_mi_get_assoced_sta_num(adapter) >= 2) {
-						/* search next appropriate sta*/
-						sta_if = _search_ld_sta(adapter, _FALSE);
-						if (sta_if) {
-							hw_port = rtw_hal_get_port(sta_if);
-							hw_port0_tsf_sync_sel(adapter, _TRUE, hw_port, 50);/*timer offset 50ms*/
-							#ifdef DBG_P0_TSF_SYNC
-							RTW_INFO("[TSF_SYNC] STA_DIS_CON => CHANGE P0_TSF_SYNC\n");
-							#endif
-						}
-					} else if (rtw_mi_get_assoced_sta_num(adapter) == 1) {
-						hw_port0_tsf_sync_sel(adapter, _FALSE, 0, 0);
-						#ifdef DBG_P0_TSF_SYNC
-						RTW_INFO("[TSF_SYNC] STA_DIS_CON => DIS P0_TSF_SYNC\n");
-						#endif
-					}
-				}
-			}
-			break;
-		case MLME_AP_STARTED :
-		case MLME_MESH_STARTED :
-			{
-				if (!(MLME_IS_AP(adapter) || MLME_IS_MESH(adapter))) {
-					RTW_ERR("AP START state,but iface("ADPT_FMT") is not AP\n", ADPT_ARG(adapter));
-					rtw_warn_on(1);
-				}
-
-				if ((dvobj->p0_tsf.sync_port == MAX_HW_PORT) &&
-					rtw_mi_get_assoced_sta_num(adapter)) {
-					/* get port of sta */
-					sta_if = _search_ld_sta(adapter, _FALSE);
-					if (sta_if) {
-						hw_port = rtw_hal_get_port(sta_if);
-						hw_port0_tsf_sync_sel(adapter, _TRUE, hw_port, 50);/*timer offset 50ms*/
-						#ifdef DBG_P0_TSF_SYNC
-						RTW_INFO("[TSF_SYNC] AP_START => EN P0_TSF_SYNC\n");
-						#endif
-					}
-				}
-			}
-			break;
-		case MLME_AP_STOPPED :
-		case MLME_MESH_STOPPED :
-			{
-				if (!(MLME_IS_AP(adapter) || MLME_IS_MESH(adapter))) {
-					RTW_ERR("AP START state,but iface("ADPT_FMT") is not AP\n", ADPT_ARG(adapter));
-					rtw_warn_on(1);
-				}
-				/*stop ap mode*/
-				if ((rtw_mi_get_ap_num(adapter) + rtw_mi_get_mesh_num(adapter) == 1) &&
-					(dvobj->p0_tsf.sync_port != MAX_HW_PORT)) {
-					hw_port0_tsf_sync_sel(adapter, _FALSE, 0, 0);
-					#ifdef DBG_P0_TSF_SYNC
-					RTW_INFO("[TSF_SYNC] AP_STOP => DIS P0_TSF_SYNC\n");
-					#endif
-				}
-			}
-			break;
-		default :
-			RTW_ERR(FUNC_ADPT_FMT" unknow state(0x%02x)\n", FUNC_ADPT_ARG(adapter), mlme_state);
-			break;
-	}
-
-	/*#ifdef DBG_P0_TSF_SYNC*/
-	#if 1
-	if (dvobj->p0_tsf.sync_port == MAX_HW_PORT)
-		RTW_INFO("[TSF_SYNC] p0 sync port = N/A\n");
-	else
-		RTW_INFO("[TSF_SYNC] p0 sync port = %d\n", dvobj->p0_tsf.sync_port);
-	RTW_INFO("[TSF_SYNC] timer offset = %d\n", dvobj->p0_tsf.offset);
-	#endif
-#endif /*CONFIG_CONCURRENT_MODE*/
 }
 
 #else /*! CONFIG_HW_P0_TSF_SYNC*/
@@ -6149,35 +5594,6 @@ static void hw_var_set_correct_tsf(_adapter *adapter, u8 mlme_state)
 
 	rtw_hal_correct_tsf(adapter, adapter->hw_port, tsf);
 
-#ifdef CONFIG_CONCURRENT_MODE
-	/* Update buddy port's TSF if it is SoftAP/Mesh for beacon TX issue! */
-	if ((mlmeinfo->state & 0x03) == WIFI_FW_STATION_STATE
-		&& (rtw_mi_get_ap_num(adapter) || rtw_mi_get_mesh_num(adapter))
-	) {
-		struct dvobj_priv *dvobj = adapter_to_dvobj(adapter);
-		int i;
-		_adapter *iface;
-
-		for (i = 0; i < dvobj->iface_nums; i++) {
-			iface = dvobj->padapters[i];
-			if (!iface)
-				continue;
-			if (iface == adapter)
-				continue;
-
-			if ((MLME_IS_AP(iface) || MLME_IS_MESH(iface))
-				&& check_fwstate(&iface->mlmepriv, WIFI_ASOC_STATE) == _TRUE
-			) {
-				rtw_hal_correct_tsf(iface, iface->hw_port, tsf);
-				#ifdef CONFIG_TSF_RESET_OFFLOAD
-				if (rtw_hal_reset_tsf(iface, iface->hw_port) == _FAIL)
-					RTW_INFO("%s-[ERROR] "ADPT_FMT" Reset port%d TSF fail\n"
-						, __func__, ADPT_ARG(iface), iface->hw_port);
-				#endif	/* CONFIG_TSF_RESET_OFFLOAD*/
-			}
-		}
-	}
-#endif /* CONFIG_CONCURRENT_MODE */
 	if ((mlmeinfo->state & 0x03) == WIFI_FW_ADHOC_STATE
 		|| (mlmeinfo->state & 0x03) == WIFI_FW_AP_STATE)
 		ResumeTxBeacon(adapter);
@@ -6580,14 +5996,6 @@ u8 SetHwReg(_adapter *adapter, u8 variable, u8 *val)
 		break;
 #endif
 
-#if defined(CONFIG_HW_P0_TSF_SYNC) && defined(CONFIG_CONCURRENT_MODE) && defined(CONFIG_MCC_MODE)
-	case HW_VAR_TSF_AUTO_SYNC:
-		if (*val == _TRUE)
-			hw_port0_tsf_sync_sel(adapter, _TRUE, adapter->hw_port, 50);
-		else
-			hw_port0_tsf_sync_sel(adapter, _FALSE, adapter->hw_port, 50);
-		break;
-#endif
 	case HW_VAR_APFM_ON_MAC:
 		hal_data->bMacPwrCtrlOn = *val;
 		RTW_INFO("%s: bMacPwrCtrlOn=%d\n", __func__, hal_data->bMacPwrCtrlOn);
@@ -7825,23 +7233,6 @@ void dm_DynamicUsbTxAgg(_adapter *padapter, u8 from_timer)
 			/* RTW_INFO("TX_TP=%u, RX_TP=%u\n", pdvobjpriv->traffic_stat.cur_tx_tp, pdvobjpriv->traffic_stat.cur_rx_tp); */
 		}
 	} else if (IS_HARDWARE_TYPE_8812(padapter)) {
-#ifdef CONFIG_CONCURRENT_MODE
-		u8 i;
-		_adapter *iface;
-		u8 bassocaed = _FALSE;
-		struct mlme_ext_priv *mlmeext;
-
-		for (i = 0; i < pdvobjpriv->iface_nums; i++) {
-			iface = pdvobjpriv->padapters[i];
-			mlmeext = &iface->mlmeextpriv;
-			if (rtw_linked_check(iface) == _TRUE) {
-				if (mlmeext->cur_wireless_mode >= cur_wireless_mode)
-					cur_wireless_mode = mlmeext->cur_wireless_mode;
-				bassocaed = _TRUE;
-			}
-		}
-		if (bassocaed)
-#endif
 			rtw_set_usb_agg_by_mode(padapter, cur_wireless_mode);
 #ifdef CONFIG_PLATFORM_NOVATEK_NT72668
 	} else {

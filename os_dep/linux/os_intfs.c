@@ -425,16 +425,6 @@ MODULE_PARM_DESC(if2name, "The default name to allocate for second interface");
 
 char *rtw_initmac = 0;  /* temp mac address if users want to use instead of the mac address in Efuse */
 
-#ifdef CONFIG_CONCURRENT_MODE
-
-	#if (CONFIG_IFACE_NUMBER > 2)
-		int rtw_virtual_iface_num = CONFIG_IFACE_NUMBER - 1;
-		module_param(rtw_virtual_iface_num, int, 0644);
-	#else
-		int rtw_virtual_iface_num = 1;
-	#endif
-
-#endif
 #ifdef CONFIG_AP_MODE
 u8 rtw_bmc_tx_rate = MGN_UNKNOWN;
 #endif
@@ -1112,9 +1102,6 @@ uint loadparam(_adapter *padapter)
 
 	registry_par->notch_filter = (u8)rtw_notch_filter;
 
-#ifdef CONFIG_CONCURRENT_MODE
-	registry_par->virtual_iface_num = (u8)rtw_virtual_iface_num;
-#endif
 	registry_par->pll_ref_clk_sel = (u8)rtw_pll_ref_clk_sel;
 
 #if CONFIG_TXPWR_LIMIT
@@ -1570,9 +1557,6 @@ void rtw_hook_if_ops(struct net_device *ndev)
 #endif
 }
 
-#ifdef CONFIG_CONCURRENT_MODE
-static void rtw_hook_vir_if_ops(struct net_device *ndev);
-#endif
 struct net_device *rtw_init_netdev(_adapter *old_padapter)
 {
 	_adapter *padapter;
@@ -1595,10 +1579,6 @@ struct net_device *rtw_init_netdev(_adapter *old_padapter)
 #endif
 
 	rtw_hook_if_ops(pnetdev);
-#ifdef CONFIG_CONCURRENT_MODE
-	if (!is_primary_adapter(padapter))
-		rtw_hook_vir_if_ops(pnetdev);
-#endif /* CONFIG_CONCURRENT_MODE */
 
 
 #ifdef CONFIG_TCP_CSUM_OFFLOAD_TX
@@ -2030,9 +2010,6 @@ u8 rtw_init_default_value(_adapter *padapter)
 
 	psecuritypriv->ndisauthtype = Ndis802_11AuthModeOpen;
 	psecuritypriv->ndisencryptstatus = Ndis802_11WEPDisabled;
-#ifdef CONFIG_CONCURRENT_MODE
-	psecuritypriv->dot118021x_bmc_cam_id = INVALID_SEC_MAC_CAM_ID;
-#endif
 
 
 	/* pwrctrl_priv */
@@ -2589,343 +2566,6 @@ void rtw_intf_stop(_adapter *adapter)
 		adapter->intf_stop(adapter);
 }
 
-#ifdef CONFIG_CONCURRENT_MODE
-#ifndef CONFIG_NEW_NETDEV_HDL
-int _netdev_vir_if_open(struct net_device *pnetdev)
-{
-	_adapter *padapter = (_adapter *)rtw_netdev_priv(pnetdev);
-	_adapter *primary_padapter = GET_PRIMARY_ADAPTER(padapter);
-
-	RTW_INFO(FUNC_NDEV_FMT" , bup=%d\n", FUNC_NDEV_ARG(pnetdev), padapter->bup);
-
-	if (!primary_padapter)
-		goto _netdev_virtual_iface_open_error;
-
-#ifdef CONFIG_PLATFORM_INTEL_BYT
-	if (padapter->bup == _FALSE) {
-		u8 mac[ETH_ALEN];
-
-		/* get mac address from primary_padapter */
-		if (primary_padapter->bup == _FALSE)
-			rtw_macaddr_cfg(adapter_mac_addr(primary_padapter), get_hal_mac_addr(primary_padapter));
-
-		_rtw_memcpy(mac, adapter_mac_addr(primary_padapter), ETH_ALEN);
-
-		/*
-		* If the BIT1 is 0, the address is universally administered.
-		* If it is 1, the address is locally administered
-		*/
-		mac[0] |= BIT(1);
-
-		_rtw_memcpy(adapter_mac_addr(padapter), mac, ETH_ALEN);
-
-#ifdef CONFIG_MI_WITH_MBSSID_CAM
-		rtw_mbid_camid_alloc(padapter, adapter_mac_addr(padapter));
-#endif
-		rtw_init_wifidirect_addrs(padapter, adapter_mac_addr(padapter), adapter_mac_addr(padapter));
-		_rtw_memcpy(pnetdev->dev_addr, adapter_mac_addr(padapter), ETH_ALEN);
-	}
-#endif /*CONFIG_PLATFORM_INTEL_BYT*/
-
-	if (primary_padapter->bup == _FALSE || !rtw_is_hw_init_completed(primary_padapter))
-		_netdev_open(primary_padapter->pnetdev);
-
-	if (padapter->bup == _FALSE && primary_padapter->bup == _TRUE &&
-	    rtw_is_hw_init_completed(primary_padapter)) {
-#if 0 /*#ifdef CONFIG_MI_WITH_MBSSID_CAM*/
-		rtw_hal_set_hwreg(padapter, HW_VAR_MAC_ADDR, adapter_mac_addr(padapter)); /* set mac addr to mac register */
-#endif
-
-	}
-
-	if (padapter->bup == _FALSE) {
-		if (rtw_start_drv_threads(padapter) == _FAIL)
-			goto _netdev_virtual_iface_open_error;
-	}
-
-#ifdef CONFIG_RTW_NAPI
-	if (padapter->napi_state == NAPI_DISABLE) {
-		napi_enable(&padapter->napi);
-		padapter->napi_state = NAPI_ENABLE;
-	}
-#endif
-
-#ifdef CONFIG_IOCTL_CFG80211
-	rtw_cfg80211_init_wiphy(padapter);
-	rtw_cfg80211_init_wdev_data(padapter);
-#endif
-
-	padapter->bup = _TRUE;
-
-	padapter->net_closed = _FALSE;
-
-	rtw_netif_wake_queue(pnetdev);
-
-	RTW_INFO(FUNC_NDEV_FMT" (bup=%d) exit\n", FUNC_NDEV_ARG(pnetdev), padapter->bup);
-
-	return 0;
-
-_netdev_virtual_iface_open_error:
-
-	padapter->bup = _FALSE;
-
-#ifdef CONFIG_RTW_NAPI
-	if(padapter->napi_state == NAPI_ENABLE) {
-		napi_disable(&padapter->napi);
-		padapter->napi_state = NAPI_DISABLE;
-	}
-#endif
-
-	rtw_netif_carrier_off(pnetdev);
-	rtw_netif_stop_queue(pnetdev);
-
-	return -1;
-
-}
-
-int netdev_vir_if_open(struct net_device *pnetdev)
-{
-	int ret;
-	_adapter *padapter = (_adapter *)rtw_netdev_priv(pnetdev);
-
-	_enter_critical_mutex(&(adapter_to_dvobj(padapter)->hw_init_mutex), NULL);
-	ret = _netdev_vir_if_open(pnetdev);
-	_exit_critical_mutex(&(adapter_to_dvobj(padapter)->hw_init_mutex), NULL);
-
-#ifdef CONFIG_AUTO_AP_MODE
-	/* if(padapter->iface_id == 2) */
-	/*	rtw_start_auto_ap(padapter); */
-#endif
-
-	return ret;
-}
-
-static int netdev_vir_if_close(struct net_device *pnetdev)
-{
-	_adapter *padapter = (_adapter *)rtw_netdev_priv(pnetdev);
-	struct mlme_priv	*pmlmepriv = &padapter->mlmepriv;
-
-	RTW_INFO(FUNC_NDEV_FMT" , bup=%d\n", FUNC_NDEV_ARG(pnetdev), padapter->bup);
-	padapter->net_closed = _TRUE;
-	pmlmepriv->LinkDetectInfo.bBusyTraffic = _FALSE;
-
-	if (pnetdev)
-		rtw_netif_stop_queue(pnetdev);
-
-
-#ifdef CONFIG_IOCTL_CFG80211
-	rtw_scan_abort(padapter);
-	rtw_cfg80211_wait_scan_req_empty(padapter, 200);
-	adapter_wdev_data(padapter)->bandroid_scan = _FALSE;
-#endif
-
-	return 0;
-}
-#endif /*#ifndef CONFIG_NEW_NETDEV_HDL*/
-
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 29))
-static const struct net_device_ops rtw_netdev_vir_if_ops = {
-	.ndo_init = rtw_ndev_init,
-	.ndo_uninit = rtw_ndev_uninit,
-	#ifdef CONFIG_NEW_NETDEV_HDL
-	.ndo_open = netdev_open,
-	.ndo_stop = netdev_close,
-	#else
-	.ndo_open = netdev_vir_if_open,
-	.ndo_stop = netdev_vir_if_close,
-	#endif
-	.ndo_start_xmit = rtw_xmit_entry,
-	.ndo_set_mac_address = rtw_net_set_mac_address,
-	.ndo_get_stats = rtw_net_get_stats,
-	.ndo_do_ioctl = rtw_ioctl,
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 35))
-	.ndo_select_queue	= rtw_select_queue,
-#endif
-};
-#endif
-
-static void rtw_hook_vir_if_ops(struct net_device *ndev)
-{
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 29))
-	ndev->netdev_ops = &rtw_netdev_vir_if_ops;
-#else
-	ndev->init = rtw_ndev_init;
-	ndev->uninit = rtw_ndev_uninit;
-	#ifdef CONFIG_NEW_NETDEV_HDL
-	ndev->open = netdev_open;
-	ndev->stop = netdev_close;
-	#else
-	ndev->open = netdev_vir_if_open;
-	ndev->stop = netdev_vir_if_close;
-	#endif
-
-	ndev->set_mac_address = rtw_net_set_mac_address;
-#endif
-}
-_adapter *rtw_drv_add_vir_if(_adapter *primary_padapter,
-	void (*set_intf_ops)(_adapter *primary_padapter, struct _io_ops *pops))
-{
-	int res = _FAIL;
-	_adapter *padapter = NULL;
-	struct dvobj_priv *pdvobjpriv;
-	u8 mac[ETH_ALEN];
-
-	/****** init adapter ******/
-	padapter = (_adapter *)rtw_zvmalloc(sizeof(*padapter));
-	if (padapter == NULL)
-		goto exit;
-
-	if (loadparam(padapter) != _SUCCESS)
-		goto free_adapter;
-
-	_rtw_memcpy(padapter, primary_padapter, sizeof(_adapter));
-
-	/*  */
-	padapter->bup = _FALSE;
-	padapter->net_closed = _TRUE;
-	padapter->dir_dev = NULL;
-	padapter->dir_odm = NULL;
-
-	/*set adapter_type/iface type*/
-	padapter->isprimary = _FALSE;
-	padapter->adapter_type = VIRTUAL_ADAPTER;
-
-#ifdef CONFIG_MI_WITH_MBSSID_CAM
-	padapter->hw_port = HW_PORT0;
-#else
-	padapter->hw_port = HW_PORT1;
-#endif
-
-
-	/****** hook vir if into dvobj ******/
-	pdvobjpriv = adapter_to_dvobj(padapter);
-	padapter->iface_id = pdvobjpriv->iface_nums;
-	pdvobjpriv->padapters[pdvobjpriv->iface_nums++] = padapter;
-
-	padapter->intf_start = primary_padapter->intf_start;
-	padapter->intf_stop = primary_padapter->intf_stop;
-
-	/* step init_io_priv */
-	if ((rtw_init_io_priv(padapter, set_intf_ops)) == _FAIL) {
-		goto free_adapter;
-	}
-
-	/*init drv data*/
-	if (rtw_init_drv_sw(padapter) != _SUCCESS)
-		goto free_drv_sw;
-
-
-	/*get mac address from primary_padapter*/
-	_rtw_memcpy(mac, adapter_mac_addr(primary_padapter), ETH_ALEN);
-
-	/*
-	* If the BIT1 is 0, the address is universally administered.
-	* If it is 1, the address is locally administered
-	*/
-	mac[0] |= BIT(1);
-	if (padapter->iface_id > IFACE_ID1)
-		mac[4] ^= BIT(padapter->iface_id);
-
-	_rtw_memcpy(adapter_mac_addr(padapter), mac, ETH_ALEN);
-	/* update mac-address to mbsid-cam cache*/
-#ifdef CONFIG_MI_WITH_MBSSID_CAM
-	rtw_mbid_camid_alloc(padapter, adapter_mac_addr(padapter));
-#endif
-	RTW_INFO("%s if%d mac_addr : "MAC_FMT"\n", __func__, padapter->iface_id + 1, MAC_ARG(adapter_mac_addr(padapter)));
-
-	rtw_led_set_ctl_en_mask_virtual(padapter);
-	rtw_led_set_iface_en(padapter, 1);
-
-	res = _SUCCESS;
-
-free_drv_sw:
-	if (res != _SUCCESS && padapter)
-		rtw_free_drv_sw(padapter);
-free_adapter:
-	if (res != _SUCCESS && padapter) {
-		rtw_vmfree((u8 *)padapter, sizeof(*padapter));
-		padapter = NULL;
-	}
-exit:
-	return padapter;
-}
-
-void rtw_drv_stop_vir_if(_adapter *padapter)
-{
-	struct net_device *pnetdev = NULL;
-	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
-
-	if (padapter == NULL)
-		return;
-	RTW_INFO(FUNC_ADPT_FMT" enter\n", FUNC_ADPT_ARG(padapter));
-
-	pnetdev = padapter->pnetdev;
-
-	if (check_fwstate(pmlmepriv, _FW_LINKED))
-		rtw_disassoc_cmd(padapter, 0, RTW_CMDF_DIRECTLY);
-
-#ifdef CONFIG_AP_MODE
-	if (MLME_IS_AP(padapter) || MLME_IS_MESH(padapter)) {
-		free_mlme_ap_info(padapter);
-		#ifdef CONFIG_HOSTAPD_MLME
-		hostapd_mode_unload(padapter);
-		#endif
-	}
-#endif
-
-	if (padapter->bup == _TRUE) {
-		#ifdef CONFIG_XMIT_ACK
-		if (padapter->xmitpriv.ack_tx)
-			rtw_ack_tx_done(&padapter->xmitpriv, RTW_SCTX_DONE_DRV_STOP);
-		#endif
-
-		rtw_intf_stop(padapter);
-	#ifndef CONFIG_NEW_NETDEV_HDL
-		rtw_stop_drv_threads(padapter);
-	#endif
-		padapter->bup = _FALSE;
-	}
-	#ifdef CONFIG_NEW_NETDEV_HDL
-	rtw_stop_drv_threads(padapter);
-	#endif
-	/* cancel timer after thread stop */
-	rtw_cancel_all_timer(padapter);
-}
-
-void rtw_drv_free_vir_if(_adapter *padapter)
-{
-	if (padapter == NULL)
-		return;
-
-	RTW_INFO(FUNC_ADPT_FMT"\n", FUNC_ADPT_ARG(padapter));
-	rtw_free_drv_sw(padapter);
-
-	/* TODO: use rtw_os_ndevs_deinit instead at the first stage of driver's dev deinit function */
-	rtw_os_ndev_free(padapter);
-
-	rtw_vmfree((u8 *)padapter, sizeof(_adapter));
-}
-
-
-void rtw_drv_stop_vir_ifaces(struct dvobj_priv *dvobj)
-{
-	int i;
-
-	for (i = VIF_START_ID; i < dvobj->iface_nums; i++)
-		rtw_drv_stop_vir_if(dvobj->padapters[i]);
-}
-
-void rtw_drv_free_vir_ifaces(struct dvobj_priv *dvobj)
-{
-	int i;
-
-	for (i = VIF_START_ID; i < dvobj->iface_nums; i++)
-		rtw_drv_free_vir_if(dvobj->padapters[i]);
-}
-
-
-#endif /*end of CONFIG_CONCURRENT_MODE*/
-
 /* IPv4, IPv6 IP addr notifier */
 static int rtw_inetaddr_notifier_call(struct notifier_block *nb,
 				      unsigned long action, void *data)
@@ -3336,17 +2976,6 @@ int _netdev_open(struct net_device *pnetdev)
 	rtw_netif_wake_queue(pnetdev);
 
 
-#ifdef CONFIG_CONCURRENT_MODE
-	{
-		_adapter *sec_adapter = adapter_to_dvobj(padapter)->padapters[IFACE_ID1];
-
-		#ifndef CONFIG_RTW_DYNAMIC_NDEV
-		if (sec_adapter && (sec_adapter->bup == _FALSE))
-			_netdev_vir_if_open(sec_adapter->pnetdev);
-		#endif
-	}
-#endif
-
 #ifdef CONFIG_RTW_CFGVEDNOR_LLSTATS
 	pwrctrlpriv->radio_on_start_time = rtw_get_current_time();
 	pwrctrlpriv->pwr_saving_start_time = rtw_get_current_time();
@@ -3397,10 +3026,6 @@ int netdev_open(struct net_device *pnetdev)
 #else
 	if (is_primary_adapter(padapter))
 		ret = _netdev_open(pnetdev);
-#ifdef CONFIG_CONCURRENT_MODE
-	else
-		ret = _netdev_vir_if_open(pnetdev);
-#endif
 #endif
 	_exit_critical_mutex(&(adapter_to_dvobj(padapter)->hw_init_mutex), NULL);
 
@@ -4147,11 +3772,6 @@ int rtw_suspend_normal(_adapter *padapter)
 		RTW_PRINT("%s: ### ERROR #### driver in IPS ####ERROR###!!!\n", __FUNCTION__);
 
 
-#ifdef CONFIG_CONCURRENT_MODE
-	rtw_set_drv_stopped(padapter);	/*for stop thread*/
-	rtw_stop_cmd_thread(padapter);
-	rtw_drv_stop_vir_ifaces(adapter_to_dvobj(padapter));
-#endif
 	rtw_dev_unload(padapter);
 
 

@@ -101,11 +101,6 @@
 	#define CONFIG_DFS	/* Enable 5G band 2&3 channel */
 	#define RTW_AMPDU_AGG_RETRY_AND_NEW
 
-	#ifdef CONFIG_CONCURRENT_MODE
-		#define CONFIG_AP_PORT_SWAP
-		#define CONFIG_FW_MULTI_PORT_SUPPORT
-	#endif /* CONFIG_CONCURRENT_MODE */
-
 	/*
 	 * Beamforming related definition
 	 */
@@ -169,11 +164,6 @@
 	#endif /* CONFIG_FW_C2H_PKT */
 	#define RTW_TX_PA_BIAS	/* Adjust TX PA Bias from eFuse */
 	#define CONFIG_DFS	/* Enable 5G band 2&3 channel */
-
-	#ifdef CONFIG_CONCURRENT_MODE
-		#define CONFIG_AP_PORT_SWAP
-		#define CONFIG_FW_MULTI_PORT_SUPPORT
-	#endif /* CONFIG_CONCURRENT_MODE */
 
 	/*
 	 * Beamforming related definition
@@ -247,10 +237,6 @@
 	#endif
 	#define LOAD_FW_HEADER_FROM_DRIVER
 	#define CONFIG_PHY_CAPABILITY_QUERY
-	#ifdef CONFIG_CONCURRENT_MODE
-	#define CONFIG_AP_PORT_SWAP
-	#define CONFIG_FW_MULTI_PORT_SUPPORT
-	#endif
 	#define CONFIG_SUPPORT_FIFO_DUMP
 	#ifndef RTW_IQK_FW_OFFLOAD
 		#define RTW_IQK_FW_OFFLOAD
@@ -281,12 +267,6 @@
 	#define RTW_TX_PA_BIAS	/* Adjust TX PA Bias from eFuse */
 	//#define CONFIG_DFS	/* Enable 5G band 2&3 channel */
 	#define RTW_AMPDU_AGG_RETRY_AND_NEW
-
-	#ifdef CONFIG_CONCURRENT_MODE
-		/*#define CONFIG_AP_PORT_SWAP*/
-		#define CONFIG_FW_MULTI_PORT_SUPPORT
-		#define CONFIG_SUPPORT_AP_PORT1
-	#endif /* CONFIG_CONCURRENT_MODE */
 
 	/*
 	 * Beamforming related definition

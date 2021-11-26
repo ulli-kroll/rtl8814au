@@ -187,11 +187,7 @@ Chip specific
 	#define RTL8814AE_SEG_NUM  TX_BUFFER_SEG_NUM /* 0:2 seg, 1: 4 seg, 2: 8 seg */
 	#define TX_DESC_NUM_8814A  TX_BD_NUM   /* 128 */
 	#define RX_DESC_NUM_8814A  PCI_MAX_RX_COUNT /* 128 */
-	#ifdef CONFIG_CONCURRENT_MODE
-		#define BE_QUEUE_TX_DESC_NUM_8814A  (TX_BD_NUM<<1)    /* 256 */
-	#else
 		#define BE_QUEUE_TX_DESC_NUM_8814A  (TX_BD_NUM+(TX_BD_NUM>>1)) /* 192 */
-	#endif
 #else
 	#define RTL8814AE_SEG_NUM  TX_BUFFER_SEG_NUM /* 0:2 seg, 1: 4 seg, 2: 8 seg */
 	#define TX_DESC_NUM_8814A  128 /* 1024//2048 change by ylb 20130624 */

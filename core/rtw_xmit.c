@@ -1044,10 +1044,6 @@ static s32 update_attrib_sec_info(_adapter *padapter, struct pkt_attrib *pattrib
 		pattrib->bswenc = _FALSE;
 	}
 
-#if defined(CONFIG_CONCURRENT_MODE)
-	pattrib->bmc_camid = padapter->securitypriv.dot118021x_bmc_cam_id;
-#endif
-
 	if (pattrib->encrypt && bmcast && _rtw_camctl_chk_flags(padapter, SEC_STATUS_STA_PK_GK_CONFLICT_DIS_BMC_SEARCH))
 		pattrib->bswenc = _TRUE;
 
@@ -1179,16 +1175,6 @@ inline u8 rtw_get_hwseq_no(_adapter *padapter)
 {
 	u8 hwseq_num = 0;
 
-#ifdef CONFIG_CONCURRENT_MODE
-	#if defined(CONFIG_RTL8822B) || defined(CONFIG_RTL8821C) || defined(CONFIG_RTL8822C) || defined(CONFIG_RTL8814B)
-	hwseq_num = padapter->iface_id;
-	if (hwseq_num > 3)
-		hwseq_num = 3;
-	#else
-	if (!is_primary_adapter(padapter))
-		hwseq_num = 1;
-	#endif
-#endif /* CONFIG_CONCURRENT_MODE */
 	return hwseq_num;
 }
 #ifdef CONFIG_LPS

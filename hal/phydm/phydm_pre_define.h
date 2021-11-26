@@ -90,11 +90,7 @@
 	#define ASSOCIATE_ENTRY_NUM	NUM_STAT
 	#define	ODM_ASSOCIATE_ENTRY_NUM	(ASSOCIATE_ENTRY_NUM + 1)
 #elif(DM_ODM_SUPPORT_TYPE & (ODM_IOT))
-	#ifdef CONFIG_CONCURRENT_MODE
-		#define ASSOCIATE_ENTRY_NUM	NUM_STA + 2 /*@2 is for station mod*/
-	#else
 		#define ASSOCIATE_ENTRY_NUM	NUM_STA /*@8 is for max size of asoc_entry[].*/
-	#endif
 	#define	ODM_ASSOCIATE_ENTRY_NUM	ASSOCIATE_ENTRY_NUM
 #else
 	#define ODM_ASSOCIATE_ENTRY_NUM	(((ASSOCIATE_ENTRY_NUM + 1) * 3) + 1)

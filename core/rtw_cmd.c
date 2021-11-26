@@ -428,12 +428,6 @@ u32 rtw_enqueue_cmd(struct cmd_priv *pcmdpriv, struct cmd_obj *cmd_obj)
 
 	cmd_obj->padapter = padapter;
 
-#ifdef CONFIG_CONCURRENT_MODE
-	/* change pcmdpriv to primary's pcmdpriv */
-	if (!is_primary_adapter(padapter))
-		pcmdpriv = &(GET_PRIMARY_ADAPTER(padapter)->cmdpriv);
-#endif
-
 	res = rtw_cmd_filter(pcmdpriv, cmd_obj);
 	if ((_FAIL == res) || (cmd_obj->cmdsz > MAX_CMDSZ)) {
 		if (cmd_obj->cmdsz > MAX_CMDSZ) {
@@ -2869,11 +2863,6 @@ u8 _lps_chk_by_tp(_adapter *adapter, u8 from_timer)
 		if (!from_timer)
 			LPS_Leave(adapter, "TRAFFIC_BUSY");
 		else {
-			#ifdef CONFIG_CONCURRENT_MODE
-			#ifndef CONFIG_FW_MULTI_PORT_SUPPORT
-			if (adapter->hw_port == HW_PORT0)
-			#endif
-			#endif
 				rtw_lps_ctrl_wk_cmd(adapter, LPS_CTRL_TRAFFIC_BUSY, 0);
 		}
 	}
@@ -2971,11 +2960,6 @@ static u8 _lps_chk_by_pkt_cnts(_adapter *padapter, u8 from_timer, u8 bBusyTraffi
 		if (!from_timer)
 			LPS_Leave(padapter, "TRAFFIC_BUSY");
 		else {
-			#ifdef CONFIG_CONCURRENT_MODE
-			#ifndef CONFIG_FW_MULTI_PORT_SUPPORT
-			if (padapter->hw_port == HW_PORT0)
-			#endif
-			#endif
 				rtw_lps_ctrl_wk_cmd(padapter, LPS_CTRL_TRAFFIC_BUSY, 0);
 		}
 	}
@@ -3467,12 +3451,6 @@ u8 rtw_lps_change_dtim_cmd(_adapter *padapter, u8 dtim)
 	struct drvextra_cmd_parm	*pdrvextra_cmd_parm;
 	struct cmd_priv	*pcmdpriv = &padapter->cmdpriv;
 	u8	res = _SUCCESS;
-	/*
-	#ifdef CONFIG_CONCURRENT_MODE
-		if (padapter->hw_port != HW_PORT0)
-			return res;
-	#endif
-	*/
 	{
 		ph2c = (struct cmd_obj *)rtw_zmalloc(sizeof(struct cmd_obj));
 		if (ph2c == NULL) {
@@ -3679,11 +3657,6 @@ u8 rtw_ps_cmd(_adapter *padapter)
 	struct cmd_priv	*pcmdpriv = &padapter->cmdpriv;
 
 	u8	res = _SUCCESS;
-
-#ifdef CONFIG_CONCURRENT_MODE
-	if (!is_primary_adapter(padapter))
-		goto exit;
-#endif
 
 	ppscmd = (struct cmd_obj *)rtw_zmalloc(sizeof(struct cmd_obj));
 	if (ppscmd == NULL) {

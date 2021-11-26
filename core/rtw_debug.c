@@ -68,10 +68,6 @@ void dump_drv_cfg(void *sel)
 	RTW_PRINT_SEL(sel, "CONFIG_RTW_DEBUG\n");
 #endif
 
-#ifdef CONFIG_CONCURRENT_MODE
-	RTW_PRINT_SEL(sel, "CONFIG_CONCURRENT_MODE\n");
-#endif
-
 #ifdef CONFIG_POWER_SAVING
 	RTW_PRINT_SEL(sel, "CONFIG_POWER_SAVING\n");
 	#ifdef CONFIG_IPS

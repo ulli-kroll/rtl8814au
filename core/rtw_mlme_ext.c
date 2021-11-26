@@ -1528,14 +1528,6 @@ _non_rc_device:
 #endif /* CONFIG_AUTO_AP_MODE */
 
 
-#ifdef CONFIG_CONCURRENT_MODE
-	if (((pmlmeinfo->state & 0x03) == WIFI_FW_AP_STATE) &&
-	    rtw_mi_buddy_check_fwstate(padapter, _FW_UNDER_LINKING | _FW_UNDER_SURVEY)) {
-		/* don't process probe req */
-		return _SUCCESS;
-	}
-#endif
-
 	p = rtw_get_ie(pframe + WLAN_HDR_A3_LEN + _PROBEREQ_IE_OFFSET_, _SSID_IE_, (int *)&ielen,
 		       len - WLAN_HDR_A3_LEN - _PROBEREQ_IE_OFFSET_);
 
@@ -1820,14 +1812,6 @@ unsigned int OnAuth(_adapter *padapter, union recv_frame *precv_frame)
 	uint len = precv_frame->u.hdr.len;
 	u8	offset = 0;
 
-
-#ifdef CONFIG_CONCURRENT_MODE
-	if (((pmlmeinfo->state & 0x03) == WIFI_FW_AP_STATE) &&
-	    rtw_mi_buddy_check_fwstate(padapter, _FW_UNDER_LINKING | _FW_UNDER_SURVEY)) {
-		/* don't process auth request; */
-		return _SUCCESS;
-	}
-#endif /* CONFIG_CONCURRENT_MODE */
 
 	if ((pmlmeinfo->state & 0x03) != WIFI_FW_AP_STATE)
 		return _FAIL;
@@ -2194,14 +2178,6 @@ unsigned int OnAssocReq(_adapter *padapter, union recv_frame *precv_frame)
 	struct sta_priv *pstapriv = &padapter->stapriv;
 	u8 *pframe = precv_frame->u.hdr.rx_data;
 	uint pkt_len = precv_frame->u.hdr.len;
-
-#ifdef CONFIG_CONCURRENT_MODE
-	if (((pmlmeinfo->state & 0x03) == WIFI_FW_AP_STATE) &&
-	    rtw_mi_buddy_check_fwstate(padapter, _FW_UNDER_LINKING | _FW_UNDER_SURVEY)) {
-		/* don't process assoc request; */
-		return _SUCCESS;
-	}
-#endif /* CONFIG_CONCURRENT_MODE */
 
 	if ((pmlmeinfo->state & 0x03) != WIFI_FW_AP_STATE)
 		return _FAIL;
@@ -4606,10 +4582,6 @@ void issue_beacon(_adapter *padapter, int timeout_ms)
 	update_mgntframe_attrib(padapter, pattrib);
 	pattrib->qsel = QSLT_BEACON;
 
-#if defined(CONFIG_CONCURRENT_MODE) && (!defined(CONFIG_SWTIMER_BASED_TXBCN))
-	if (padapter->hw_port == HW_PORT1)
-		pattrib->mbssid = 1;
-#endif
 #ifdef CONFIG_FW_HANDLE_TXBCN
 	if (padapter->vap_id != CONFIG_LIMITED_AP_NUM)
 		pattrib->mbssid = padapter->vap_id;
@@ -8331,79 +8303,6 @@ void report_add_sta_event(_adapter *padapter, unsigned char *MacAddr)
 bool rtw_port_switch_chk(_adapter *adapter)
 {
 	bool switch_needed = _FALSE;
-#ifdef CONFIG_CONCURRENT_MODE
-#ifdef CONFIG_RUNTIME_PORT_SWITCH
-	struct dvobj_priv *dvobj = adapter_to_dvobj(adapter);
-	struct pwrctrl_priv *pwrctl = dvobj_to_pwrctl(dvobj);
-	_adapter *if_port0 = NULL;
-	_adapter *if_port1 = NULL;
-	struct mlme_ext_info *if_port0_mlmeinfo = NULL;
-	struct mlme_ext_info *if_port1_mlmeinfo = NULL;
-	int i;
-
-	for (i = 0; i < dvobj->iface_nums; i++) {
-		if (get_hw_port(dvobj->padapters[i]) == HW_PORT0) {
-			if_port0 = dvobj->padapters[i];
-			if_port0_mlmeinfo = &(if_port0->mlmeextpriv.mlmext_info);
-		} else if (get_hw_port(dvobj->padapters[i]) == HW_PORT1) {
-			if_port1 = dvobj->padapters[i];
-			if_port1_mlmeinfo = &(if_port1->mlmeextpriv.mlmext_info);
-		}
-	}
-
-	if (if_port0 == NULL) {
-		rtw_warn_on(1);
-		goto exit;
-	}
-
-	if (if_port1 == NULL) {
-		rtw_warn_on(1);
-		goto exit;
-	}
-
-#ifdef DBG_RUNTIME_PORT_SWITCH
-	RTW_INFO(FUNC_ADPT_FMT" wowlan_mode:%u\n"
-		 ADPT_FMT", port0, mlmeinfo->state:0x%08x, p2p_state:%d, %d\n"
-		 ADPT_FMT", port1, mlmeinfo->state:0x%08x, p2p_state:%d, %d\n",
-		 FUNC_ADPT_ARG(adapter), pwrctl->wowlan_mode,
-		ADPT_ARG(if_port0), if_port0_mlmeinfo->state, rtw_p2p_state(&if_port0->wdinfo), rtw_p2p_chk_state(&if_port0->wdinfo, P2P_STATE_NONE),
-		ADPT_ARG(if_port1), if_port1_mlmeinfo->state, rtw_p2p_state(&if_port1->wdinfo), rtw_p2p_chk_state(&if_port1->wdinfo, P2P_STATE_NONE));
-#endif /* DBG_RUNTIME_PORT_SWITCH */
-
-
-	/* AP/Mesh should use port0 for ctl frame's ack */
-	if ((if_port1_mlmeinfo->state & 0x03) == WIFI_FW_AP_STATE) {
-		RTW_INFO("%s "ADPT_FMT" is AP/GO/Mesh\n", __func__, ADPT_ARG(if_port1));
-		switch_needed = _TRUE;
-		goto exit;
-	}
-
-	/* GC should use port0 for p2p ps */
-	if (((if_port1_mlmeinfo->state & 0x03) == WIFI_FW_STATION_STATE)
-	    && (if_port1_mlmeinfo->state & WIFI_FW_ASSOC_SUCCESS)
-	    && !check_fwstate(&if_port1->mlmepriv, WIFI_UNDER_WPS)
-	   ) {
-		RTW_INFO("%s "ADPT_FMT" is GC\n", __func__, ADPT_ARG(if_port1));
-		switch_needed = _TRUE;
-		goto exit;
-	}
-
-	/* port1 linked, but port0 not linked */
-	if ((if_port1_mlmeinfo->state & WIFI_FW_ASSOC_SUCCESS)
-	    && !(if_port0_mlmeinfo->state & WIFI_FW_ASSOC_SUCCESS)
-	    && ((if_port0_mlmeinfo->state & 0x03) != WIFI_FW_AP_STATE)
-	   ) {
-		RTW_INFO("%s "ADPT_FMT" is SINGLE_LINK\n", __func__, ADPT_ARG(if_port1));
-		switch_needed = _TRUE;
-		goto exit;
-	}
-
-exit:
-#ifdef DBG_RUNTIME_PORT_SWITCH
-	RTW_INFO(FUNC_ADPT_FMT" ret:%d\n", FUNC_ADPT_ARG(adapter), switch_needed);
-#endif /* DBG_RUNTIME_PORT_SWITCH */
-#endif /* CONFIG_RUNTIME_PORT_SWITCH */
-#endif /* CONFIG_CONCURRENT_MODE */
 	return switch_needed;
 }
 
@@ -11382,22 +11281,15 @@ u8 setkey_hdl(_adapter *padapter, u8 *pbuf)
 	if (pparm->set_tx)
 		pmlmeinfo->key_index = pparm->keyid;
 
-#ifdef CONFIG_CONCURRENT_MODE
-	if (((pmlmeinfo->state & 0x03) == WIFI_FW_AP_STATE) || ((pmlmeinfo->state & 0x03) == WIFI_FW_ADHOC_STATE))
-		cam_id = rtw_iface_bcmc_id_get(padapter);
-	else
-#endif
 		cam_id = rtw_camid_alloc(padapter, NULL, pparm->keyid, 1, &used);
 
 	if (cam_id < 0)
 		goto enable_mc;
 
-#ifndef CONFIG_CONCURRENT_MODE
 	if (cam_id >= 0 && cam_id <= 3) {
 		/* default key camid */
 		addr = null_addr;
 	} else
-#endif
 	{
 		/* not default key camid */
 		if (((pmlmeinfo->state & 0x03) == WIFI_FW_AP_STATE) || ((pmlmeinfo->state & 0x03) == WIFI_FW_ADHOC_STATE)) {
@@ -11443,35 +11335,10 @@ u8 setkey_hdl(_adapter *padapter, u8 *pbuf)
 	write_cam(padapter, cam_id, ctrl, addr, pparm->key);
 
 	/* if ((cam_id > 3) && (((pmlmeinfo->state&0x03) == WIFI_FW_AP_STATE) || ((pmlmeinfo->state&0x03) == WIFI_FW_ADHOC_STATE)))*/
-#ifdef CONFIG_CONCURRENT_MODE
-	if (((pmlmeinfo->state & 0x03) == WIFI_FW_AP_STATE) || ((pmlmeinfo->state & 0x03) == WIFI_FW_ADHOC_STATE)) {
-		if (is_wep_enc(pparm->algorithm)) {
-			padapter->securitypriv.dot11Def_camid[pparm->keyid] = cam_id;
-			padapter->securitypriv.dot118021x_bmc_cam_id =
-				padapter->securitypriv.dot11Def_camid[padapter->securitypriv.dot11PrivacyKeyIndex];
-			RTW_PRINT("wep group key - force camid:%d\n", padapter->securitypriv.dot118021x_bmc_cam_id);
-		} else {
-			/*u8 org_cam_id = padapter->securitypriv.dot118021x_bmc_cam_id;*/
-
-			/*force GK's cam id*/
-			padapter->securitypriv.dot118021x_bmc_cam_id = cam_id;
-
-			/* for GTK rekey
-			if ((org_cam_id != INVALID_SEC_MAC_CAM_ID) &&
-				(org_cam_id != cam_id)) {
-				RTW_PRINT("clear group key for addr:"MAC_FMT", org_camid:%d new_camid:%d\n", MAC_ARG(addr), org_cam_id, cam_id);
-				clear_cam_entry(padapter, org_cam_id);
-				rtw_camid_free(padapter, org_cam_id);
-			}*/
-		}
-	}
-#endif
 
 
-#ifndef CONFIG_CONCURRENT_MODE
 	if (cam_id >= 0 && cam_id <= 3)
 		rtw_hal_set_hwreg(padapter, HW_VAR_SEC_DK_CFG, (u8 *)_TRUE);
-#endif
 
 	/* 8814au should set both broadcast and unicast CAM entry for WEP key in STA mode */
 	if (is_wep_enc(pparm->algorithm) && check_mlmeinfo_state(pmlmeext, WIFI_FW_STATION_STATE) &&
@@ -12104,9 +11971,6 @@ void rtw_join_done_chk_ch(_adapter *adapter, int join_res)
 
 int rtw_chk_start_clnt_join(_adapter *adapter, u8 *ch, u8 *bw, u8 *offset)
 {
-#ifdef CONFIG_CONCURRENT_MODE
-	bool chbw_allow = _TRUE;
-#endif
 	bool connect_allow = _TRUE;
 	struct mlme_ext_priv	*pmlmeext = &adapter->mlmeextpriv;
 	u8 cur_ch, cur_bw, cur_ch_offset;
@@ -12130,125 +11994,6 @@ int rtw_chk_start_clnt_join(_adapter *adapter, u8 *ch, u8 *bw, u8 *offset)
 		goto exit;
 	}
 	RTW_INFO(FUNC_ADPT_FMT" req: %u,%u,%u\n", FUNC_ADPT_ARG(adapter), u_ch, u_bw, u_offset);
-
-#ifdef CONFIG_CONCURRENT_MODE
-	{
-		struct dvobj_priv *dvobj;
-		_adapter *iface;
-		struct mlme_priv *mlme;
-		struct mlme_ext_priv *mlmeext;
-		struct mi_state mstate;
-		int i;
-
-		dvobj = adapter_to_dvobj(adapter);
-
-		rtw_mi_status_no_self(adapter, &mstate);
-		RTW_INFO(FUNC_ADPT_FMT" others ld_sta_num:%u, ap_num:%u, mesh_num:%u\n"
-			, FUNC_ADPT_ARG(adapter), MSTATE_STA_LD_NUM(&mstate)
-			, MSTATE_AP_NUM(&mstate), MSTATE_MESH_NUM(&mstate));
-
-		if (!MSTATE_STA_LD_NUM(&mstate) && !MSTATE_AP_NUM(&mstate) && !MSTATE_MESH_NUM(&mstate)) {
-			/* consider linking STA? */
-			goto connect_allow_hdl;
-		}
-
-		if (rtw_mi_get_ch_setting_union_no_self(adapter, &u_ch, &u_bw, &u_offset) <= 0) {
-			dump_adapters_status(RTW_DBGDUMP , dvobj);
-			rtw_warn_on(1);
-		}
-		RTW_INFO(FUNC_ADPT_FMT" others union:%u,%u,%u\n"
-			 , FUNC_ADPT_ARG(adapter), u_ch, u_bw, u_offset);
-
-		/* chbw_allow? */
-		chbw_allow = rtw_is_chbw_grouped(pmlmeext->cur_channel, pmlmeext->cur_bwmode, pmlmeext->cur_ch_offset
-						 , u_ch, u_bw, u_offset);
-
-		RTW_INFO(FUNC_ADPT_FMT" chbw_allow:%d\n"
-			 , FUNC_ADPT_ARG(adapter), chbw_allow);
-
-#ifdef CONFIG_MCC_MODE
-		/* check setting success, don't go to ch union process */
-		if (rtw_hal_set_mcc_setting_chk_start_clnt_join(adapter, &u_ch, &u_bw, &u_offset, chbw_allow))
-			goto exit;
-#endif
-
-		if (chbw_allow == _TRUE) {
-			rtw_sync_chbw(&cur_ch, &cur_bw, &cur_ch_offset, &u_ch, &u_bw, &u_offset);
-			rtw_warn_on(cur_ch != pmlmeext->cur_channel);
-			rtw_warn_on(cur_bw != pmlmeext->cur_bwmode);
-			rtw_warn_on(cur_ch_offset != pmlmeext->cur_ch_offset);
-			goto connect_allow_hdl;
-		}
-
-#ifdef CONFIG_CFG80211_ONECHANNEL_UNDER_CONCURRENT
-		/* chbw_allow is _FALSE, connect allow? */
-		for (i = 0; i < dvobj->iface_nums; i++) {
-			iface = dvobj->padapters[i];
-			mlme = &iface->mlmepriv;
-			mlmeext = &iface->mlmeextpriv;
-
-			if (check_fwstate(mlme, WIFI_STATION_STATE)
-			    && check_fwstate(mlme, WIFI_ASOC_STATE)
-			   ) {
-				connect_allow = _FALSE;
-				break;
-			}
-		}
-#endif /* CONFIG_CFG80211_ONECHANNEL_UNDER_CONCURRENT */
-
-		if (MSTATE_STA_LD_NUM(&mstate) + MSTATE_AP_LD_NUM(&mstate) + MSTATE_MESH_LD_NUM(&mstate) >= 4)
-			connect_allow = _FALSE;
-
-		RTW_INFO(FUNC_ADPT_FMT" connect_allow:%d\n"
-			 , FUNC_ADPT_ARG(adapter), connect_allow);
-
-		if (connect_allow == _FALSE)
-			goto exit;
-
-connect_allow_hdl:
-		/* connect_allow == _TRUE */
-
-		if (chbw_allow == _FALSE) {
-			u_ch = cur_ch;
-			u_bw = cur_bw;
-			u_offset = cur_ch_offset;
-
-			for (i = 0; i < dvobj->iface_nums; i++) {
-				iface = dvobj->padapters[i];
-				mlme = &iface->mlmepriv;
-				mlmeext = &iface->mlmeextpriv;
-
-				if (!iface || iface == adapter)
-					continue;
-
-				if ((MLME_IS_AP(iface) || MLME_IS_MESH(iface))
-					&& check_fwstate(mlme, WIFI_ASOC_STATE)
-				) {
-					#ifdef CONFIG_SPCT_CH_SWITCH
-					if (1)
-						rtw_ap_inform_ch_switch(iface, pmlmeext->cur_channel , pmlmeext->cur_ch_offset);
-					else
-					#endif
-						rtw_sta_flush(iface, _FALSE);
-
-					rtw_hal_set_hwreg(iface, HW_VAR_CHECK_TXBUF, 0);
-					set_fwstate(mlme, WIFI_OP_CH_SWITCHING);
-
-				} else if (check_fwstate(mlme, WIFI_STATION_STATE)
-					&& check_fwstate(mlme, WIFI_ASOC_STATE)
-				) {
-					rtw_disassoc_cmd(iface, 500, RTW_CMDF_DIRECTLY);
-					rtw_indicate_disconnect(iface, 0, _FALSE);
-					rtw_free_assoc_resources(iface, _TRUE);
-				}
-			}
-		}
-
-		#ifdef CONFIG_DFS_MASTER
-		rtw_dfs_rd_en_decision(adapter, MLME_STA_CONNECTING, 0);
-		#endif
-	}
-#endif /* CONFIG_CONCURRENT_MODE */
 
 exit:
 

@@ -807,9 +807,6 @@ void rtw_macid_ctl_init(struct macid_ctl_t *macid_ctl);
 void rtw_macid_ctl_deinit(struct macid_ctl_t *macid_ctl);
 u8 rtw_iface_bcmc_id_get(_adapter *padapter);
 void rtw_iface_bcmc_id_set(_adapter *padapter, u8 mac_id);
-#if defined(DBG_CONFIG_ERROR_RESET) && defined(CONFIG_CONCURRENT_MODE)
-void rtw_iface_bcmc_sec_cam_map_restore(_adapter *adapter);
-#endif
 bool rtw_bmp_is_set(const u8 *bmp, u8 bmp_len, u8 id);
 void rtw_bmp_set(u8 *bmp, u8 bmp_len, u8 id);
 void rtw_bmp_clear(u8 *bmp, u8 bmp_len, u8 id);

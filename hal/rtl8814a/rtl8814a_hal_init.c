@@ -3016,11 +3016,6 @@ void SetBeaconRelatedRegisters8814A(PADAPTER padapter)
 	/* REG_DUAL_TSF_RST */
 	/* REG_BCN_CTRL  */ /* (0x550) */
 
-#ifdef CONFIG_CONCURRENT_MODE
-	if (padapter->hw_port == HW_PORT1)
-		bcn_ctrl_reg = REG_BCN_CTRL_1;
-#endif
-
 	/* BCN interval */
 	rtw_hal_set_hwreg(padapter, HW_VAR_BEACON_INTERVAL, (u8 *)&pmlmeinfo->bcn_interval);
 
@@ -3124,81 +3119,6 @@ static void hw_var_set_opmode(PADAPTER Adapter, u8 variable, u8 *val)
 
 	rtw_hal_set_hwreg(Adapter, HW_VAR_MAC_ADDR, adapter_mac_addr(Adapter)); /* set mac addr to mac register */
 
-#ifdef CONFIG_CONCURRENT_MODE
-	if (Adapter->hw_port == HW_PORT1) {
-		/* disable Port1 TSF update */
-		rtw_iface_disable_tsf_update(Adapter);
-
-		/* set net_type */
-		Set_MSR(Adapter, mode);
-
-		RTW_INFO("%s()-%d mode = %d\n", __FUNCTION__, __LINE__, mode);
-
-		if ((mode == _HW_STATE_STATION_) || (mode == _HW_STATE_NOLINK_)) {
-			if (!rtw_mi_get_ap_num(Adapter) && !rtw_mi_get_mesh_num(Adapter)) {
-				StopTxBeacon(Adapter);
-			}
-
-			rtw_write8(Adapter, REG_BCN_CTRL_1, DIS_TSF_UDT | DIS_ATIM); /* disable atim wnd and disable beacon function */
-			/* rtw_write8(Adapter,REG_BCN_CTRL_1, DIS_TSF_UDT | EN_BCN_FUNCTION); */
-		} else if (mode == _HW_STATE_ADHOC_) {
-#ifdef RTL8814AE_SW_BCN
-			/*Beacon is polled to TXBUF*/
-			rtw_write16(Adapter, REG_CR, rtw_read16(Adapter, REG_CR) | BIT(8));
-			RTW_INFO("%s-%d: enable SW BCN, REG_CR=0x%x\n", __func__, __LINE__, rtw_read32(Adapter, REG_CR));
-#endif
-			ResumeTxBeacon(Adapter);
-			rtw_write8(Adapter, REG_BCN_CTRL_1, DIS_TSF_UDT | EN_BCN_FUNCTION | DIS_BCNQ_SUB);
-		} else if (mode == _HW_STATE_AP_) {
-
-			rtw_write8(Adapter, REG_BCN_CTRL_1, DIS_TSF_UDT | DIS_BCNQ_SUB);
-
-#ifdef RTL8814AE_SW_BCN
-			rtw_write16(Adapter, REG_CR, rtw_read16(Adapter, REG_CR) | BIT(8));
-			RTW_INFO("%s-%d: enable SW BCN, REG_CR=0x%x\n", __func__, __LINE__, rtw_read32(Adapter, REG_CR));
-#endif
-
-			/* enable to rx data frame */
-			rtw_write16(Adapter, REG_RXFLTMAP2, 0xFFFF);
-
-			/* Beacon Control related register for first time */
-			rtw_write8(Adapter, REG_BCNDMATIM, 0x02); /* 2ms		 */
-
-			/* rtw_write8(Adapter, REG_BCN_MAX_ERR, 0xFF); */
-			rtw_write8(Adapter, REG_ATIMWND_1, 0x0c); /* 12ms for port1 */
-
-			rtw_write16(Adapter, REG_TSFTR_SYN_OFFSET, 0x7fff);/* +32767 (~32ms) */
-
-			/* reset TSF2	 */
-			rtw_write8(Adapter, REG_DUAL_TSF_RST, BIT(1));
-
-			/* enable BCN1 Function for if2 */
-			/* don't enable update TSF1 for if2 (due to TSF update when beacon/probe rsp are received) */
-			rtw_write8(Adapter, REG_BCN_CTRL_1, (DIS_TSF_UDT | EN_BCN_FUNCTION | EN_TXBCN_RPT | DIS_BCNQ_SUB));
-
-#ifdef CONFIG_CONCURRENT_MODE
-			if (!rtw_mi_buddy_check_mlmeinfo_state(Adapter, WIFI_FW_ASSOC_SUCCESS))
-				rtw_write8(Adapter, REG_BCN_CTRL,
-					rtw_read8(Adapter, REG_BCN_CTRL) & ~EN_BCN_FUNCTION);
-#endif
-			/* BCN1 TSF will sync to BCN0 TSF with offset(0x518) if if1_sta linked */
-			/* rtw_write8(Adapter, REG_BCN_CTRL_1, rtw_read8(Adapter, REG_BCN_CTRL_1)|BIT(5)); */
-			/* rtw_write8(Adapter, REG_DUAL_TSF_RST, BIT(3)); */
-
-			/* dis BCN0 ATIM  WND if if1 is station */
-			rtw_write8(Adapter, REG_BCN_CTRL, rtw_read8(Adapter, REG_BCN_CTRL) | DIS_ATIM);
-
-#ifdef CONFIG_TSF_RESET_OFFLOAD
-			/* Reset TSF for STA+AP concurrent mode */
-			if (DEV_STA_LD_NUM(adapter_to_dvobj(Adapter))) {
-				if (rtw_hal_reset_tsf(Adapter, HW_PORT1) == _FAIL)
-					RTW_INFO("ERROR! %s()-%d: Reset port1 TSF fail\n",
-						 __FUNCTION__, __LINE__);
-			}
-#endif /* CONFIG_TSF_RESET_OFFLOAD */
-		}
-	} else /* else for port0 */
-#endif /* CONFIG_CONCURRENT_MODE */
 	{
 #ifdef CONFIG_MI_WITH_MBSSID_CAM /*For Port0 - MBSS CAM*/
 		hw_var_set_opmode_mbid(Adapter, mode);
@@ -3212,9 +3132,6 @@ static void hw_var_set_opmode(PADAPTER Adapter, u8 variable, u8 *val)
 		RTW_INFO("%s()-%d mode = %d\n", __FUNCTION__, __LINE__, mode);
 
 		if ((mode == _HW_STATE_STATION_) || (mode == _HW_STATE_NOLINK_)) {
-#ifdef CONFIG_CONCURRENT_MODE
-			if (!rtw_mi_get_ap_num(Adapter) && !rtw_mi_get_mesh_num(Adapter))
-#endif /* CONFIG_CONCURRENT_MODE */
 			{
 				StopTxBeacon(Adapter);
 			}
@@ -3254,12 +3171,6 @@ static void hw_var_set_opmode(PADAPTER Adapter, u8 variable, u8 *val)
 			/* enable BCN0 Function for if1 */
 			/* don't enable update TSF0 for if1 (due to TSF update when beacon/probe rsp are received) */
 			rtw_write8(Adapter, REG_BCN_CTRL, (DIS_TSF_UDT | EN_BCN_FUNCTION | EN_TXBCN_RPT | DIS_BCNQ_SUB));
-
-#ifdef CONFIG_CONCURRENT_MODE
-			if (!rtw_mi_buddy_check_mlmeinfo_state(Adapter, WIFI_FW_ASSOC_SUCCESS))
-				rtw_write8(Adapter, REG_BCN_CTRL_1,
-					rtw_read8(Adapter, REG_BCN_CTRL_1) & ~EN_BCN_FUNCTION);
-#endif
 
 			/* dis BCN1 ATIM  WND if if2 is station */
 			rtw_write8(Adapter, REG_BCN_CTRL_1, rtw_read8(Adapter, REG_BCN_CTRL_1) | DIS_ATIM);
@@ -3640,14 +3551,6 @@ u8 SetHwReg8814A(PADAPTER padapter, u8 variable, u8 *pval)
 	break;
 
 	case HW_VAR_BCN_VALID:
-#ifdef CONFIG_CONCURRENT_MODE
-		if (padapter->hw_port == HW_PORT1) {
-			/* BCN_VALID, BIT31 of REG_FIFOPAGE_CTRL_2_8814A, write 1 to clear, Clear by sw */
-			val8 = rtw_read8(padapter, REG_FIFOPAGE_CTRL_2_8814A + 3);
-			val8 |= BIT(7);
-			rtw_write8(padapter, REG_FIFOPAGE_CTRL_2_8814A + 3, val8);
-		} else
-#endif
 		{
 			/* BCN_VALID, BIT15 of REG_FIFOPAGE_CTRL_2_8814A, write 1 to clear, Clear by sw */
 			val8 = rtw_read8(padapter, REG_FIFOPAGE_CTRL_2_8814A + 1);
@@ -3658,14 +3561,6 @@ u8 SetHwReg8814A(PADAPTER padapter, u8 variable, u8 *pval)
 
 	case HW_VAR_DL_BCN_SEL:
 #if 0 /* for MBSSID, so far we don't need this */
-#ifdef CONFIG_CONCURRENT_MODE
-		if (IS_HARDWARE_TYPE_8821(padapter) && padapter->hw_port == HW_PORT1) {
-			/* SW_BCN_SEL - Port1 */
-			val8 = rtw_read8(padapter, REG_AUTO_LLT_8814A);
-			val8 |= BIT(2);
-			rtw_write8(padapter, REG_AUTO_LLT_8814A, val8);
-		} else
-#endif /* CONFIG_CONCURRENT_MODE */
 		{
 			/* SW_BCN_SEL - Port0 , BIT_r_EN_BCN_SW_HEAD_SEL */
 			val8 = rtw_read8(padapter, REG_AUTO_LLT_8814A);
@@ -3944,13 +3839,6 @@ void GetHwReg8814A(PADAPTER padapter, u8 variable, u8 *pval)
 		break;
 
 	case HW_VAR_BCN_VALID:
-#ifdef CONFIG_CONCURRENT_MODE
-		if (padapter->hw_port == HW_PORT1) {
-			/* BCN_VALID, BIT31 of REG_FIFOPAGE_CTRL_2_8814A, write 1 to clear */
-			val8 = rtw_read8(padapter, REG_FIFOPAGE_CTRL_2_8814A + 3);
-			*pval = (BIT(7) & val8) ? _TRUE : _FALSE;
-		} else
-#endif /* CONFIG_CONCURRENT_MODE */
 		{
 			/* BCN_VALID, BIT15 of REG_FIFOPAGE_CTRL_2_8814A, write 1 to clear */
 			val8 = rtw_read8(padapter, REG_FIFOPAGE_CTRL_2_8814A + 1);

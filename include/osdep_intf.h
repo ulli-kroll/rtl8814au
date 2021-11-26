@@ -112,14 +112,6 @@ int rtw_ips_pwr_up(_adapter *padapter);
 void rtw_ips_pwr_down(_adapter *padapter);
 #endif
 
-#ifdef CONFIG_CONCURRENT_MODE
-struct _io_ops;
-struct dvobj_priv;
-_adapter *rtw_drv_add_vir_if(_adapter *primary_padapter, void (*set_intf_ops)(_adapter *primary_padapter, struct _io_ops *pops));
-void rtw_drv_stop_vir_ifaces(struct dvobj_priv *dvobj);
-void rtw_drv_free_vir_ifaces(struct dvobj_priv *dvobj);
-#endif
-
 void rtw_ndev_destructor(_nic_hdl ndev);
 #ifdef CONFIG_ARP_KEEP_ALIVE
 int rtw_gw_addr_query(_adapter *padapter);

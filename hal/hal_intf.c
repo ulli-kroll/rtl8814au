@@ -898,12 +898,6 @@ void	rtw_hal_dm_watchdog(_adapter *padapter)
 #ifdef CONFIG_LPS_LCLK_WD_TIMER
 void	rtw_hal_dm_watchdog_in_lps(_adapter *padapter)
 {
-#if defined(CONFIG_CONCURRENT_MODE)
-#ifndef CONFIG_FW_MULTI_PORT_SUPPORT
-	if (padapter->hw_port != HW_PORT0)
-		return;
-#endif
-#endif
 
 	if (adapter_to_pwrctl(padapter)->bFwCurrentInPSMode == _TRUE)
 		rtw_phydm_watchdog_in_lps_lclk(padapter);/* this function caller is in interrupt context */

@@ -18,8 +18,7 @@
 #include "hal_ic_cfg.h"
 
 #define CONFIG_RSSI_PRIORITY
-
-#if defined(CONFIG_MCC_MODE) && (!defined(CONFIG_CONCURRENT_MODE))
+#if defined(CONFIG_MCC_MODE)
 
 	#error "Enable CONCURRENT_MODE before enable MCC MODE\n"
 
@@ -290,18 +289,12 @@
 #endif
 
 #ifndef CONFIG_IFACE_NUMBER
-	#ifdef CONFIG_CONCURRENT_MODE
-		#define CONFIG_IFACE_NUMBER	2
-	#else
 		#define CONFIG_IFACE_NUMBER	1
-	#endif
 #endif
 
-#ifndef CONFIG_CONCURRENT_MODE
 	#if (CONFIG_IFACE_NUMBER > 1)
 		#error "CONFIG_IFACE_NUMBER over 1,but CONFIG_CONCURRENT_MODE not defined"
 	#endif
-#endif
 
 #if (CONFIG_IFACE_NUMBER == 0)
 	#error "CONFIG_IFACE_NUMBER cound not be 0 !!"

@@ -1233,9 +1233,6 @@ void rtw_surveydone_event_callback(_adapter	*adapter, u8 *pbuf)
 
 	rtw_indicate_scan_done(adapter, _FALSE);
 
-#if defined(CONFIG_CONCURRENT_MODE) && defined(CONFIG_IOCTL_CFG80211)
-	rtw_cfg80211_indicate_scan_done_for_buddy(adapter, _FALSE);
-#endif
 
 }
 
@@ -1305,18 +1302,6 @@ u8 _rtw_sitesurvey_condition_check(const char *caller, _adapter *adapter, bool c
 		}
 	}
 
-#ifdef CONFIG_CONCURRENT_MODE
-	if (rtw_mi_buddy_check_fwstate(adapter, _FW_UNDER_LINKING | WIFI_UNDER_WPS)) {
-		RTW_INFO("%s ("ADPT_FMT") : scan abort!! buddy_intf under linking or wps\n", caller, ADPT_ARG(adapter));
-		ss_condition = SS_DENY_BUDDY_UNDER_LINK_WPS;
-		goto _exit;
-
-	} else if (rtw_mi_buddy_check_fwstate(adapter, _FW_UNDER_SURVEY)) {
-		RTW_INFO("%s ("ADPT_FMT") : scan abort!! buddy_intf under survey\n", caller, ADPT_ARG(adapter));
-		ss_condition = SS_DENY_BUDDY_UNDER_SURVEY;
-		goto _exit;
-	}
-#endif /* CONFIG_CONCURRENT_MODE */
 
 	if (pmlmepriv->LinkDetectInfo.bBusyTraffic == _TRUE) {
 		RTW_INFO("%s ("ADPT_FMT") : scan abort!! BusyTraffic\n",
@@ -2795,9 +2780,6 @@ void rtw_scan_timeout_handler(void *ctx)
 
 	rtw_indicate_scan_done(adapter, _TRUE);
 
-#if defined(CONFIG_CONCURRENT_MODE) && defined(CONFIG_IOCTL_CFG80211)
-	rtw_cfg80211_indicate_scan_done_for_buddy(adapter, _TRUE);
-#endif
 }
 
 void rtw_mlme_reset_auto_scan_int(_adapter *adapter, u8 *reason)
@@ -2875,12 +2857,6 @@ void rtw_drv_scan_by_self(_adapter *padapter, u8 reason)
 		goto exit;
 	}
 
-#ifdef CONFIG_CONCURRENT_MODE
-	if (rtw_mi_buddy_check_fwstate(padapter, (_FW_UNDER_SURVEY | _FW_UNDER_LINKING | WIFI_UNDER_WPS))) {
-		RTW_INFO(FUNC_ADPT_FMT", but buddy_intf is under scanning or linking or wps_phase\n", FUNC_ADPT_ARG(padapter));
-		goto exit;
-	}
-#endif
 #endif
 
 	RTW_INFO(FUNC_ADPT_FMT" reason:0x%02x\n", FUNC_ADPT_ARG(padapter), reason);

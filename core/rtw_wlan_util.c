@@ -1181,10 +1181,8 @@ s16 rtw_get_camid(_adapter *adapter, u8 *addr, s16 kid, u8 gk)
 
 	for (i = 0; i < cam_ctl->num; i++) {
 		/* bypass default key which is allocated statically */
-#ifndef CONFIG_CONCURRENT_MODE
 		if (((i + start_id) % cam_ctl->num) < 4)
 			continue;
-#endif
 		if (_rtw_sec_camid_is_used(cam_ctl, ((i + start_id) % cam_ctl->num)) == _FALSE)
 			break;
 	}
@@ -1221,7 +1219,6 @@ s16 rtw_camid_alloc(_adapter *adapter, struct sta_info *sta, u8 kid, u8 gk, bool
 		* 1. non-STA mode WEP key
 		* 2. group TX key
 		*/
-#ifndef CONFIG_CONCURRENT_MODE
 		/* static alloction to default key by key ID when concurrent is not defined */
 		if (kid > 3) {
 			RTW_PRINT(FUNC_ADPT_FMT" group key with invalid key id:%u\n"
@@ -1230,14 +1227,6 @@ s16 rtw_camid_alloc(_adapter *adapter, struct sta_info *sta, u8 kid, u8 gk, bool
 			goto bitmap_handle;
 		}
 		cam_id = kid;
-#else
-		u8 *addr = adapter_mac_addr(adapter);
-
-		cam_id = rtw_get_camid(adapter, addr, kid, gk);
-		if (1)
-			RTW_PRINT(FUNC_ADPT_FMT" group key with "MAC_FMT" assigned cam_id:%u\n"
-				, FUNC_ADPT_ARG(adapter), MAC_ARG(addr), cam_id);
-#endif
 	} else {
 		/*
 		* 1. STA mode WEP key
@@ -1310,10 +1299,6 @@ inline void rtw_sec_cam_swap(_adapter *adapter, u8 cam_id_a, u8 cam_id_b)
 
 	if (cam_id_a == cam_id_b)
 		return;
-
-#ifdef CONFIG_CONCURRENT_MODE
-	rtw_mi_update_ap_bmc_camid(adapter, cam_id_a, cam_id_b);
-#endif
 
 	/*setp-1. backup org cam_info*/
 	_enter_critical_bh(&cam_ctl->lock, &irqL);
@@ -1396,55 +1381,10 @@ void rtw_clean_hw_dk_cam(_adapter *adapter)
 
 void flush_all_cam_entry(_adapter *padapter)
 {
-#ifdef CONFIG_CONCURRENT_MODE
-	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
-	struct mlme_ext_info *pmlmeinfo = &(pmlmeext->mlmext_info);
-	struct mlme_priv *pmlmepriv = &(padapter->mlmepriv);
-
-	if (check_fwstate(pmlmepriv, WIFI_STATION_STATE)) {
-		struct sta_priv	*pstapriv = &padapter->stapriv;
-		struct sta_info		*psta;
-
-		psta = rtw_get_stainfo(pstapriv, pmlmeinfo->network.MacAddress);
-		if (psta) {
-			if (psta->state & WIFI_AP_STATE) {
-				/*clear cam when ap free per sta_info*/
-			} else
-				rtw_clearstakey_cmd(padapter, psta, _FALSE);
-		}
-	} else if (MLME_IS_AP(padapter) || MLME_IS_MESH(padapter)) {
-#if 1
-		int cam_id = -1;
-		u8 *addr = adapter_mac_addr(padapter);
-
-		while ((cam_id = rtw_camid_search(padapter, addr, -1, -1)) >= 0) {
-			RTW_PRINT("clear wep or group key for addr:"MAC_FMT", camid:%d\n", MAC_ARG(addr), cam_id);
-			clear_cam_entry(padapter, cam_id);
-			rtw_camid_free(padapter, cam_id);
-		}
-#else
-		/* clear default key */
-		int i, cam_id;
-		u8 null_addr[ETH_ALEN] = {0, 0, 0, 0, 0, 0};
-
-		for (i = 0; i < 4; i++) {
-			cam_id = rtw_camid_search(padapter, null_addr, i, -1);
-			if (cam_id >= 0) {
-				clear_cam_entry(padapter, cam_id);
-				rtw_camid_free(padapter, cam_id);
-			}
-		}
-		/* clear default key related key search setting */
-		rtw_hal_set_hwreg(padapter, HW_VAR_SEC_DK_CFG, (u8 *)_FALSE);
-#endif
-	}
-
-#else /*NON CONFIG_CONCURRENT_MODE*/
 
 	invalidate_cam_all(padapter);
 	/* clear default key related key search setting */
 	rtw_hal_set_hwreg(padapter, HW_VAR_SEC_DK_CFG, (u8 *)_FALSE);
-#endif
 }
 
 int WMM_param_handler(_adapter *padapter, PNDIS_802_11_VARIABLE_IEs	pIE)
@@ -3703,18 +3643,6 @@ inline u8 rtw_iface_bcmc_id_get(_adapter *padapter)
 
 	return macid_ctl->iface_bmc[padapter->iface_id];
 }
-#if defined(DBG_CONFIG_ERROR_RESET) && defined(CONFIG_CONCURRENT_MODE)
-void rtw_iface_bcmc_sec_cam_map_restore(_adapter *adapter)
-{
-	struct dvobj_priv *dvobj = adapter_to_dvobj(adapter);
-	struct cam_ctl_t *cam_ctl = dvobj_to_sec_camctl(dvobj);
-	int cam_id = -1;
-
-	cam_id = rtw_iface_bcmc_id_get(adapter);
-	if (cam_id != INVALID_SEC_MAC_CAM_ID)
-		rtw_sec_cam_map_set(&cam_ctl->used, cam_id);
-}
-#endif
 void rtw_alloc_macid(_adapter *padapter, struct sta_info *psta)
 {
 	int i;
@@ -3738,9 +3666,6 @@ void rtw_alloc_macid(_adapter *padapter, struct sta_info *psta)
 	}
 
 	if (is_bc_sta
-		#ifdef CONFIG_CONCURRENT_MODE
-		&& (MLME_IS_STA(padapter) || MLME_IS_NULL(padapter))
-		#endif
 	) {
 		/* STA mode have no BMC data TX, shared with this macid */
 		/* When non-concurrent, only one BMC data TX is used, shared with this macid */
@@ -3762,12 +3687,6 @@ void rtw_alloc_macid(_adapter *padapter, struct sta_info *psta)
 		}
 #endif /* CONFIG_MCC_MODE */
 
-		#ifdef CONFIG_CONCURRENT_MODE
-		/* for BMC data TX with force camid */
-		if (is_bc_sta && rtw_sec_camid_is_used(dvobj_to_sec_camctl(dvobj), i))
-			continue;
-		#endif
-
 		if (!rtw_macid_is_used(macid_ctl, i))
 			break;
 	}
@@ -3775,17 +3694,6 @@ void rtw_alloc_macid(_adapter *padapter, struct sta_info *psta)
 	if (i < macid_ctl->num) {
 
 		rtw_macid_map_set(used_map, i);
-
-		#ifdef CONFIG_CONCURRENT_MODE
-		/* for BMC data TX with force camid */
-		if (is_bc_sta) {
-			struct cam_ctl_t *cam_ctl = dvobj_to_sec_camctl(dvobj);
-
-			rtw_macid_map_set(&macid_ctl->bmc, i);
-			rtw_iface_bcmc_id_set(padapter, i);
-			rtw_sec_cam_map_set(&cam_ctl->used, i);
-		}
-		#endif
 
 		rtw_macid_map_set(&macid_ctl->if_g[padapter->iface_id], i);
 		macid_ctl->sta[i] = psta;

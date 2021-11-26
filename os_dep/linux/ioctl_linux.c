@@ -1662,25 +1662,6 @@ static int rtw_wx_set_wap(struct net_device *dev,
 	struct	wlan_network	*pnetwork = NULL;
 	NDIS_802_11_AUTHENTICATION_MODE	authmode;
 
-	/*
-	#ifdef CONFIG_CONCURRENT_MODE
-		if(padapter->adapter_type > PRIMARY_IFACE)
-		{
-			ret = -EINVAL;
-			goto exit;
-		}
-	#endif
-	*/
-
-#ifdef CONFIG_CONCURRENT_MODE
-	if (rtw_mi_buddy_check_fwstate(padapter, _FW_UNDER_SURVEY | _FW_UNDER_LINKING) == _TRUE) {
-		RTW_INFO("set bssid, but buddy_intf is under scanning or linking\n");
-
-		ret = -EINVAL;
-
-		goto exit;
-	}
-#endif
 
 	rtw_ps_deny(padapter, PS_DENY_JOIN);
 	if (_FAIL == rtw_pwr_wakeup(padapter)) {
@@ -1754,9 +1735,6 @@ static int rtw_wx_set_wap(struct net_device *dev,
 cancel_ps_deny:
 	rtw_ps_deny_cancel(padapter, PS_DENY_JOIN);
 
-#ifdef CONFIG_CONCURRENT_MODE
-exit:
-#endif
 	return ret;
 }
 
@@ -1922,14 +1900,6 @@ static int rtw_wx_set_scan(struct net_device *dev, struct iw_request_info *a,
 		goto cancel_ps_deny;
 	}
 
-#ifdef CONFIG_CONCURRENT_MODE
-	if (rtw_mi_buddy_check_fwstate(padapter,
-		       _FW_UNDER_SURVEY | _FW_UNDER_LINKING | WIFI_UNDER_WPS)) {
-
-		indicate_wx_scan_complete_event(padapter);
-		goto cancel_ps_deny;
-	}
-#endif
 #endif
 
 
@@ -2223,13 +2193,6 @@ static int rtw_wx_set_essid(struct net_device *dev,
 		goto cancel_ps_deny;
 	}
 
-#ifdef CONFIG_CONCURRENT_MODE
-	if (rtw_mi_buddy_check_fwstate(padapter, _FW_UNDER_SURVEY | _FW_UNDER_LINKING)) {
-		RTW_INFO("set ssid, but buddy_intf is under scanning or linking\n");
-		ret = -EINVAL;
-		goto cancel_ps_deny;
-	}
-#endif
 	authmode = padapter->securitypriv.ndisauthtype;
 	RTW_INFO("=>%s\n", __FUNCTION__);
 	if (wrqu->essid.flags && wrqu->essid.length) {
@@ -3534,11 +3497,6 @@ static int rtw_rereg_nd_name(struct net_device *dev,
 
 	if (rereg_priv->old_ifname[0] == 0) {
 		char *reg_ifname;
-#ifdef CONFIG_CONCURRENT_MODE
-		if (padapter->isprimary)
-			reg_ifname = padapter->registrypriv.ifname;
-		else
-#endif
 			reg_ifname = padapter->registrypriv.if2name;
 
 		strncpy(rereg_priv->old_ifname, reg_ifname, IFNAMSIZ);

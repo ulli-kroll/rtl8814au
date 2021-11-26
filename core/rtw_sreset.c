@@ -296,9 +296,6 @@ void sreset_reset(_adapter *padapter)
 	_ips_enter(padapter);
 	_ips_leave(padapter);
 #endif
-#ifdef CONFIG_CONCURRENT_MODE
-	rtw_mi_ap_info_restore(padapter);
-#endif
 	rtw_mi_sreset_adapter_hdl(padapter, _TRUE);/*sreset_start_adapter*/
 
 	psrtpriv->silent_reset_inprogress = _FALSE;

@@ -155,9 +155,6 @@ struct security_priv {
 	unsigned int wpa2_pairwise_cipher;
 	u8 mfp_opt;
 #endif
-#ifdef CONFIG_CONCURRENT_MODE
-	u8	dot118021x_bmc_cam_id;
-#endif
 	/*IEEE802.11-2012 Std. Table 8-101 AKM Suite Selectors*/
 	u32	rsn_akm_suite_type;
 

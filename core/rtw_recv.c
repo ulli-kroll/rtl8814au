@@ -265,13 +265,6 @@ int rtw_free_recvframe(union recv_frame *precvframe, _queue *pfree_recv_queue)
 	struct recv_priv *precvpriv = &padapter->recvpriv;
 
 
-#ifdef CONFIG_CONCURRENT_MODE
-	padapter = GET_PRIMARY_ADAPTER(padapter);
-	precvpriv = &padapter->recvpriv;
-	pfree_recv_queue = &precvpriv->free_recv_queue;
-	precvframe->u.hdr.adapter = padapter;
-#endif
-
 
 	rtw_os_free_recvframe(precvframe);
 
@@ -587,9 +580,6 @@ union recv_frame *decryptor(_adapter *padapter, union recv_frame *precv_frame)
 
 	if (prxattrib->encrypt && !prxattrib->bdecrypted) {
 		if (GetFrameType(get_recvframe_data(precv_frame)) == WIFI_DATA
-			#ifdef CONFIG_CONCURRENT_MODE
-			&& !IS_MCAST(prxattrib->ra) /* bc/mc packets may use sw decryption for concurrent mode */
-			#endif
 		)
 			psecuritypriv->hw_decrypted = _FALSE;
 
@@ -3643,10 +3633,6 @@ static void rtw_signal_stat_timer_hdl(void *ctx)
 		   )
 			goto set_timer;
 
-#ifdef CONFIG_CONCURRENT_MODE
-		if (rtw_mi_buddy_check_fwstate(adapter, _FW_UNDER_SURVEY) == _TRUE)
-			goto set_timer;
-#endif
 
 		if (RTW_SIGNAL_STATE_CALC_PROFILE < SIGNAL_STAT_CALC_PROFILE_MAX)
 			ratio_profile = RTW_SIGNAL_STATE_CALC_PROFILE;
@@ -3977,25 +3963,6 @@ s32 pre_recv_entry(union recv_frame *precvframe, u8 *pphy_status)
 	u8 *pda = get_ra(pbuf);
 	u8 ra_is_bmc = IS_MCAST(pda);
 	_adapter *primary_padapter = precvframe->u.hdr.adapter;
-#ifdef CONFIG_CONCURRENT_MODE
-	_adapter *iface = NULL;
-
-
-	if (ra_is_bmc == _FALSE) { /*unicast packets*/
-		iface = rtw_get_iface_by_macddr(primary_padapter , pda);
-		if (NULL == iface) {
-		#ifdef CONFIG_RTW_CFGVENDOR_RANDOM_MAC_OUI
-			if (_rtw_memcmp(pda, adapter_pno_mac_addr(primary_padapter),
-					ETH_ALEN) != _TRUE)
-		#endif
-			RTW_INFO("%s [WARN] Cannot find appropriate adapter - mac_addr : "MAC_FMT"\n", __func__, MAC_ARG(pda));
-			/*rtw_warn_on(1);*/
-		} else
-			precvframe->u.hdr.adapter = iface;
-	} else   /* Handle BC/MC Packets	*/
-		rtw_mi_buddy_clone_bcmc_packet(primary_padapter, precvframe, pphy_status);
-bypass_concurrent_hdl:
-#endif /* CONFIG_CONCURRENT_MODE */
 	if (primary_padapter->registrypriv.mp_mode != 1) {
 		/* skip unnecessary bmc data frame for primary adapter */
 		if (ra_is_bmc == _TRUE && GetFrameType(pbuf) == WIFI_DATA_TYPE

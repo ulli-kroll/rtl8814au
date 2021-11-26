@@ -1776,11 +1776,6 @@ void rtw_init_pwrctrl_priv(PADAPTER padapter)
 
 	struct pwrctrl_priv *pwrctrlpriv = adapter_to_pwrctl(padapter);
 
-#if defined(CONFIG_CONCURRENT_MODE)
-	if (!is_primary_adapter(padapter))
-		return;
-#endif
-
 	_init_pwrlock(&pwrctrlpriv->lock);
 	_init_pwrlock(&pwrctrlpriv->check_32k_lock);
 	pwrctrlpriv->rf_pwrstate = rf_on;
@@ -1895,10 +1890,6 @@ void rtw_free_pwrctrl_priv(PADAPTER adapter)
 {
 	struct pwrctrl_priv *pwrctrlpriv = adapter_to_pwrctl(adapter);
 
-#if defined(CONFIG_CONCURRENT_MODE)
-	if (!is_primary_adapter(adapter))
-		return;
-#endif
 
 
 	/* _rtw_memset((unsigned char *)pwrctrlpriv, 0, sizeof(struct pwrctrl_priv)); */

@@ -343,17 +343,6 @@ void rtl8814a_fill_fake_txdesc(
 #endif
 }
 
-#if defined(CONFIG_CONCURRENT_MODE)
-void fill_txdesc_force_bmc_camid(struct pkt_attrib *pattrib, u8 *ptxdesc)
-{
-	if ((pattrib->encrypt > 0) && (!pattrib->bswenc)
-	    && (pattrib->bmc_camid != INVALID_SEC_MAC_CAM_ID)) {
-
-		SET_TX_DESC_EN_DESC_ID_8814A(ptxdesc, 1);
-		SET_TX_DESC_MACID_8814A(ptxdesc, pattrib->bmc_camid);
-	}
-}
-#endif
 void fill_txdesc_bmc_tx_rate(struct pkt_attrib *pattrib, u8 *ptxdesc)
 {
 	SET_TX_DESC_USE_RATE_8814A(ptxdesc, 1);

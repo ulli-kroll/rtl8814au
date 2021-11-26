@@ -166,10 +166,6 @@ struct rtw_wdev_priv {
 
 	_mutex roch_mutex;
 
-#ifdef CONFIG_CONCURRENT_MODE
-	ATOMIC_T switch_ch_to;
-#endif
-
 #ifdef CONFIG_RTW_CFGVENDOR_RANDOM_MAC_OUI
 	u8 pno_mac_addr[ETH_ALEN];
 	u16 pno_scan_seq_num;
@@ -285,11 +281,6 @@ void rtw_cfg80211_indicate_connect(_adapter *padapter);
 void rtw_cfg80211_indicate_disconnect(_adapter *padapter, u16 reason, u8 locally_generated);
 void rtw_cfg80211_indicate_scan_done(_adapter *adapter, bool aborted);
 u32 rtw_cfg80211_wait_scan_req_empty(_adapter *adapter, u32 timeout_ms);
-
-#ifdef CONFIG_CONCURRENT_MODE
-u8 rtw_cfg80211_scan_via_buddy(_adapter *padapter, struct cfg80211_scan_request *request);
-void rtw_cfg80211_indicate_scan_done_for_buddy(_adapter *padapter, bool bscan_aborted);
-#endif
 
 #ifdef CONFIG_AP_MODE
 void rtw_cfg80211_indicate_sta_assoc(_adapter *padapter, u8 *pmgmt_frame, uint frame_len);

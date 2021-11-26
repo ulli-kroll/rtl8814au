@@ -337,9 +337,6 @@ struct registry_priv {
 	u8  check_fw_ps;
 	u8	RegPwrTrimEnable;
 
-#ifdef CONFIG_CONCURRENT_MODE
-	u8 virtual_iface_num;
-#endif
 	u8 qos_opt_enable;
 
 	u8 hiq_filter;
@@ -481,13 +478,8 @@ typedef struct rtw_if_operations {
 
 #define get_hw_port(adapter) (adapter->hw_port)
 
-#ifdef CONFIG_CONCURRENT_MODE
-	#define is_primary_adapter(adapter) (adapter->adapter_type == PRIMARY_ADAPTER)
-	#define is_vir_adapter(adapter) (adapter->adapter_type == VIRTUAL_ADAPTER)
-#else
 	#define is_primary_adapter(adapter) (1)
 	#define is_vir_adapter(adapter) (0)
-#endif
 #define GET_PRIMARY_ADAPTER(padapter) (((_adapter *)padapter)->dvobj->padapters[IFACE_ID0])
 #define GET_IFACE_NUMS(padapter) (((_adapter *)padapter)->dvobj->iface_nums)
 #define GET_ADAPTER(padapter, iface_id) (((_adapter *)padapter)->dvobj->padapters[iface_id])

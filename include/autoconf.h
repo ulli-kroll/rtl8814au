@@ -90,18 +90,6 @@
 	#endif
 #endif /*CONFIG_POWER_SAVING*/
 
-
-
-	/* #define CONFIG_CONCURRENT_MODE 1 */
-	#ifdef CONFIG_CONCURRENT_MODE
-		#define CONFIG_RUNTIME_PORT_SWITCH
-		/* #define DBG_RUNTIME_PORT_SWITCH */
-
-		/* #ifdef CONFIG_RTL8812A */
-		/*	#define CONFIG_TSF_RESET_OFFLOAD 1 */		/* For 2 PORT TSF SYNC. */
-		/* #endif */
-	#endif
-
 #define CONFIG_AP_MODE	1
 #ifdef CONFIG_AP_MODE
 	#define CONFIG_NATIVEAP_MLME

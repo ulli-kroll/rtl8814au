@@ -2299,97 +2299,6 @@ static int rtw_cfg80211_set_probe_req_wpsp2pie(_adapter *padapter, char *buf, in
 
 }
 
-#ifdef CONFIG_CONCURRENT_MODE
-u8 rtw_cfg80211_scan_via_buddy(_adapter *padapter, struct cfg80211_scan_request *request)
-{
-	int i;
-	u8 ret = _FALSE;
-	_adapter *iface = NULL;
-	_irqL	irqL;
-	struct dvobj_priv *dvobj = adapter_to_dvobj(padapter);
-	struct rtw_wdev_priv *pwdev_priv = adapter_wdev_data(padapter);
-	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
-
-	for (i = 0; i < dvobj->iface_nums; i++) {
-		struct mlme_priv *buddy_mlmepriv;
-		struct rtw_wdev_priv *buddy_wdev_priv;
-
-		iface = dvobj->padapters[i];
-		if (iface == NULL)
-			continue;
-
-		if (iface == padapter)
-			continue;
-
-		if (rtw_is_adapter_up(iface) == _FALSE)
-			continue;
-
-		buddy_mlmepriv = &iface->mlmepriv;
-		if (!check_fwstate(buddy_mlmepriv, _FW_UNDER_SURVEY))
-			continue;
-
-		buddy_wdev_priv = adapter_wdev_data(iface);
-		_enter_critical_bh(&pwdev_priv->scan_req_lock, &irqL);
-		_enter_critical_bh(&buddy_wdev_priv->scan_req_lock, &irqL);
-		if (buddy_wdev_priv->scan_request) {
-			pmlmepriv->scanning_via_buddy_intf = _TRUE;
-			_enter_critical_bh(&pmlmepriv->lock, &irqL);
-			set_fwstate(pmlmepriv, _FW_UNDER_SURVEY);
-			_exit_critical_bh(&pmlmepriv->lock, &irqL);
-			pwdev_priv->scan_request = request;
-			ret = _TRUE;
-		}
-		_exit_critical_bh(&buddy_wdev_priv->scan_req_lock, &irqL);
-		_exit_critical_bh(&pwdev_priv->scan_req_lock, &irqL);
-
-		if (ret == _TRUE)
-			goto exit;
-	}
-
-exit:
-	return ret;
-}
-
-void rtw_cfg80211_indicate_scan_done_for_buddy(_adapter *padapter, bool bscan_aborted)
-{
-	int i;
-	_adapter *iface = NULL;
-	_irqL	irqL;
-	struct dvobj_priv *dvobj = adapter_to_dvobj(padapter);
-	struct mlme_priv *mlmepriv;
-	struct rtw_wdev_priv *wdev_priv;
-	bool indicate_buddy_scan;
-
-	for (i = 0; i < dvobj->iface_nums; i++) {
-		iface = dvobj->padapters[i];
-		if ((iface) && rtw_is_adapter_up(iface)) {
-
-			if (iface == padapter)
-				continue;
-
-			mlmepriv = &(iface->mlmepriv);
-			wdev_priv = adapter_wdev_data(iface);
-
-			indicate_buddy_scan = _FALSE;
-			_enter_critical_bh(&wdev_priv->scan_req_lock, &irqL);
-			if (mlmepriv->scanning_via_buddy_intf == _TRUE) {
-				mlmepriv->scanning_via_buddy_intf = _FALSE;
-				clr_fwstate(mlmepriv, _FW_UNDER_SURVEY);
-				if (wdev_priv->scan_request)
-					indicate_buddy_scan = _TRUE;
-			}
-			_exit_critical_bh(&wdev_priv->scan_req_lock, &irqL);
-
-			if (indicate_buddy_scan == _TRUE) {
-				rtw_cfg80211_surveydone_event_callback(iface);
-				rtw_indicate_scan_done(iface, bscan_aborted);
-			}
-
-		}
-	}
-}
-#endif /* CONFIG_CONCURRENT_MODE */
-
 static int cfg80211_rtw_scan(struct wiphy *wiphy
 	#if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 6, 0))
 	, struct net_device *ndev
@@ -2473,9 +2382,6 @@ bypass_p2p_chk:
 		case SS_DENY_SELF_AP_UNDER_LINKING :
 		case SS_DENY_SELF_AP_UNDER_SURVEY :
 		case SS_DENY_SELF_STA_UNDER_SURVEY :
-		#ifdef CONFIG_CONCURRENT_MODE
-		case SS_DENY_BUDDY_UNDER_LINK_WPS :
-		#endif
 		case SS_DENY_BUSY_TRAFFIC :
 			need_indicate_scan_done = _TRUE;
 			goto check_need_indicate_scan_done;
@@ -2493,18 +2399,6 @@ bypass_p2p_chk:
 		case SS_DENY_SELF_STA_UNDER_LINKING :
 			ret = -EBUSY;
 			goto check_need_indicate_scan_done;
-
-		#ifdef CONFIG_CONCURRENT_MODE
-		case SS_DENY_BUDDY_UNDER_SURVEY :
-			{
-				bool scan_via_buddy = rtw_cfg80211_scan_via_buddy(padapter, request);
-
-				if (scan_via_buddy == _FALSE)
-					need_indicate_scan_done = _TRUE;
-
-				goto check_need_indicate_scan_done;
-			}
-		#endif
 
 		default :
 			RTW_ERR("site survey check code (%d) unknown\n", ssc_chk);
@@ -2577,22 +2471,6 @@ bypass_p2p_chk:
 		ret = -EBUSY;
 		goto check_need_indicate_scan_done;
 	}
-
-#ifdef CONFIG_CONCURRENT_MODE
-	if (rtw_mi_buddy_check_fwstate(padapter, _FW_UNDER_LINKING | WIFI_UNDER_WPS)) {
-		RTW_INFO("%s exit due to buddy_intf's mlme state under linking or wps\n", __func__);
-		need_indicate_scan_done = _TRUE;
-		goto check_need_indicate_scan_done;
-
-	} else if (rtw_mi_buddy_check_fwstate(padapter, _FW_UNDER_SURVEY)) {
-		bool scan_via_buddy = rtw_cfg80211_scan_via_buddy(padapter, request);
-
-		if (scan_via_buddy == _FALSE)
-			need_indicate_scan_done = _TRUE;
-
-		goto check_need_indicate_scan_done;
-	}
-#endif /* CONFIG_CONCURRENT_MODE */
 
 	/* busy traffic check*/
 	if (rtw_mi_busy_traffic_check(padapter, _TRUE)) {
@@ -3072,16 +2950,6 @@ static int cfg80211_rtw_join_ibss(struct wiphy *wiphy, struct net_device *ndev,
 		goto cancel_ps_deny;
 	}
 
-#ifdef CONFIG_CONCURRENT_MODE
-	if (rtw_mi_buddy_check_fwstate(padapter, _FW_UNDER_LINKING)) {
-		RTW_INFO("%s, but buddy_intf is under linking\n", __FUNCTION__);
-		ret = -EINVAL;
-		goto cancel_ps_deny;
-	}
-	rtw_mi_buddy_scan_abort(padapter, _TRUE); /* OR rtw_mi_scan_abort(padapter, _TRUE);*/
-#endif /*CONFIG_CONCURRENT_MODE*/
-
-
 	_rtw_memset(&ndis_ssid, 0, sizeof(NDIS_802_11_SSID));
 	ndis_ssid.SsidLength = params->ssid_len;
 	_rtw_memcpy(ndis_ssid.Ssid, (u8 *)params->ssid, params->ssid_len);
@@ -3298,12 +3166,6 @@ static int cfg80211_rtw_connect(struct wiphy *wiphy, struct net_device *ndev,
 	rtw_mi_scan_abort(padapter, _TRUE);
 
 	rtw_join_abort_timeout(padapter, 300);
-#ifdef CONFIG_CONCURRENT_MODE
-	if (rtw_mi_buddy_check_fwstate(padapter, _FW_UNDER_LINKING)) {
-		ret = -EINVAL;
-		goto cancel_ps_deny;
-	}
-#endif
 
 	_rtw_memset(&ndis_ssid, 0, sizeof(NDIS_802_11_SSID));
 	ndis_ssid.SsidLength = sme->ssid_len;
@@ -6219,11 +6081,6 @@ static void rtw_cfg80211_init_vht_capab(_adapter *padapter
 
 void rtw_cfg80211_init_wdev_data(_adapter *padapter)
 {
-#ifdef CONFIG_CONCURRENT_MODE
-	struct rtw_wdev_priv *pwdev_priv = adapter_wdev_data(padapter);
-
-	ATOMIC_SET(&pwdev_priv->switch_ch_to, 1);
-#endif
 }
 
 void rtw_cfg80211_init_wiphy(_adapter *padapter)
@@ -6858,10 +6715,6 @@ int rtw_wdev_alloc(_adapter *padapter, struct wiphy *wiphy)
 		pwdev_priv->power_mgmt = _FALSE;
 
 	_rtw_mutex_init(&pwdev_priv->roch_mutex);
-
-#ifdef CONFIG_CONCURRENT_MODE
-	ATOMIC_SET(&pwdev_priv->switch_ch_to, 1);
-#endif
 
 #ifdef CONFIG_RTW_CFGVEDNOR_RSSIMONITOR
         pwdev_priv->rssi_monitor_enable = 0;

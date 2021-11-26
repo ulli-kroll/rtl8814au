@@ -3925,9 +3925,6 @@ void start_ap_mode(_adapter *padapter)
 	struct sta_priv *pstapriv = &padapter->stapriv;
 	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
 	struct mlme_ext_info	*pmlmeinfo = &(pmlmeext->mlmext_info);
-#ifdef CONFIG_CONCURRENT_MODE
-	struct security_priv *psecuritypriv = &padapter->securitypriv;
-#endif
 
 	pmlmepriv->update_bcn = _FALSE;
 
@@ -3964,10 +3961,6 @@ void start_ap_mode(_adapter *padapter)
 	_rtw_memset(pmlmepriv->ext_capab_ie_data, 0, sizeof(pmlmepriv->ext_capab_ie_data));
 	pmlmepriv->ext_capab_ie_len = 0;
 
-#ifdef CONFIG_CONCURRENT_MODE
-	psecuritypriv->dot118021x_bmc_cam_id = INVALID_SEC_MAC_CAM_ID;
-#endif
-
 	for (i = 0 ;  i < pstapriv->max_aid; i++)
 		pstapriv->sta_aid[i] = NULL;
 
@@ -3986,21 +3979,7 @@ void start_ap_mode(_adapter *padapter)
 
 void rtw_ap_bcmc_sta_flush(_adapter *padapter)
 {
-#ifdef CONFIG_CONCURRENT_MODE
-	int cam_id = -1;
-	u8 *addr = adapter_mac_addr(padapter);
-
-	cam_id = rtw_iface_bcmc_id_get(padapter);
-	if (cam_id != INVALID_SEC_MAC_CAM_ID) {
-		RTW_PRINT("clear group key for "ADPT_FMT" addr:"MAC_FMT", camid:%d\n",
-			ADPT_ARG(padapter), MAC_ARG(addr), cam_id);
-		clear_cam_entry(padapter, cam_id);
-		rtw_camid_free(padapter, cam_id);
-		rtw_iface_bcmc_id_set(padapter, INVALID_SEC_MAC_CAM_ID);	/*init default value*/
-	}
-#else
 	invalidate_cam_all(padapter);
-#endif
 }
 
 void stop_ap_mode(_adapter *padapter)

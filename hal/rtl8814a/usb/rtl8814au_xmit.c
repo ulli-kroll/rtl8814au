@@ -122,10 +122,6 @@ static s32 update_txdesc(struct xmit_frame *pxmitframe, u8 *pmem, s32 sz , u8 ba
 		/* RTW_INFO("pxmitframe->frame_tag == DATA_FRAMETAG\n");		 */
 
 		rtl8814a_fill_txdesc_sectype(pattrib, ptxdesc);
-#if defined(CONFIG_CONCURRENT_MODE)
-		if (bmcst)
-			fill_txdesc_force_bmc_camid(pattrib, ptxdesc);
-#endif
 
 		/* offset 20 */
 #ifdef CONFIG_USB_TX_AGGREGATION

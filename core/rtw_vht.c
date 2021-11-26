@@ -279,18 +279,6 @@ void	rtw_vht_use_default_setting(_adapter *padapter)
 		rtw_hal_get_def_var(padapter, HAL_DEF_VHT_MU_BEAMFORMER, &mu_bfer);
 		rtw_hal_get_def_var(padapter, HAL_DEF_VHT_MU_BEAMFORMEE, &mu_bfee);
 		if (TEST_FLAG(pregistrypriv->beamform_cap, BIT0) && bHwSupportBeamformer) {
-#ifdef CONFIG_CONCURRENT_MODE
-			if ((pmlmeinfo->state & 0x03) == WIFI_FW_AP_STATE) {
-				SET_FLAG(pvhtpriv->beamform_cap, BEAMFORMING_VHT_BEAMFORMER_ENABLE);
-				RTW_INFO("[VHT] CONCURRENT AP Support Beamformer\n");
-				if (TEST_FLAG(pregistrypriv->beamform_cap, BIT(2))
-				    && (_TRUE == mu_bfer)) {
-					SET_FLAG(pvhtpriv->beamform_cap, BEAMFORMING_VHT_MU_MIMO_AP_ENABLE);
-					RTW_INFO("[VHT] Support MU-MIMO AP\n");
-				}
-			} else
-				RTW_INFO("[VHT] CONCURRENT not AP ;not allow  Support Beamformer\n");
-#else
 			SET_FLAG(pvhtpriv->beamform_cap, BEAMFORMING_VHT_BEAMFORMER_ENABLE);
 			RTW_INFO("[VHT] Support Beamformer\n");
 			if (TEST_FLAG(pregistrypriv->beamform_cap, BIT(2))
@@ -299,7 +287,6 @@ void	rtw_vht_use_default_setting(_adapter *padapter)
 				SET_FLAG(pvhtpriv->beamform_cap, BEAMFORMING_VHT_MU_MIMO_AP_ENABLE);
 				RTW_INFO("[VHT] Support MU-MIMO AP\n");
 			}
-#endif
 		}
 		if (TEST_FLAG(pregistrypriv->beamform_cap, BIT1) && bHwSupportBeamformee) {
 			SET_FLAG(pvhtpriv->beamform_cap, BEAMFORMING_VHT_BEAMFORMEE_ENABLE);
