@@ -493,9 +493,7 @@ static inline int rtw_merge_string(char *dst, int dst_len, const char *src1, con
 
 
 /* Suspend lock prevent system from going suspend */
-#ifdef CONFIG_WAKELOCK
-	#include <linux/wakelock.h>
-#elif defined(CONFIG_ANDROID_POWER)
+#if defined(CONFIG_ANDROID_POWER)
 	#include <linux/android_power.h>
 #endif
 
