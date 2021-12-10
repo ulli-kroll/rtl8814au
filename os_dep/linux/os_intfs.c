@@ -3849,9 +3849,6 @@ int rtw_resume_process_normal(_adapter *padapter)
 
 	rtw_mi_resume_process_normal(padapter);
 
-#ifdef CONFIG_RESUME_IN_WORKQUEUE
-	/* rtw_unlock_suspend(); */
-#endif /* CONFIG_RESUME_IN_WORKQUEUE */
 	RTW_INFO("<== "FUNC_ADPT_FMT" exit....\n", FUNC_ADPT_ARG(padapter));
 
 exit:
