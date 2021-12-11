@@ -258,17 +258,7 @@
 	#define CONFIG_RTW_PLL_REF_CLK_SEL 0x0F
 #endif
 
-#ifndef CONFIG_IFACE_NUMBER
 		#define CONFIG_IFACE_NUMBER	1
-#endif
-
-	#if (CONFIG_IFACE_NUMBER > 1)
-		#error "CONFIG_IFACE_NUMBER over 1,but CONFIG_CONCURRENT_MODE not defined"
-	#endif
-
-#if (CONFIG_IFACE_NUMBER == 0)
-	#error "CONFIG_IFACE_NUMBER cound not be 0 !!"
-#endif
 
 #if defined(CONFIG_RTL8812A) || defined(CONFIG_RTL8821A)
 #define CONFIG_HWMPCAP_GEN1
@@ -289,48 +279,6 @@
 #if defined(CONFIG_HWMPCAP_GEN1) && (CONFIG_IFACE_NUMBER > 3)
         #error " This IC can't support over 3 interfaces !!"
 #endif
-
-#if (CONFIG_IFACE_NUMBER > 4)
-	#error "Not support over 4 interfaces yet !!"
-#endif
-
-#if (CONFIG_IFACE_NUMBER > 8)	/*IFACE_ID_MAX*/
-	#error "HW count not support over 8 interfaces !!"
-#endif
-
-#if (CONFIG_IFACE_NUMBER > 2)
-	#define CONFIG_MI_WITH_MBSSID_CAM
-
-	#ifdef CONFIG_MI_WITH_MBSSID_CAM
-		#define CONFIG_MBSSID_CAM
-		#if defined(CONFIG_RUNTIME_PORT_SWITCH)
-			#undef CONFIG_RUNTIME_PORT_SWITCH
-		#endif
-	#endif
-
-	#ifdef CONFIG_AP_MODE
-		#define CONFIG_SUPPORT_MULTI_BCN
-
-		#define CONFIG_SWTIMER_BASED_TXBCN
-
-		#ifdef CONFIG_HWMPCAP_GEN2 /*CONFIG_RTL8822B/CONFIG_RTL8821C/CONFIG_RTL8822C*/
-		#define CONFIG_FW_HANDLE_TXBCN
-
-		#ifdef CONFIG_FW_HANDLE_TXBCN
-			#ifdef CONFIG_SWTIMER_BASED_TXBCN
-				#undef CONFIG_SWTIMER_BASED_TXBCN
-			#endif
-
-			#define CONFIG_LIMITED_AP_NUM	4
-		#endif
-	#endif /*CONFIG_HWMPCAP_GEN2*/
-	#endif /*CONFIG_AP_MODE*/
-
-	#ifdef CONFIG_HWMPCAP_GEN2 /*CONFIG_RTL8822B/CONFIG_RTL8821C/CONFIG_RTL8822C*/
-	#define CONFIG_CLIENT_PORT_CFG
-	#define CONFIG_NEW_NETDEV_HDL
-	#endif/*CONFIG_HWMPCAP_GEN2*/
-#endif/*(CONFIG_IFACE_NUMBER > 2)*/
 
 #define MACID_NUM_SW_LIMIT 32
 #define SEC_CAM_ENT_NUM_SW_LIMIT 32
