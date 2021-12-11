@@ -141,9 +141,6 @@ void rtw_mi_buddy_intf_start(_adapter *adapter);
 void rtw_mi_intf_stop(_adapter *adapter);
 void rtw_mi_buddy_intf_stop(_adapter *adapter);
 
-#ifdef CONFIG_NEW_NETDEV_HDL
-u8 rtw_mi_hal_iface_init(_adapter *padapter);
-#endif
 void rtw_mi_suspend_free_assoc_resource(_adapter *adapter);
 void rtw_mi_buddy_suspend_free_assoc_resource(_adapter *adapter);
 

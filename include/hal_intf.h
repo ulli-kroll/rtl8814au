@@ -645,9 +645,6 @@ u32 rtw_hal_power_on(_adapter *padapter);
 void rtw_hal_power_off(_adapter *padapter);
 
 uint rtw_hal_init(_adapter *padapter);
-#ifdef CONFIG_NEW_NETDEV_HDL
-uint rtw_hal_iface_init(_adapter *adapter);
-#endif
 
 enum rf_type rtw_chip_rftype_to_rfpath(_adapter *adapter);
 void dump_hal_runtime_trx_mode(void *sel, _adapter *adapter);

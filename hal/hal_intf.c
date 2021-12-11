@@ -480,59 +480,6 @@ void rtw_hal_init_opmode(_adapter *padapter)
 	rtw_setopmode_cmd(padapter, networkType, RTW_CMDF_DIRECTLY);
 }
 
-#ifdef CONFIG_NEW_NETDEV_HDL
-uint rtw_hal_iface_init(_adapter *adapter)
-{
-	uint status = _SUCCESS;
-
-	rtw_hal_set_hwreg(adapter, HW_VAR_MAC_ADDR, adapter_mac_addr(adapter));
-	#ifdef RTW_HALMAC
-	rtw_hal_hw_port_enable(adapter);
-	#endif
-	rtw_sec_restore_wep_key(adapter);
-	rtw_hal_init_opmode(adapter);
-	rtw_hal_start_thread(adapter);
-	return status;
-}
-uint rtw_hal_init(_adapter *padapter)
-{
-	uint status = _SUCCESS;
-
-	halrf_set_rfsupportability(adapter_to_phydm(padapter));
-
-	status = padapter->hal_func.hal_init(padapter);
-
-	if (status == _SUCCESS) {
-		rtw_set_hw_init_completed(padapter, _TRUE);
-		if (padapter->registrypriv.notch_filter == 1)
-			rtw_hal_notch_filter(padapter, 1);
-		rtw_led_control(padapter, LED_CTL_POWER_ON);
-		init_hw_mlme_ext(padapter);
-		#ifdef CONFIG_RF_POWER_TRIM
-		rtw_bb_rf_gain_offset(padapter);
-		#endif /*CONFIG_RF_POWER_TRIM*/
-		GET_PRIMARY_ADAPTER(padapter)->bup = _TRUE; /*temporary*/
-		#ifdef CONFIG_MI_WITH_MBSSID_CAM
-		rtw_mi_set_mbid_cam(padapter);
-		#endif
-		#ifdef CONFIG_SUPPORT_MULTI_BCN
-		rtw_ap_multi_bcn_cfg(padapter);
-		#endif
-		#if (RTL8822B_SUPPORT == 1) || (RTL8192F_SUPPORT == 1)
-		#ifdef CONFIG_DYNAMIC_SOML
-		rtw_dyn_soml_config(padapter);
-		#endif
-		#endif
-		#ifdef CONFIG_TDMADIG
-		rtw_phydm_tdmadig(padapter, TDMADIG_INIT);
-		#endif/*CONFIG_TDMADIG*/
-	} else {
-		rtw_set_hw_init_completed(padapter, _FALSE);
-		RTW_ERR("%s: hal_init fail\n", __func__);
-	}
-	return status;
-}
-#else
 uint	 rtw_hal_init(_adapter *padapter)
 {
 	uint	status = _SUCCESS;
@@ -587,7 +534,6 @@ uint	 rtw_hal_init(_adapter *padapter)
 	return status;
 
 }
-#endif
 
 uint rtw_hal_deinit(_adapter *padapter)
 {

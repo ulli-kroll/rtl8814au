@@ -1107,13 +1107,11 @@ void LeaveAllPowerSaveMode(PADAPTER Adapter)
 	u8	enqueue = 0;
 	int i;
 
-	#ifndef CONFIG_NEW_NETDEV_HDL
 	if (_FALSE == Adapter->bup) {
 		RTW_INFO(FUNC_ADPT_FMT ": bup=%d Skip!\n",
 			 FUNC_ADPT_ARG(Adapter), Adapter->bup);
 		return;
 	}
-	#endif
 
 /*	RTW_INFO(FUNC_ADPT_FMT "\n", FUNC_ADPT_ARG(Adapter));*/
 

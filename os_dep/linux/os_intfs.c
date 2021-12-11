@@ -1395,15 +1395,6 @@ static int rtw_ndev_notifier_call(struct notifier_block *nb, unsigned long state
 	switch (state) {
 	case NETDEV_CHANGENAME:
 		break;
-	#ifdef CONFIG_NEW_NETDEV_HDL
-	case NETDEV_PRE_UP :
-		{
-			_adapter *adapter = rtw_netdev_priv(ndev);
-
-			rtw_pwr_wakeup(adapter);
-		}
-		break;
-	#endif
 	}
 
 	return NOTIFY_DONE;
@@ -2742,92 +2733,6 @@ void rtw_os_ndevs_deinit(struct dvobj_priv *dvobj)
 	rtw_os_ndevs_free(dvobj);
 }
 
-#ifdef CONFIG_NEW_NETDEV_HDL
-int _netdev_open(struct net_device *pnetdev)
-{
-	uint status;
-	_adapter *padapter = (_adapter *)rtw_netdev_priv(pnetdev);
-	struct pwrctrl_priv *pwrctrlpriv = adapter_to_pwrctl(padapter);
-
-	RTW_INFO(FUNC_NDEV_FMT" start\n", FUNC_NDEV_ARG(pnetdev));
-
-	if (!rtw_is_hw_init_completed(padapter)) { // ips 
-		rtw_clr_surprise_removed(padapter);
-		rtw_clr_drv_stopped(padapter);
-		RTW_ENABLE_FUNC(padapter, DF_RX_BIT);
-		RTW_ENABLE_FUNC(padapter, DF_TX_BIT);
-		status = rtw_hal_init(padapter);
-		if (status == _FAIL)
-			goto netdev_open_error;
-		rtw_led_control(padapter, LED_CTL_NO_LINK);
-		#ifndef RTW_HALMAC
-		status = rtw_mi_start_drv_threads(padapter);
-		if (status == _FAIL) {
-			RTW_ERR(FUNC_NDEV_FMT "Initialize driver thread failed!\n", FUNC_NDEV_ARG(pnetdev));
-			goto netdev_open_error;
-		}
-
-		rtw_intf_start(GET_PRIMARY_ADAPTER(padapter));
-		#endif /* !RTW_HALMAC */
-
-		{
-
-			_set_timer(&adapter_to_dvobj(padapter)->dynamic_chk_timer, 2000);
-
-	#ifndef CONFIG_IPS_CHECK_IN_WD
-			rtw_set_pwr_state_check_timer(pwrctrlpriv);
-	#endif /*CONFIG_IPS_CHECK_IN_WD*/
-		}
-
-	}
-
-	/*if (padapter->bup == _FALSE) */
-	{
-		rtw_hal_iface_init(padapter);
-
-		#ifdef CONFIG_RTW_NAPI
-		if(padapter->napi_state == NAPI_DISABLE) {
-			napi_enable(&padapter->napi);
-			padapter->napi_state = NAPI_ENABLE;
-		}
-		#endif
-
-		#ifdef CONFIG_IOCTL_CFG80211
-		rtw_cfg80211_init_wiphy(padapter);
-		rtw_cfg80211_init_wdev_data(padapter);
-		#endif
-		/* rtw_netif_carrier_on(pnetdev); */ /* call this func when rtw_joinbss_event_callback return success */
-		rtw_netif_wake_queue(pnetdev);
-
-		padapter->bup = _TRUE;
-		padapter->net_closed = _FALSE;
-		padapter->netif_up = _TRUE;
-		pwrctrlpriv->bips_processing = _FALSE;
-	}
-
-	RTW_INFO(FUNC_NDEV_FMT" Success (bup=%d)\n", FUNC_NDEV_ARG(pnetdev), padapter->bup);
-	return 0;
-
-netdev_open_error:
-	padapter->bup = _FALSE;
-
-	#ifdef CONFIG_RTW_NAPI
-	if(padapter->napi_state == NAPI_ENABLE) {
-		napi_disable(&padapter->napi);
-		padapter->napi_state = NAPI_DISABLE;
-	}
-	#endif
-
-	rtw_netif_carrier_off(pnetdev);
-	rtw_netif_stop_queue(pnetdev);
-
-	RTW_ERR(FUNC_NDEV_FMT" Failed!! (bup=%d)\n", FUNC_NDEV_ARG(pnetdev), padapter->bup);
-
-	return -1;
-
-}
-
-#else
 int _netdev_open(struct net_device *pnetdev)
 {
 	uint status;
@@ -2942,7 +2847,7 @@ netdev_open_error:
 	return -1;
 
 }
-#endif
+
 int netdev_open(struct net_device *pnetdev)
 {
 	int ret = _FALSE;
@@ -2955,12 +2860,10 @@ int netdev_open(struct net_device *pnetdev)
 	}
 
 	_enter_critical_mutex(&(adapter_to_dvobj(padapter)->hw_init_mutex), NULL);
-#ifdef CONFIG_NEW_NETDEV_HDL
 	ret = _netdev_open(pnetdev);
-#else
 	if (is_primary_adapter(padapter))
 		ret = _netdev_open(pnetdev);
-#endif
+
 	_exit_critical_mutex(&(adapter_to_dvobj(padapter)->hw_init_mutex), NULL);
 
 
@@ -2985,20 +2888,10 @@ int  ips_netdrv_open(_adapter *padapter)
 
 	rtw_clr_drv_stopped(padapter);
 	/* padapter->bup = _TRUE; */
-#ifdef CONFIG_NEW_NETDEV_HDL
-	if (!rtw_is_hw_init_completed(padapter)) {
-		status = rtw_hal_init(padapter);
-		if (status == _FAIL) {
-			goto netdev_open_error;
-		}
-		rtw_mi_hal_iface_init(padapter);
-	}
-#else
 	status = rtw_hal_init(padapter);
 	if (status == _FAIL) {
 		goto netdev_open_error;
 	}
-#endif
 #if 0
 	rtw_mi_set_mac_addr(padapter);
 #endif
@@ -3084,88 +2977,7 @@ void rtw_ips_dev_unload(_adapter *padapter)
 		rtw_hal_deinit(padapter);
 
 }
-#ifdef CONFIG_NEW_NETDEV_HDL
-int _pm_netdev_open(_adapter *padapter)
-{
-	uint status;
-	struct pwrctrl_priv *pwrctrlpriv = adapter_to_pwrctl(padapter);
-	struct net_device *pnetdev = padapter->pnetdev;
 
-	RTW_INFO(FUNC_NDEV_FMT" start\n", FUNC_NDEV_ARG(pnetdev));
-
-	if (!rtw_is_hw_init_completed(padapter)) { // ips 
-		rtw_clr_surprise_removed(padapter);
-		rtw_clr_drv_stopped(padapter);
-		status = rtw_hal_init(padapter);
-		if (status == _FAIL)
-			goto netdev_open_error;
-		rtw_led_control(padapter, LED_CTL_NO_LINK);
-		#ifndef RTW_HALMAC
-		status = rtw_mi_start_drv_threads(padapter);
-		if (status == _FAIL) {
-			RTW_ERR(FUNC_NDEV_FMT "Initialize driver thread failed!\n", FUNC_NDEV_ARG(pnetdev));
-			goto netdev_open_error;
-		}
-
-		rtw_intf_start(GET_PRIMARY_ADAPTER(padapter));
-		#endif /* !RTW_HALMAC */
-
-		{
-			_set_timer(&adapter_to_dvobj(padapter)->dynamic_chk_timer, 2000);
-
-	#ifndef CONFIG_IPS_CHECK_IN_WD
-			rtw_set_pwr_state_check_timer(pwrctrlpriv);
-	#endif /*CONFIG_IPS_CHECK_IN_WD*/
-		}
-
-	}
-
-	/*if (padapter->bup == _FALSE) */
-	{
-		rtw_hal_iface_init(padapter);
-
-		padapter->bup = _TRUE;
-		padapter->net_closed = _FALSE;
-		padapter->netif_up = _TRUE;
-		pwrctrlpriv->bips_processing = _FALSE;
-	}
-
-	RTW_INFO(FUNC_NDEV_FMT" Success (bup=%d)\n", FUNC_NDEV_ARG(pnetdev), padapter->bup);
-	return 0;
-
-netdev_open_error:
-	padapter->bup = _FALSE;
-
-	rtw_netif_carrier_off(pnetdev);
-	rtw_netif_stop_queue(pnetdev);
-
-	RTW_ERR(FUNC_NDEV_FMT" Failed!! (bup=%d)\n", FUNC_NDEV_ARG(pnetdev), padapter->bup);
-
-	return -1;
-
-}
-int _mi_pm_netdev_open(struct net_device *pnetdev)
-{
-	int i;
-	int status = 0;
-	_adapter *padapter = (_adapter *)rtw_netdev_priv(pnetdev);
-	_adapter *iface;
-	struct dvobj_priv *dvobj = adapter_to_dvobj(padapter);
-
-	for (i = 0; i < dvobj->iface_nums; i++) {
-		iface = dvobj->padapters[i];
-		if (iface->netif_up) {
-			status = _pm_netdev_open(iface);
-			if (status == -1) {
-				RTW_ERR("%s failled\n", __func__);
-				break;
-			}
-		}
-	}
-
-	return status;
-}
-#endif /*CONFIG_NEW_NETDEV_HDL*/
 int pm_netdev_open(struct net_device *pnetdev, u8 bnormal)
 {
 	int status = 0;
@@ -3174,11 +2986,7 @@ int pm_netdev_open(struct net_device *pnetdev, u8 bnormal)
 
 	if (_TRUE == bnormal) {
 		_enter_critical_mutex(&(adapter_to_dvobj(padapter)->hw_init_mutex), NULL);
-		#ifdef CONFIG_NEW_NETDEV_HDL
-		status = _mi_pm_netdev_open(pnetdev);
-		#else
 		status = _netdev_open(pnetdev);
-		#endif
 		_exit_critical_mutex(&(adapter_to_dvobj(padapter)->hw_init_mutex), NULL);
 	}
 #ifdef CONFIG_IPS

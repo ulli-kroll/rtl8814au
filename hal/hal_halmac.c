@@ -2964,11 +2964,7 @@ static int _drv_enable_trx(struct dvobj_priv *d)
 
 	adapter = dvobj_get_primary_adapter(d);
 	if (adapter->bup == _FALSE) {
-#ifdef CONFIG_NEW_NETDEV_HDL
-		status = rtw_mi_start_drv_threads(adapter);
-#else
 		status = rtw_start_drv_threads(adapter);
-#endif
 		if (status == _FAIL) {
 			RTW_ERR("%s: Start threads Failed!\n", __FUNCTION__);
 			return -1;

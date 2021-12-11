@@ -665,24 +665,6 @@ void rtw_mi_buddy_intf_stop(_adapter *adapter)
 	_rtw_mi_process(adapter, _TRUE, NULL, _rtw_mi_intf_stop);
 }
 
-#ifdef CONFIG_NEW_NETDEV_HDL
-u8 rtw_mi_hal_iface_init(_adapter *padapter)
-{
-	int i;
-	_adapter *iface;
-	struct dvobj_priv *dvobj = adapter_to_dvobj(padapter);
-
-	u8 ret = _TRUE;
-
-	for (i = 0; i < dvobj->iface_nums; i++) {
-		iface = dvobj->padapters[i];
-		if (iface && iface->netif_up)
-			rtw_hal_iface_init(padapter);
-	}
-	return ret;
-}
-#endif
-
 static u8 _rtw_mi_suspend_free_assoc_resource(_adapter *padapter, void *data)
 {
 	return rtw_suspend_free_assoc_resource(padapter);
